@@ -222,7 +222,6 @@
                         <div class="text-right">
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date</p>
                             <p class="text-sm font-black" id="displayDate">--</p>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1" id="dispGrn"></p>
                         </div>
                     </div>
 
@@ -745,39 +744,14 @@
             updateUI();
         };
 
-        window.loadHistoricBill = (id) => {
-            if (currentItems.length > 0 && !billIsFinalized) {
-                if (!confirm("You have an unsaved bill in progress. Discard it to view this history?")) return;
-            }
-            const b = window.allBills.find(x => x.id === id);
-            if (!b) return;
-
-            document.getElementById('vName').value = b.name || "";
-            document.getElementById('vId').value = b.vId || "";
-            currentItems = b.items || [];
-            currentExpenses = b.expenses || [];
-            
-            // Treat this loaded bill as finalized so next entries auto-clear
-            billIsFinalized = true;
-            
-            // Close edit dropdowns/inputs if any
-            document.getElementById('pWeight').value = "0";
-            document.getElementById('pPrice').value = "0";
-            document.getElementById('pCrates').value = "0";
-
-            updateUI();
-            finalizeUI(b);
-        };
-
         const listenToQueue = () => {
             db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').onSnapshot(snap => {
                 const bills = [];
                 snap.forEach(d => bills.push({id: d.id, ...d.data()}));
                 const history = bills.sort((a,b) => b.ts - a.ts);
-                window.allBills = history;
                 document.getElementById('ccHistoryCount').innerText = history.length;
                 document.getElementById('ccHistoryQueue').innerHTML = history.map(b => `
-                    <div onclick="loadHistoricBill('${b.id}')" class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 shadow-sm transition-all cursor-pointer">
+                    <div class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 shadow-sm transition-all cursor-pointer">
                         <div class="flex justify-between items-start mb-1">
                             <div>
                                 <p class="font-black text-xs text-gray-900">${b.name}</p>
