@@ -14,7 +14,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .bill-container { 
             background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
-            width: 155mm; min-height: auto; padding: 10mm; margin: auto; 
+            width: 155mm; min-height: auto; padding: 10mm; margin: 0 auto; 
             border: 1px solid #e2e8f0; zoom: 0.85; transform-origin: top;
         }
         .draft-border { border: 4px dashed #e2e8f0; }
@@ -62,7 +62,7 @@
         <div class="flex flex-col md:flex-row gap-4 items-start relative mb-6">
             
             <!-- COLUMN 1: TRANSACTION ENTRY (45% Width) -->
-            <div id="inputFormArea" class="w-full md:w-[45%] bg-white p-4 rounded-3xl shadow-xl border border-gray-100 no-print h-fit sticky top-2">
+            <div id="inputFormArea" class="w-full md:w-[45%] bg-white p-4 rounded-3xl shadow-xl border border-gray-100 no-print h-fit">
                 <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-50">
                     <div class="flex items-center gap-2">
                         <div id="formIndicator" class="bg-blue-600 w-2 h-6 rounded-full"></div>
@@ -208,7 +208,7 @@
             <!-- RIGHT COLUMN: BILL PREVIEW (55% Width - Locked Beside) -->
             <div id="previewContainer" class="w-full md:w-[55%] flex flex-col gap-4 min-w-0">
 
-                <div class="sticky top-2 h-fit w-full flex flex-col">
+                <div class="h-fit w-full flex flex-col">
                 <div id="billPreview" class="bill-container p-4 md:p-6 border rounded-2xl shadow-xl mx-auto w-full max-w-full md:max-w-none flex flex-col draft-border relative transition-all origin-top h-fit">
                     <div id="watermark" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] rotate-[-45deg] hidden">
                         <span class="text-9xl font-black uppercase text-green-600">APPROVED</span>
@@ -344,7 +344,27 @@
         </div>
     </div>
 
-    <!-- Multi-Grade Grid Picker Overlay -->
+    <!-- Microsoft Style Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-black text-gray-900 uppercase">Confirm Delete</h3>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">This action is permanent</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-6 leading-relaxed">Are you sure you want to permanently erase this transaction from the audit trail? This cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button onclick="closeDeleteModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-black text-[10px] uppercase transition-all">Cancel</button>
+                    <button onclick="executeDelete()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-black text-[10px] uppercase shadow-lg shadow-red-200 transition-all">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="gradePickerModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeGradePicker()"></div>
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
@@ -376,6 +396,7 @@
         let db, auth;
         const appId = 'nj-billing-v2';
         const CC_ACCESS_CODE = "temp123";
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxFTPebcDTY8DEtdzFVP4tHhjFwC15SXfcdeKNBYaE4B9k7qbVdVhvoeQpImSHQ3b-hNg/exec";
 
         try {
             const mockStore = {
@@ -409,6 +430,12 @@
                 onSnapshot: (cb) => {
                     const bill = mockStore.bills.find(b => b.id === docId);
                     cb({ exists: !!bill, data: () => bill });
+                },
+                delete: () => {
+                    const idx = mockStore.bills.findIndex(b => b.id === docId);
+                    if (idx > -1) mockStore.bills.splice(idx, 1);
+                    mockStore.notify();
+                    return Promise.resolve();
                 },
                 collection: () => mockCollection()
             });
@@ -997,10 +1024,16 @@
                      return;
                 }
 
-                const billId = "bill_" + Date.now();
+                const billId = "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase();
                 const ref = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(billId);
                 
                 await ref.set(data);
+
+                // --- START GOOGLE SHEETS SYNC ---
+                if (GOOGLE_SHEETS_URL !== "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
+                    syncToGoogleSheets({ id: billId, ...data });
+                }
+                // --- END SYNC ---
                 
                 // FINAL LOCK AND UI SYNC
                 billIsFinalized = true; 
@@ -1249,10 +1282,14 @@
         const renderHistoryQueue = (data) => {
             document.getElementById('ccHistoryCount').innerText = data.length;
             document.getElementById('ccHistoryQueue').innerHTML = data.map(b => `
-                <div onclick="viewPastBill('${b.id}')" class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 hover:shadow-lg shadow-sm transition-all cursor-pointer group active:scale-95">
-                    <div class="flex justify-between items-start mb-1">
+                <div onclick="viewPastBill('${b.id}')" class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 hover:shadow-lg shadow-sm transition-all cursor-pointer group active:scale-95 relative overflow-hidden">
+                    <button onclick="event.stopPropagation(); requestDelete('${b.id}')" class="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:border-red-100 rounded-lg flex items-center justify-center text-[10px] font-black transition-all">X</button>
+                    <div class="flex justify-between items-start mb-1 pr-6">
                         <div>
-                            <p class="font-black text-xs text-gray-900 group-hover:text-blue-600 transition-colors">${b.name || 'Vendor'}</p>
+                            <div class="flex items-center gap-2 mb-1">
+                                <p class="font-black text-xs text-gray-900 group-hover:text-blue-600 transition-colors">${b.name || 'Vendor'}</p>
+                                <span id="histSyncStatus_${b.id}" class="hidden"></span>
+                            </div>
                             <p class="text-[8px] text-gray-400 font-bold uppercase">${b.ts ? new Date(b.ts).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : 'NEW RECORD'}</p>
                         </div>
                         <span class="text-[7px] font-black px-1.5 py-0.5 rounded bg-green-100 text-green-700 uppercase">${b.status || 'PAID'}</span>
@@ -1331,6 +1368,56 @@
             } catch (e) {
                 console.error("History Load Error:", e);
                 renderHistoryQueue([]); // Clear "Ready to Sync" even on error
+            }
+        };
+
+        let pendingDeleteId = null;
+        window.requestDelete = (id) => {
+            pendingDeleteId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        };
+        window.closeDeleteModal = () => {
+            pendingDeleteId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+        };
+        window.executeDelete = async () => {
+            if (!pendingDeleteId) return;
+            try {
+                await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(pendingDeleteId).delete();
+                closeDeleteModal();
+            } catch (e) {
+                console.error("Delete Error:", e);
+                alert("STABILITY ALERT: Failed to delete. Try again.");
+            }
+        };
+
+        const syncToGoogleSheets = async (data) => {
+            const statusTag = document.getElementById('histSyncStatus');
+            try {
+                if (statusTag) {
+                    statusTag.innerHTML = "\u231B Syncing to Sheets...";
+                    statusTag.className = "text-[7px] font-black px-2 py-1 bg-blue-50 text-blue-500 rounded-full animate-pulse";
+                    statusTag.classList.remove('hidden');
+                }
+                
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for Google Scripts
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (statusTag) {
+                    statusTag.innerHTML = "\u2705 Saved to Sheet";
+                    statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
+                    setTimeout(() => statusTag.classList.add('hidden'), 5000);
+                }
+            } catch (e) {
+                console.error("Sheets Sync Error:", e);
+                if (statusTag) {
+                    statusTag.innerHTML = "\u26A0 Sync Failed";
+                    statusTag.className = "text-[7px] font-black px-2 py-1 bg-red-50 text-red-600 rounded-full";
+                }
             }
         };
 
