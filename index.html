@@ -362,7 +362,6 @@
                     class="bill-container p-4 md:p-6 border rounded-2xl shadow-xl mx-auto w-full max-w-full md:max-w-none flex flex-col draft-border relative transition-all origin-top h-fit">
                     <div id="watermark"
                         class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] rotate-[-45deg] hidden">
-                        <span class="text-9xl font-black uppercase text-green-600">APPROVED</span>
                     </div>
 
                     <div class="flex justify-between pb-8 mb-8 border-b-2 border-gray-100">
@@ -1349,26 +1348,38 @@
             const filename = `Ninjacart_Bill_${vendor}_${date}.png`;
 
             const originalClasses = bill.className;
-            bill.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6');
+            bill.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full');
             bill.style.transform = 'scale(1)';
             bill.style.boxShadow = 'none';
+
+            // FORCE STRICT DESKTOP SIZING FOR THE SNAPSHOT
+            const originalWidth = bill.style.width;
+            const originalMaxWidth = bill.style.maxWidth;
+            bill.style.width = '850px';
+            bill.style.maxWidth = '850px';
 
             html2canvas(bill, {
                 scale: 3,
                 useCORS: true,
                 backgroundColor: "#ffffff",
-                windowWidth: 1200
+                windowWidth: 850
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = filename;
                 link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
+                
+                // RESTORE ORIGINAL STATE
                 bill.className = originalClasses;
                 bill.style.transform = '';
                 bill.style.boxShadow = '';
+                bill.style.width = originalWidth;
+                bill.style.maxWidth = originalMaxWidth;
             }).catch(err => {
                 console.error("Capture failed:", err);
                 bill.className = originalClasses;
+                bill.style.width = originalWidth;
+                bill.style.maxWidth = originalMaxWidth;
             });
         };
 
