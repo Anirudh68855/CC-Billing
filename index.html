@@ -399,18 +399,36 @@
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxFTPebcDTY8DEtdzFVP4tHhjFwC15SXfcdeKNBYaE4B9k7qbVdVhvoeQpImSHQ3b-hNg/exec";
 
         try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyB1kDMDcvw6jTjgpkU9jeNqm1AzgjntgvE",
+                authDomain: "cc-billing-8d661.firebaseapp.com",
+                projectId: "cc-billing-8d661",
+                storageBucket: "cc-billing-8d661.firebasestorage.app",
+                messagingSenderId: "226455424419",
+                appId: "1:226455424419:web:386036811162a372949e16",
+                measurementId: "G-DCNEPXBPE5"
+            };
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            db = firebase.firestore();
+            auth = firebase.auth();
+        } catch (e) {
+            console.error("Firebase Error:", e);
+
             const mockStore = {
                 bills: [],
                 listeners: [],
-                notify() { 
-                    const data = { 
-                        forEach: (fn) => this.bills.sort((a,b)=>(b.ts||0)-(a.ts||0)).forEach(b => fn({ id: b.id, data: () => b })),
-                        docs: this.bills.sort((a,b)=>(b.ts||0)-(a.ts||0)).map(b => ({ id: b.id, data: () => b })),
+                notify() {
+                    const data = {
+                        forEach: (fn) => this.bills.sort((a, b) => (b.ts || 0) - (a.ts || 0)).forEach(b => fn({ id: b.id, data: () => b })),
+                        docs: this.bills.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(b => ({ id: b.id, data: () => b })),
                         empty: this.bills.length === 0
                     };
-                    // DECOUPLED SYNC: Ensure database notifications don't block the UI
                     setTimeout(() => {
-                        this.listeners.forEach(cb => { try { cb(data); } catch(e) { console.error("Sync Error:", e); } }); 
+                        this.listeners.forEach(cb => { try { cb(data); } catch (err) { console.error("Sync Error:", err); } });
                     }, 0);
                 }
             };
@@ -422,10 +440,10 @@
                     mockStore.notify();
                     return Promise.resolve();
                 },
-                get: () => Promise.resolve({ 
-                    id: docId, 
+                get: () => Promise.resolve({
+                    id: docId,
                     exists: !!mockStore.bills.find(b => b.id === docId),
-                    data: () => mockStore.bills.find(b => b.id === docId) 
+                    data: () => mockStore.bills.find(b => b.id === docId)
                 }),
                 onSnapshot: (cb) => {
                     const bill = mockStore.bills.find(b => b.id === docId);
@@ -447,7 +465,7 @@
                 startAfter: () => mockCollection(),
                 get: () => Promise.resolve({
                     empty: mockStore.bills.length === 0,
-                    docs: mockStore.bills.sort((a,b) => (b.ts || 0) - (a.ts || 0)).map(b => ({
+                    docs: mockStore.bills.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(b => ({
                         id: b.id,
                         data: () => b
                     }))
@@ -461,7 +479,7 @@
 
             db = { collection: mockCollection };
             auth = { onAuthStateChanged: (cb) => cb({ uid: 'mock-user-123' }) };
-        } catch (e) { console.error("Firebase Error:", e); }
+        }
 
         let currentItems = [];
         let currentExpenses = [];
@@ -1026,11 +1044,19 @@
 
                 const totalAmount = (data.items.reduce((acc, i) => acc + (i.total || 0), 0) + data.expenses.reduce((acc, e) => acc + (e.amount || 0), 0));
                 
+                // --- CATEGORIZE EXPENSES FOR COLUMNS ---
+                const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
+                data.expenses.forEach(e => {
+                    if (buckets.hasOwnProperty(e.type)) buckets[e.type] += (e.amount || 0);
+                    else buckets.Other += (e.amount || 0); // Aggregate custom/other expenses
+                });
+
                 const finalData = {
                     id: "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase(),
                     ...data,
                     vId: mVal,
-                    total: totalAmount
+                    total: totalAmount,
+                    expenseBuckets: buckets
                 };
 
                 const ref = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(finalData.id);
@@ -1399,7 +1425,7 @@
             }
         };
 
-        const syncToGoogleSheets = async (data) => {
+        const syncToGoogleSheets = (data) => {
             const statusTag = document.getElementById('histSyncStatus');
             try {
                 if (statusTag) {
@@ -1407,19 +1433,39 @@
                     statusTag.className = "text-[7px] font-black px-2 py-1 bg-blue-50 text-blue-500 rounded-full animate-pulse";
                     statusTag.classList.remove('hidden');
                 }
-                
-                const response = await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Required for Google Scripts
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                if (statusTag) {
-                    statusTag.innerHTML = "\u2705 Saved to Sheet";
-                    statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
-                    setTimeout(() => statusTag.classList.add('hidden'), 5000);
-                }
+
+                const iframeName = `gsheets_sync_${Date.now()}`;
+                const iframe = document.createElement('iframe');
+                iframe.name = iframeName;
+                iframe.style.display = 'none';
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SHEETS_URL;
+                form.target = iframeName;
+                form.style.display = 'none';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'data';
+                input.value = JSON.stringify(data);
+                form.appendChild(input);
+
+                iframe.onload = () => {
+                    if (statusTag) {
+                        statusTag.innerHTML = "\u2705 Saved to Sheet";
+                        statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
+                        setTimeout(() => statusTag.classList.add('hidden'), 5000);
+                    }
+                    setTimeout(() => {
+                        iframe.remove();
+                        form.remove();
+                    }, 1000);
+                };
+
+                document.body.appendChild(iframe);
+                document.body.appendChild(form);
+                form.submit();
             } catch (e) {
                 console.error("Sheets Sync Error:", e);
                 if (statusTag) {
