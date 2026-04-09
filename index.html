@@ -600,6 +600,29 @@
         </div>
     </div>
 
+    <!-- Beautiful Custom Prompt Modal -->
+    <div id="customPromptModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border-4 border-white">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-black text-gray-900 uppercase tracking-tight">New Grade</h3>
+                </div>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Create a custom card (e.g. Export, Reject)</p>
+                <input type="text" id="customPromptInput" placeholder="Type Grade Name..." onkeydown="if(event.key === 'Enter') confirmCustomPrompt()"
+                    class="w-full bg-gray-50 border-2 border-gray-100 placeholder-gray-300 text-gray-900 rounded-xl px-4 py-4 font-black uppercase text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all mb-6">
+                <div class="flex gap-3">
+                    <button onclick="closeCustomPrompt()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
+                    <button onclick="confirmCustomPrompt()" class="flex-[1.5] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 transition-all">Verify & Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let db, auth;
         const appId = 'nj-billing-v2';
@@ -1369,49 +1392,103 @@
 
         // --- MULTI-GRADE PICKER LOGIC ---
         let pickerSelected = [];
+        let customGradesList = []; // Persists custom grades added during this session
 
         window.openGradePicker = () => {
             const modal = document.getElementById('gradePickerModal');
-            const container = document.getElementById('gradeGridContainer');
             const select = document.getElementById('pGrade');
             pickerSelected = currentItems.filter(i => i.total === 0).map(i => ({ value: i.rawGrade, manual: i.manualGrade }));
 
-            container.innerHTML = Array.from(select.options).map(opt => {
-                const isSelected = pickerSelected.some(p => p.value === opt.value);
-                return `
-                    <div onclick="toggleGradeInPicker('${opt.value}')" id="btn_picker_${opt.value}" class="picker-grade-btn border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-white border-gray-100'}">
-                        <span class="text-xs font-black uppercase tracking-tight">${opt.value}</span>
-                        <span class="text-[8px] font-bold opacity-60 uppercase">${opt.text.split('[')[1]?.replace(']', '') || ''}</span>
-                    </div>
-                 `;
-            }).join('');
+            // Extract any existing custom grades from items into the session list
+            pickerSelected.forEach(p => {
+                if (p.value === 'OTHERS' && p.manual && !customGradesList.includes(p.manual)) {
+                    customGradesList.push(p.manual);
+                }
+            });
+
+            renderGradeGrid();
             modal.classList.remove('hidden');
             updatePickerUI();
         };
 
-        window.toggleGradeInPicker = (grade) => {
-            if (grade === 'OTHERS') {
-                const customName = prompt("Enter Custom Grade Name (e.g., Export Grade, Mixed S1):", "OTHERS");
-                if (customName) {
-                    pickerSelected.push({ value: 'OTHERS', manual: customName.toUpperCase() });
-                }
-            } else {
-                const idx = pickerSelected.findIndex(p => p.value === grade);
-                if (idx > -1) pickerSelected.splice(idx, 1);
-                else pickerSelected.push({ value: grade, manual: "" });
-            }
+        window.renderGradeGrid = () => {
+            const container = document.getElementById('gradeGridContainer');
+            const select = document.getElementById('pGrade');
+            
+            let html = '';
+            
+            // 1. Render Predefined Master Grades
+            Array.from(select.options).forEach(opt => {
+                if (opt.value === 'OTHERS') return; // Skip default OTHERS inside grid loop
+                
+                const isSelected = pickerSelected.some(p => p.value === opt.value);
+                html += `
+                    <div onclick="toggleGradeInPicker('${opt.value}')" class="picker-grade-btn border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-white border-gray-100'}">
+                        <span class="text-xs font-black uppercase tracking-tight">${opt.value}</span>
+                        <span class="text-[8px] font-bold opacity-60 uppercase">${opt.text.split('[')[1]?.replace(']', '') || ''}</span>
+                    </div>`;
+            });
 
-            const btn = document.getElementById(`btn_picker_${grade}`);
-            const isSelected = pickerSelected.some(p => p.value === grade);
-            if (isSelected) {
-                btn.classList.replace('bg-white', 'bg-blue-600');
-                btn.classList.replace('border-gray-100', 'border-blue-600');
-                btn.classList.add('text-white', 'shadow-lg');
-            } else {
-                btn.classList.replace('bg-blue-600', 'bg-white');
-                btn.classList.replace('border-blue-600', 'border-gray-100');
-                btn.classList.remove('text-white', 'shadow-lg');
+            // 2. Render Custom 'OTHERS' Grades Dynamic Buttons
+            customGradesList.forEach(customName => {
+                const isSelected = pickerSelected.some(p => p.value === 'OTHERS' && p.manual === customName);
+                const safeName = customName.replace(/'/g, "\\'"); // escape quotes
+                html += `
+                    <div onclick="toggleGradeInPicker('OTHERS', '${safeName}')" class="picker-grade-btn border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${isSelected ? 'bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-orange-50 border-orange-200 text-orange-900'}">
+                        <span class="text-xs font-black uppercase tracking-tight text-center">${customName}</span>
+                        <span class="text-[8px] font-bold opacity-60 uppercase">CUSTOM RATE</span>
+                    </div>`;
+            });
+
+            // 3. Render "+ ADD OTHER" Creation Button
+            html += `
+                <div onclick="addNewCustomGrade()" class="picker-grade-btn border-2 border-dashed border-gray-300 bg-gray-50/50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all hover:bg-gray-100 hover:border-gray-400">
+                    <span class="text-xl font-black text-gray-400 leading-none">+</span>
+                    <span class="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">ADD OTHER</span>
+                </div>`;
+
+            container.innerHTML = html;
+        };
+
+        window.addNewCustomGrade = () => {
+            const inputEl = document.getElementById('customPromptInput');
+            inputEl.value = '';
+            document.getElementById('customPromptModal').classList.remove('hidden');
+            setTimeout(() => inputEl.focus(), 50);
+        };
+
+        window.closeCustomPrompt = () => {
+            document.getElementById('customPromptModal').classList.add('hidden');
+        };
+
+        window.confirmCustomPrompt = () => {
+            const customName = document.getElementById('customPromptInput').value;
+            if (customName && customName.trim() !== '') {
+                const cleanName = customName.trim().toUpperCase();
+                if (!customGradesList.includes(cleanName)) {
+                    customGradesList.push(cleanName);
+                }
+                // Auto-select upon creation
+                if (!pickerSelected.some(p => p.value === 'OTHERS' && p.manual === cleanName)) {
+                    pickerSelected.push({ value: 'OTHERS', manual: cleanName });
+                }
+                renderGradeGrid();
+                updatePickerUI();
             }
+            closeCustomPrompt();
+        };
+
+        window.toggleGradeInPicker = (gradeValue, customName = "") => {
+            if (gradeValue === 'OTHERS') {
+                const idx = pickerSelected.findIndex(p => p.value === 'OTHERS' && p.manual === customName);
+                if (idx > -1) pickerSelected.splice(idx, 1);
+                else pickerSelected.push({ value: 'OTHERS', manual: customName });
+            } else {
+                const idx = pickerSelected.findIndex(p => p.value === gradeValue);
+                if (idx > -1) pickerSelected.splice(idx, 1);
+                else pickerSelected.push({ value: gradeValue, manual: "" });
+            }
+            renderGradeGrid();
             updatePickerUI();
         };
 
