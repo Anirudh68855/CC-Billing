@@ -396,18 +396,18 @@
                         <div
                             class="grid grid-cols-3 gap-4 text-center bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
                             <div>
-                                <p class="text-[9px] font-bold text-gray-400 uppercase">Total Weight
+                                <p class="text-[9px] font-bold text-gray-400">TOTAL&nbsp;WEIGHT
                                 </p>
                                 <p class="text-lg font-black text-gray-900"><span id="dispTotalWeight">0.00</span>&nbsp;<span
                                         class="text-[10px]">KG</span></p>
                             </div>
                             <div class="border-x border-gray-100">
-                                <p class="text-[9px] font-bold text-gray-400 uppercase">Total Crates
+                                <p class="text-[9px] font-bold text-gray-400">TOTAL&nbsp;CRATES
                                 </p>
                                 <p class="text-lg font-black text-gray-900" id="dispTotalCrates">0</p>
                             </div>
                             <div>
-                                <p class="text-[9px] font-bold text-blue-400 uppercase">Net Payable</p>
+                                <p class="text-[9px] font-bold text-blue-400">NET&nbsp;PAYABLE</p>
                                 <p class="text-lg font-black text-blue-600" id="dispGrandTotal">&#x20B9;&nbsp;0.00</p>
                             </div>
                         </div>
@@ -417,8 +417,8 @@
                         <table class="w-full text-left">
                             <thead class="border-b-2 border-gray-800 text-[10px] uppercase font-black text-gray-400">
                                 <tr>
-                                    <th class="py-3">Produce &nbsp;/&nbsp; Grade</th>
-                                    <th class="py-3 text-center" id="dispPackLabel">Crates</th>
+                                    <th class="py-3">PRODUCE &nbsp;/&nbsp; GRADE</th>
+                                    <th class="py-3 text-center" id="dispPackLabel">CRATES</th>
                                     <th class="py-3 text-right">Qty (Kg)</th>
                                     <th class="py-3 text-right">Rate</th>
                                     <th class="py-3 text-right">Total</th>
@@ -439,8 +439,7 @@
 
                     <div class="mt-auto pt-8 border-t-2 border-gray-900">
                         <div class="flex justify-between items-center bg-gray-900 text-white p-6 rounded-2xl">
-                            <span class="font-black uppercase text-xs tracking-widest opacity-60">Net Payable
-                                Amount</span>
+                            <span class="font-black text-xs tracking-widest opacity-60">NET PAYABLE AMOUNT</span>
                             <span class="text-3xl font-black" id="sumTotal">&#x20B9;0.00</span>
                         </div>
                     </div>
@@ -1372,12 +1371,18 @@
             bill.style.maxWidth = '850px';
             bill.style.zIndex = '9999';
 
-            // KILL HTML2CANVAS KERNING BUGS
+            // KILL HTML2CANVAS KERNING BUGS BY ENFORCING NATIVE SYSTEM FONT
             const allElements = bill.querySelectorAll('*');
-            const originalSpacings = [];
+            const originalStylesData = [];
+            
+            bill.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
             allElements.forEach(el => {
-                originalSpacings.push(el.style.letterSpacing);
+                originalStylesData.push({
+                    letterSpacing: el.style.letterSpacing,
+                    fontFamily: el.style.fontFamily
+                });
                 el.style.setProperty('letter-spacing', 'normal', 'important');
+                el.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
             });
 
             html2canvas(bill, {
@@ -1396,15 +1401,19 @@
                 bill.style.transform = '';
                 bill.style.boxShadow = '';
                 Object.assign(bill.style, originalStyles);
+                bill.style.fontFamily = '';
                 allElements.forEach((el, index) => {
-                    el.style.setProperty('letter-spacing', originalSpacings[index]);
+                    el.style.setProperty('letter-spacing', originalStylesData[index].letterSpacing);
+                    el.style.setProperty('font-family', originalStylesData[index].fontFamily);
                 });
             }).catch(err => {
                 console.error("Capture failed:", err);
                 bill.className = originalClasses;
                 Object.assign(bill.style, originalStyles);
+                bill.style.fontFamily = '';
                 allElements.forEach((el, index) => {
-                    el.style.setProperty('letter-spacing', originalSpacings[index]);
+                    el.style.setProperty('letter-spacing', originalStylesData[index].letterSpacing);
+                    el.style.setProperty('font-family', originalStylesData[index].fontFamily);
                 });
             });
         };
