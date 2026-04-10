@@ -417,7 +417,7 @@
                         <table class="w-full text-left">
                             <thead class="border-b-2 border-gray-800 text-[10px] uppercase font-black text-gray-400">
                                 <tr>
-                                    <th class="py-3">Produce/Grade</th>
+                                    <th class="py-3">Produce &nbsp;/&nbsp; Grade</th>
                                     <th class="py-3 text-center" id="dispPackLabel">Crates</th>
                                     <th class="py-3 text-right">Qty (Kg)</th>
                                     <th class="py-3 text-right">Rate</th>
@@ -1041,13 +1041,14 @@
                 const priceNum = parseFloat(item.price) || 0;
                 const weightNum = (item.total > 0) ? item.weight : (crateNum * (PACK_MULTIPLIERS[item.packType] || 0));
                 const rowTotal = (item.total > 0) ? item.total : (weightNum * priceNum);
+                const printGrade = item.grade.replace(/\(/g, ' (');
                 return `
                     <tr class="border-b border-gray-100">
-                        <td class="py-4 font-black text-gray-800">${item.grade}</td>
+                        <td class="py-4 font-black text-gray-800">${printGrade}</td>
                         <td class="py-4 text-center">${crateNum}</td>
                         <td class="py-4 text-right">${weightNum.toFixed(2)}</td>
                         <td class="py-4 text-right font-mono">${priceNum.toFixed(2)}</td>
-                        <td class="py-4 text-right font-black font-mono tracking-tighter">\u20B9${rowTotal.toFixed(2)}</td>
+                        <td class="py-4 text-right font-black font-mono">\u20B9${rowTotal.toFixed(2)}</td>
                     </tr> `;
             }).join('');
             previewBody.innerHTML = billHTML || '<tr><td colspan="5" class="py-20 text-center text-gray-300 italic uppercase font-black tracking-widest text-[10px]">No item entry detected</td></tr>';
@@ -1352,11 +1353,32 @@
             bill.style.transform = 'scale(1)';
             bill.style.boxShadow = 'none';
 
-            // FORCE STRICT DESKTOP SIZING FOR THE SNAPSHOT
-            const originalWidth = bill.style.width;
-            const originalMaxWidth = bill.style.maxWidth;
+            // FORCE STRICT DESKTOP SIZING FOR THE SNAPSHOT (LIFT OUT OF MOBILE VIEWPORT)
+            const originalStyles = {
+                width: bill.style.width,
+                maxWidth: bill.style.maxWidth,
+                minWidth: bill.style.minWidth,
+                position: bill.style.position,
+                top: bill.style.top,
+                left: bill.style.left,
+                zIndex: bill.style.zIndex
+            };
+            
+            bill.style.position = 'absolute';
+            bill.style.top = '0';
+            bill.style.left = '0';
             bill.style.width = '850px';
+            bill.style.minWidth = '850px';
             bill.style.maxWidth = '850px';
+            bill.style.zIndex = '9999';
+
+            // KILL HTML2CANVAS KERNING BUGS
+            const allElements = bill.querySelectorAll('*');
+            const originalSpacings = [];
+            allElements.forEach(el => {
+                originalSpacings.push(el.style.letterSpacing);
+                el.style.setProperty('letter-spacing', 'normal', 'important');
+            });
 
             html2canvas(bill, {
                 scale: 3,
@@ -1373,13 +1395,17 @@
                 bill.className = originalClasses;
                 bill.style.transform = '';
                 bill.style.boxShadow = '';
-                bill.style.width = originalWidth;
-                bill.style.maxWidth = originalMaxWidth;
+                Object.assign(bill.style, originalStyles);
+                allElements.forEach((el, index) => {
+                    el.style.setProperty('letter-spacing', originalSpacings[index]);
+                });
             }).catch(err => {
                 console.error("Capture failed:", err);
                 bill.className = originalClasses;
-                bill.style.width = originalWidth;
-                bill.style.maxWidth = originalMaxWidth;
+                Object.assign(bill.style, originalStyles);
+                allElements.forEach((el, index) => {
+                    el.style.setProperty('letter-spacing', originalSpacings[index]);
+                });
             });
         };
 
