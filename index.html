@@ -1254,10 +1254,14 @@
         };
 
         window.generateVerifiedBill = async () => {
+            if (isSaving) return;
+            
             const mVal = (document.getElementById('vId').value || "").replace(/\D/g, '');
             if (mVal.length !== 10) { alert("ERROR: Please enter a valid 10-digit mobile number."); return; }
 
             if (currentItems.length === 0) { alert("Add items first."); return; }
+            
+            isSaving = true;
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden');
 
@@ -1335,6 +1339,7 @@
                 alert("STABILITY ALERT: Save failed. Try again.");
             } finally {
                 loader.classList.add('hidden');
+                isSaving = false;
             }
         };
 
@@ -1359,6 +1364,9 @@
         };
 
         window.downloadBillAsImage = () => {
+            if (isDownloading) return;
+            isDownloading = true;
+            
             const bill = document.getElementById('billPreview');
             const vendor = (document.getElementById('vName').value || "Vendor").trim().replace(/\s+/g, '_');
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).replace(' ', '');
@@ -1398,10 +1406,12 @@
                     // REVERT
                     bill.className = originalClasses;
                     Object.assign(bill.style, originalStyles);
+                    isDownloading = false;
                 }).catch(err => {
                     console.error("Capture failed:", err);
                     bill.className = originalClasses;
                     Object.assign(bill.style, originalStyles);
+                    isDownloading = false;
                 });
             }, 100);
         };
