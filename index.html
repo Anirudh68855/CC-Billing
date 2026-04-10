@@ -1352,7 +1352,6 @@
             bill.style.transform = 'scale(1)';
             bill.style.boxShadow = 'none';
 
-            // FORCE STRICT DESKTOP SIZING FOR THE SNAPSHOT (LIFT OUT OF MOBILE VIEWPORT)
             const originalStyles = {
                 width: bill.style.width,
                 maxWidth: bill.style.maxWidth,
@@ -1371,51 +1370,48 @@
             bill.style.maxWidth = '850px';
             bill.style.zIndex = '9999';
 
-            // KILL HTML2CANVAS KERNING BUGS BY ENFORCING NATIVE SYSTEM FONT
-            const allElements = bill.querySelectorAll('*');
-            const originalStylesData = [];
-            
-            bill.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
-            allElements.forEach(el => {
-                originalStylesData.push({
-                    letterSpacing: el.style.letterSpacing,
-                    fontFamily: el.style.fontFamily
-                });
-                el.style.setProperty('letter-spacing', 'normal', 'important');
-                el.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
-            });
+            // BRUTAL FONT METRICS OVERRIDE (WITH REPAINT DELAY)
+            const styleHack = document.createElement('style');
+            styleHack.id = 'printHackStyle';
+            styleHack.innerHTML = `
+                #billPreview, #billPreview * {
+                    letter-spacing: normal !important;
+                    font-family: Arial, Helvetica, sans-serif !important;
+                    font-kerning: none !important;
+                    text-rendering: geometricPrecision !important;
+                }
+            `;
+            document.head.appendChild(styleHack);
 
-            html2canvas(bill, {
-                scale: 3,
-                useCORS: true,
-                backgroundColor: "#ffffff",
-                windowWidth: 850
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = canvas.toDataURL('image/png', 1.0);
-                link.click();
-                
-                // RESTORE ORIGINAL STATE
-                bill.className = originalClasses;
-                bill.style.transform = '';
-                bill.style.boxShadow = '';
-                Object.assign(bill.style, originalStyles);
-                bill.style.fontFamily = '';
-                allElements.forEach((el, index) => {
-                    el.style.setProperty('letter-spacing', originalStylesData[index].letterSpacing);
-                    el.style.setProperty('font-family', originalStylesData[index].fontFamily);
+            // Wait 150ms to forcefully guarantee the mobile browser's Layout Engine
+            // has completely repainted the DOM with Arial metrics before cloning
+            setTimeout(() => {
+                html2canvas(bill, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: "#ffffff",
+                    windowWidth: 850
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+                    
+                    // RESTORE ORIGINAL STATE
+                    bill.className = originalClasses;
+                    bill.style.transform = '';
+                    bill.style.boxShadow = '';
+                    Object.assign(bill.style, originalStyles);
+                    const hack = document.getElementById('printHackStyle');
+                    if (hack) hack.remove();
+                }).catch(err => {
+                    console.error("Capture failed:", err);
+                    bill.className = originalClasses;
+                    Object.assign(bill.style, originalStyles);
+                    const hack = document.getElementById('printHackStyle');
+                    if (hack) hack.remove();
                 });
-            }).catch(err => {
-                console.error("Capture failed:", err);
-                bill.className = originalClasses;
-                Object.assign(bill.style, originalStyles);
-                bill.style.fontFamily = '';
-                allElements.forEach((el, index) => {
-                    el.style.setProperty('letter-spacing', originalStylesData[index].letterSpacing);
-                    el.style.setProperty('font-family', originalStylesData[index].fontFamily);
-                });
-            });
+            }, 150);
         };
 
         window.newTransaction = () => {
