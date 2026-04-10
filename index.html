@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f8fafc;
         }
 
@@ -1359,43 +1359,32 @@
         };
 
         window.downloadBillAsImage = () => {
-            const originalBill = document.getElementById('billPreview');
+            const bill = document.getElementById('billPreview');
             const vendor = (document.getElementById('vName').value || "Vendor").trim().replace(/\s+/g, '_');
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).replace(' ', '');
-            const filename = `Ninjacart_Bill_${vendor}_${date}.png`;
+            const uid = Date.now().toString().slice(-4);
+            const filename = `Ninjacart_Bill_${vendor}_${date}_V6_${uid}.png`;
 
-            // CREATE SECURE OFF-SCREEN RENDER CONTAINER
-            const tempContainer = document.createElement('div');
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.left = '-9999px';
-            tempContainer.style.top = '0';
-            tempContainer.style.width = '850px';
-            tempContainer.style.backgroundColor = 'white';
+            const originalClasses = bill.className;
+            const originalStyles = {
+                width: bill.style.width,
+                maxWidth: bill.style.maxWidth,
+                minWidth: bill.style.minWidth,
+                transform: bill.style.transform,
+                boxShadow: bill.style.boxShadow
+            };
+
+            // Force native unconstrained layout
+            bill.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full', 'mx-auto');
+            bill.style.width = '850px';
+            bill.style.minWidth = '850px';
+            bill.style.maxWidth = '850px';
+            bill.style.transform = 'none';
+            bill.style.boxShadow = 'none';
             
-            // Clone the bill to isolate from mobile Viewport reflow bugs
-            const clone = originalBill.cloneNode(true);
-            clone.id = "printCloneOut";
-            clone.className = originalBill.className;
-            clone.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full', 'mx-auto');
-            clone.style.width = '850px';
-            clone.style.minWidth = '850px';
-            clone.style.maxWidth = '850px';
-            clone.style.transform = 'none';
-            clone.style.boxShadow = 'none';
-
-            tempContainer.appendChild(clone);
-            document.body.appendChild(tempContainer);
-
-            // BRUTALLY ANNIHILATE FONTS IN THE CLONE
-            tempContainer.querySelectorAll('*').forEach(el => {
-                el.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
-                el.style.setProperty('letter-spacing', '0px', 'important');
-                el.style.setProperty('font-kerning', 'none', 'important');
-            });
-
-            // Wait carefully to guarantee mobile browser repaints the off-screen clone natively
+            // Allow CSS engine to settle
             setTimeout(() => {
-                html2canvas(clone, {
+                html2canvas(bill, {
                     scale: 3,
                     useCORS: true,
                     backgroundColor: "#ffffff",
@@ -1405,12 +1394,16 @@
                     link.download = filename;
                     link.href = canvas.toDataURL('image/png', 1.0);
                     link.click();
-                    tempContainer.remove();
+                    
+                    // REVERT
+                    bill.className = originalClasses;
+                    Object.assign(bill.style, originalStyles);
                 }).catch(err => {
                     console.error("Capture failed:", err);
-                    tempContainer.remove();
+                    bill.className = originalClasses;
+                    Object.assign(bill.style, originalStyles);
                 });
-            }, 300);
+            }, 100);
         };
 
         window.newTransaction = () => {
