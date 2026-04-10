@@ -1359,51 +1359,43 @@
         };
 
         window.downloadBillAsImage = () => {
-            const bill = document.getElementById('billPreview');
+            const originalBill = document.getElementById('billPreview');
             const vendor = (document.getElementById('vName').value || "Vendor").trim().replace(/\s+/g, '_');
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).replace(' ', '');
             const filename = `Ninjacart_Bill_${vendor}_${date}.png`;
 
-            const originalClasses = bill.className;
-            bill.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full');
-            bill.style.transform = 'scale(1)';
-            bill.style.boxShadow = 'none';
-
-            const originalStyles = {
-                width: bill.style.width,
-                maxWidth: bill.style.maxWidth,
-                minWidth: bill.style.minWidth,
-                position: bill.style.position,
-                top: bill.style.top,
-                left: bill.style.left,
-                zIndex: bill.style.zIndex
-            };
+            // CREATE SECURE OFF-SCREEN RENDER CONTAINER
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.top = '0';
+            tempContainer.style.width = '850px';
+            tempContainer.style.backgroundColor = 'white';
             
-            bill.style.position = 'absolute';
-            bill.style.top = '0';
-            bill.style.left = '0';
-            bill.style.width = '850px';
-            bill.style.minWidth = '850px';
-            bill.style.maxWidth = '850px';
-            bill.style.zIndex = '9999';
+            // Clone the bill to isolate from mobile Viewport reflow bugs
+            const clone = originalBill.cloneNode(true);
+            clone.id = "printCloneOut";
+            clone.className = originalBill.className;
+            clone.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full', 'mx-auto');
+            clone.style.width = '850px';
+            clone.style.minWidth = '850px';
+            clone.style.maxWidth = '850px';
+            clone.style.transform = 'none';
+            clone.style.boxShadow = 'none';
 
-            // BRUTAL FONT METRICS OVERRIDE (WITH REPAINT DELAY)
-            const styleHack = document.createElement('style');
-            styleHack.id = 'printHackStyle';
-            styleHack.innerHTML = `
-                #billPreview, #billPreview * {
-                    letter-spacing: normal !important;
-                    font-family: Arial, Helvetica, sans-serif !important;
-                    font-kerning: none !important;
-                    text-rendering: geometricPrecision !important;
-                }
-            `;
-            document.head.appendChild(styleHack);
+            tempContainer.appendChild(clone);
+            document.body.appendChild(tempContainer);
 
-            // Wait 150ms to forcefully guarantee the mobile browser's Layout Engine
-            // has completely repainted the DOM with Arial metrics before cloning
+            // BRUTALLY ANNIHILATE FONTS IN THE CLONE
+            tempContainer.querySelectorAll('*').forEach(el => {
+                el.style.setProperty('font-family', 'Arial, Helvetica, sans-serif', 'important');
+                el.style.setProperty('letter-spacing', '0px', 'important');
+                el.style.setProperty('font-kerning', 'none', 'important');
+            });
+
+            // Wait carefully to guarantee mobile browser repaints the off-screen clone natively
             setTimeout(() => {
-                html2canvas(bill, {
+                html2canvas(clone, {
                     scale: 3,
                     useCORS: true,
                     backgroundColor: "#ffffff",
@@ -1413,22 +1405,12 @@
                     link.download = filename;
                     link.href = canvas.toDataURL('image/png', 1.0);
                     link.click();
-                    
-                    // RESTORE ORIGINAL STATE
-                    bill.className = originalClasses;
-                    bill.style.transform = '';
-                    bill.style.boxShadow = '';
-                    Object.assign(bill.style, originalStyles);
-                    const hack = document.getElementById('printHackStyle');
-                    if (hack) hack.remove();
+                    tempContainer.remove();
                 }).catch(err => {
                     console.error("Capture failed:", err);
-                    bill.className = originalClasses;
-                    Object.assign(bill.style, originalStyles);
-                    const hack = document.getElementById('printHackStyle');
-                    if (hack) hack.remove();
+                    tempContainer.remove();
                 });
-            }, 150);
+            }, 300);
         };
 
         window.newTransaction = () => {
