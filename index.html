@@ -396,19 +396,26 @@
                         <div
                             class="grid grid-cols-3 gap-4 text-center bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
                             <div>
-                                <p class="text-[9px] font-bold text-gray-400">TOTAL&nbsp;WEIGHT
-                                </p>
-                                <p class="text-lg font-black text-gray-900"><span id="dispTotalWeight">0.00</span>&nbsp;<span
-                                        class="text-[10px]">KG</span></p>
+                                <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1">
+                                    <span>TOTAL</span><span>WEIGHT</span>
+                                </div>
+                                <div class="text-lg font-black text-gray-900 flex justify-center items-baseline space-x-0.5">
+                                    <span id="dispTotalWeight">0.00</span><span class="text-[10px]">KG</span>
+                                </div>
                             </div>
                             <div class="border-x border-gray-100">
-                                <p class="text-[9px] font-bold text-gray-400">TOTAL&nbsp;CRATES
-                                </p>
-                                <p class="text-lg font-black text-gray-900" id="dispTotalCrates">0</p>
+                                <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1">
+                                    <span>TOTAL</span><span>CRATES</span>
+                                </div>
+                                <div class="text-lg font-black text-gray-900 flex justify-center" id="dispTotalCrates">0</div>
                             </div>
                             <div>
-                                <p class="text-[9px] font-bold text-blue-400">NET&nbsp;PAYABLE</p>
-                                <p class="text-lg font-black text-blue-600" id="dispGrandTotal">&#x20B9;&nbsp;0.00</p>
+                                <div class="text-[9px] font-bold text-blue-400 flex justify-center space-x-1">
+                                    <span>NET</span><span>PAYABLE</span>
+                                </div>
+                                <div class="text-lg font-black text-blue-600 flex justify-center items-baseline" id="dispGrandTotal">
+                                    <span class="mr-0.5">&#x20B9;</span><span>0.00</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -417,7 +424,9 @@
                         <table class="w-full text-left">
                             <thead class="border-b-2 border-gray-800 text-[10px] uppercase font-black text-gray-400">
                                 <tr>
-                                    <th class="py-3">PRODUCE &nbsp;/&nbsp; GRADE</th>
+                                    <th class="py-3">
+                                        <div class="flex space-x-1 text-left"><span>PRODUCE</span><span>/</span><span>GRADE</span></div>
+                                    </th>
                                     <th class="py-3 text-center" id="dispPackLabel">CRATES</th>
                                     <th class="py-3 text-right">Qty (Kg)</th>
                                     <th class="py-3 text-right">Rate</th>
@@ -439,8 +448,8 @@
 
                     <div class="mt-auto pt-8 border-t-2 border-gray-900">
                         <div class="flex justify-between items-center bg-gray-900 text-white p-6 rounded-2xl">
-                            <span class="font-black text-xs tracking-widest opacity-60">NET PAYABLE AMOUNT</span>
-                            <span class="text-3xl font-black" id="sumTotal">&#x20B9;0.00</span>
+                            <div class="font-black text-xs tracking-widest opacity-60 flex space-x-1"><span>NET</span><span>PAYABLE</span><span>AMOUNT</span></div>
+                            <div class="text-3xl font-black flex items-baseline" id="sumTotal"><span class="mr-1">&#x20B9;</span><span>0.00</span></div>
                         </div>
                     </div>
 
@@ -1030,8 +1039,8 @@
 
             if (document.getElementById('dispTotalWeight')) document.getElementById('dispTotalWeight').innerText = tW.toFixed(2);
             if (document.getElementById('dispTotalCrates')) document.getElementById('dispTotalCrates').innerText = tC.toFixed(0);
-            if (document.getElementById('dispGrandTotal')) document.getElementById('dispGrandTotal').innerText = "\u20B9" + netPayable.toFixed(2);
-            if (document.getElementById('sumTotal')) document.getElementById('sumTotal').innerText = "\u20B9" + netPayable.toFixed(2);
+            if (document.getElementById('dispGrandTotal')) document.getElementById('dispGrandTotal').innerHTML = `<span class="mr-0.5">\u20B9</span><span>${netPayable.toFixed(2)}</span>`;
+            if (document.getElementById('sumTotal')) document.getElementById('sumTotal').innerHTML = `<span class="mr-1">\u20B9</span><span>${netPayable.toFixed(2)}</span>`;
 
             // Render Right Side Bill Breakdown
             const previewBody = document.getElementById('dispItemsBody');
@@ -1040,14 +1049,18 @@
                 const priceNum = parseFloat(item.price) || 0;
                 const weightNum = (item.total > 0) ? item.weight : (crateNum * (PACK_MULTIPLIERS[item.packType] || 0));
                 const rowTotal = (item.total > 0) ? item.total : (weightNum * priceNum);
-                const printGrade = item.grade.replace(/\(/g, ' (');
+                
+                // Force structural injection of space between text and brackets
+                const printGrade = item.grade.replace(/\(/g, '<span class="mx-0.5"></span>(');
                 return `
                     <tr class="border-b border-gray-100">
                         <td class="py-4 font-black text-gray-800">${printGrade}</td>
                         <td class="py-4 text-center">${crateNum}</td>
                         <td class="py-4 text-right">${weightNum.toFixed(2)}</td>
                         <td class="py-4 text-right font-mono">${priceNum.toFixed(2)}</td>
-                        <td class="py-4 text-right font-black font-mono">\u20B9${rowTotal.toFixed(2)}</td>
+                        <td class="py-4 text-right font-black font-mono">
+                            <div class="flex justify-end items-center"><span class="mr-0.5">\u20B9</span><span>${rowTotal.toFixed(2)}</span></div>
+                        </td>
                     </tr> `;
             }).join('');
             previewBody.innerHTML = billHTML || '<tr><td colspan="5" class="py-20 text-center text-gray-300 italic uppercase font-black tracking-widest text-[10px]">No item entry detected</td></tr>';
@@ -1056,12 +1069,16 @@
             let expHTML = (currentItems.length > 0 || gT > 0 || currentExpenses.length > 0) ? `
                 <tr class="text-gray-900 border-b border-gray-50 bg-gray-50/50">
                     <td colspan="4" class="py-3 text-right uppercase text-[10px] font-black tracking-widest">Gross Produce Value</td>
-                    <td class="py-3 text-right font-black font-mono">\u20B9${gT.toFixed(2)}</td>
+                    <td class="py-3 text-right font-black font-mono">
+                        <div class="flex justify-end items-center"><span class="mr-0.5">\u20B9</span><span>${gT.toFixed(2)}</span></div>
+                    </td>
                 </tr>` : '';
             expHTML += currentExpenses.map(e => `
                 <tr class="text-blue-600">
                     <td colspan="4" class="py-2 text-right text-[10px] uppercase font-bold">${e.type}</td>
-                    <td class="py-2 text-right font-mono font-bold">\u20B9${e.amount.toFixed(2)}</td>
+                    <td class="py-2 text-right font-mono font-bold">
+                        <div class="flex justify-end items-center"><span class="mr-0.5">\u20B9</span><span>${e.amount.toFixed(2)}</span></div>
+                    </td>
                 </tr>`).join('');
             document.getElementById('dispExpensesBody').innerHTML = expHTML;
 
