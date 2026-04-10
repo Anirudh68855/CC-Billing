@@ -155,6 +155,16 @@
                     <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Verified Billing v8.1</p>
                 </div>
             </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openHistoryModal()"
+                    class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all hover:bg-blue-100 active:scale-95">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    History
+                    <span id="historyBadge" class="ml-1 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
+                <span class="bg-green-100 text-green-700 text-[9px] px-3 py-1 rounded-full font-black uppercase">Online</span>
+            </div>
     </div>
     </header>
 
@@ -495,7 +505,7 @@
     </div> <!-- END DUAL COLUMN WORKSPACE -->
 
     <!-- SEPARATE TRANSACTION HISTORY (Always Below Everything) -->
-    <div id="historyPanel" class="no-print mt-12 bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+    <div id="historyPanel" class="hidden no-print mt-12 bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
         <div id="ccAdminArea">
             <div class="flex justify-between items-center mb-8 border-b border-gray-50 pb-5">
                 <div class="flex items-center gap-4">
@@ -538,6 +548,29 @@
         </div>
     </div>
     </div>
+
+
+    <!-- HISTORY MODAL OVERLAY -->
+    <div id="historyModal" class="hidden fixed inset-0 z-[900] flex flex-col no-print" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="closeHistoryModal()">
+        <div class="mt-auto max-h-[85vh] w-full overflow-y-auto bg-white rounded-t-3xl p-4 md:p-6 shadow-2xl" onclick="event.stopPropagation()" style="animation: slideUp 0.3s ease-out;">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-black text-gray-900 uppercase tracking-tight">Transaction History</h2>
+                <button onclick="closeHistoryModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900 transition-all active:scale-90">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
+                <input type="date" id="modalHistDate" onchange="applyModalHistoryFilters()" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
+                <input type="text" id="modalHistName" oninput="applyModalHistoryFilters()" placeholder="Name" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px] uppercase">
+                <input type="text" id="modalHistMobile" oninput="applyModalHistoryFilters()" placeholder="Mobile" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
+                <button onclick="clearModalHistoryFilters()" class="w-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 px-2 py-2 rounded-lg font-black text-[9px] uppercase transition-all">Clear</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="modalHistoryQueue">
+                <p class="text-sm text-gray-400 italic py-12 col-span-full text-center">No history yet</p>
+            </div>
+        </div>
+    </div>
+    <style>@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }</style>
 
     <!-- Microsoft Style Delete Confirmation Modal -->
     <div id="deleteModal"
@@ -722,6 +755,8 @@
         let currentItems = [];
         let currentExpenses = [];
         let isLocked = false;
+        let isSaving = false;
+        let isDownloading = false;
         let billIsFinalized = false;
         let allHistoryData = [];
         let lastHistoryDoc = null;
@@ -1020,8 +1055,6 @@
 
         // --- CORE MATH & RENDERING ENGINE ---
         window.syncTotals = () => {
-            // IF BILL IS FINALIZED (Locked for Print), DONT OVERWRITE THE PREVIEW WITH EMPTY STATE
-            if (billIsFinalized) return;
 
             let tW = 0, tC = 0, gT = 0;
             currentItems.forEach(i => {
@@ -1327,13 +1360,13 @@
                 // IMMUTABLE HISTORY SYNC
                 loadHistory();
 
-                // Reset only entry fields, keep items in data for history/viewing till new transaction
-                document.getElementById('vName').value = "";
-                document.getElementById('vId').value = "";
-
-                // Clear inputs but keep items in memory just for the 'frozen' UI state
-                // Next updateUI will see billIsFinalized and stay frozen 
-                updateUI();
+                // Keep vendor info visible in the bill preview (don't clear yet)
+                // Auto-reset will handle clearing after a delay
+                
+                // Auto-reset: start new bill automatically after 2.5 seconds
+                setTimeout(() => {
+                    newTransaction();
+                }, 2500);
             } catch (e) {
                 console.error("BILL SAVE ERR:", e);
                 alert("STABILITY ALERT: Save failed. Try again.");
@@ -1368,52 +1401,55 @@
             isDownloading = true;
             
             const bill = document.getElementById('billPreview');
-            const vendor = (document.getElementById('vName').value || "Vendor").trim().replace(/\s+/g, '_');
+            const vendor = (document.getElementById('dispName').innerText || "Vendor").trim().replace(/\s+/g, '_');
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).replace(' ', '');
             const uid = Date.now().toString().slice(-4);
             const filename = `Ninjacart_Bill_${vendor}_${date}_V6_${uid}.png`;
 
-            const originalClasses = bill.className;
-            const originalStyles = {
-                width: bill.style.width,
-                maxWidth: bill.style.maxWidth,
-                minWidth: bill.style.minWidth,
-                transform: bill.style.transform,
-                boxShadow: bill.style.boxShadow
-            };
-
-            // Force native unconstrained layout
-            bill.classList.remove('scale-[0.8]', 'xl:scale-95', 'sticky', 'top-6', 'w-full', 'max-w-full', 'mx-auto');
-            bill.style.width = '850px';
-            bill.style.minWidth = '850px';
-            bill.style.maxWidth = '850px';
-            bill.style.transform = 'none';
-            bill.style.boxShadow = 'none';
+            // Clone-based export to prevent layout issues
+            const exportHost = document.createElement('div');
+            exportHost.style.cssText = 'position:fixed;left:-10000px;top:0;z-index:-1;padding:24px;background:white;';
             
-            // Allow CSS engine to settle
-            setTimeout(() => {
-                html2canvas(bill, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: "#ffffff",
-                    windowWidth: 850
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    link.click();
-                    
-                    // REVERT
-                    bill.className = originalClasses;
-                    Object.assign(bill.style, originalStyles);
-                    isDownloading = false;
-                }).catch(err => {
-                    console.error("Capture failed:", err);
-                    bill.className = originalClasses;
-                    Object.assign(bill.style, originalStyles);
-                    isDownloading = false;
+            const clonedBill = bill.cloneNode(true);
+            clonedBill.style.width = '700px';
+            clonedBill.style.minWidth = '700px';
+            clonedBill.style.maxWidth = '700px';
+            clonedBill.style.transform = 'none';
+            clonedBill.style.boxShadow = 'none';
+            clonedBill.style.zoom = '1';
+            clonedBill.style.border = '1px solid #e2e8f0';
+            
+            // Fix table layout in clone
+            const tables = clonedBill.querySelectorAll('table');
+            tables.forEach(t => { t.style.tableLayout = 'fixed'; t.style.width = '100%'; });
+            const cells = clonedBill.querySelectorAll('td, th');
+            cells.forEach(c => { c.style.wordBreak = 'break-word'; c.style.overflow = 'visible'; });
+            
+            exportHost.appendChild(clonedBill);
+            document.body.appendChild(exportHost);
+            
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    html2canvas(clonedBill, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: "#ffffff",
+                        width: 700,
+                        windowWidth: 700
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = filename;
+                        link.href = canvas.toDataURL('image/png', 1.0);
+                        link.click();
+                        exportHost.remove();
+                        isDownloading = false;
+                    }).catch(err => {
+                        console.error("Capture failed:", err);
+                        exportHost.remove();
+                        isDownloading = false;
+                    });
                 });
-            }, 100);
+            });
         };
 
         window.newTransaction = () => {
@@ -1604,9 +1640,17 @@
             currentItems = JSON.parse(JSON.stringify(bill.items || []));
             currentExpenses = JSON.parse(JSON.stringify(bill.expenses || []));
 
+            // Set vendor info in the preview directly
+            document.getElementById('dispName').innerText = (bill.name || '---').toUpperCase();
+            document.getElementById('dispId').innerText = bill.vId || '---';
+
             // Populating visual elements directly for the preview
+            billIsFinalized = true;
             finalizeUI(bill);
-            updateUI();
+
+            // Render items and totals directly (bypass updateUI guard)
+            renderSpreadsheet();
+            syncTotals();
 
             // Highlight search context
             document.getElementById('editBadge').innerText = "Viewing Record";
@@ -1644,6 +1688,8 @@
 
         const renderHistoryQueue = (data) => {
             document.getElementById('ccHistoryCount').innerText = data.length;
+            const badge = document.getElementById('historyBadge');
+            if (badge) { badge.innerText = data.length; if (data.length > 0) badge.classList.remove('hidden'); else badge.classList.add('hidden'); }
             document.getElementById('ccHistoryQueue').innerHTML = data.map(b => `
                 <div onclick="viewPastBill('${b.id}')" class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 hover:shadow-lg shadow-sm transition-all cursor-pointer group active:scale-95 relative overflow-hidden">
                     <button onclick="event.stopPropagation(); requestDelete('${b.id}')" class="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:border-red-100 rounded-lg flex items-center justify-center text-[10px] font-black transition-all">X</button>
@@ -1808,6 +1854,53 @@
                     statusTag.className = "text-[7px] font-black px-2 py-1 bg-red-50 text-red-600 rounded-full";
                 }
             }
+        };
+
+
+        // --- HISTORY MODAL FUNCTIONS ---
+        window.openHistoryModal = () => {
+            document.getElementById('historyModal').classList.remove('hidden');
+            renderModalHistory(allHistoryData);
+        };
+        window.closeHistoryModal = () => {
+            document.getElementById('historyModal').classList.add('hidden');
+        };
+        const renderModalHistory = (data) => {
+            const container = document.getElementById('modalHistoryQueue');
+            container.innerHTML = data.map(b => `
+                <div onclick="viewPastBill('${b.id}'); closeHistoryModal();" class="p-4 border border-gray-100 rounded-2xl bg-white hover:border-blue-300 hover:shadow-lg shadow-sm transition-all cursor-pointer group active:scale-95 relative overflow-hidden">
+                    <button onclick="event.stopPropagation(); requestDelete('${b.id}')" class="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:border-red-100 rounded-lg flex items-center justify-center text-[10px] font-black transition-all">X</button>
+                    <div class="flex justify-between items-start mb-1 pr-6">
+                        <div>
+                            <p class="font-black text-xs text-gray-900 group-hover:text-blue-600 transition-colors">${b.name || 'Vendor'}</p>
+                            <p class="text-[8px] text-gray-400 font-bold uppercase">${b.ts ? new Date(b.ts).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'NEW'}</p>
+                        </div>
+                        <span class="text-[7px] font-black px-1.5 py-0.5 rounded bg-green-100 text-green-700 uppercase">${b.status || 'PAID'}</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-50">
+                        <p class="text-[9px] font-bold text-gray-500 uppercase">MOB: ${b.vId || '---'}</p>
+                        <p class="text-xs font-black text-blue-600 tracking-tighter">\u20B9${((b.items ? b.items.reduce((acc, i) => acc + (i.total || 0), 0) : 0) + (b.expenses ? b.expenses.reduce((acc, e) => acc + (e.amount || 0), 0) : 0)).toFixed(2)}</p>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-sm text-gray-400 italic py-12 col-span-full text-center">No history yet</p>';
+        };
+        window.applyModalHistoryFilters = () => {
+            const dVal = document.getElementById('modalHistDate').value;
+            const nVal = (document.getElementById('modalHistName').value || "").toLowerCase().trim();
+            const mVal = (document.getElementById('modalHistMobile').value || "").trim();
+            const filtered = allHistoryData.filter(b => {
+                if (dVal) { const bDate = new Date(b.ts).toISOString().split('T')[0]; if (bDate !== dVal) return false; }
+                if (nVal && !b.name.toLowerCase().includes(nVal)) return false;
+                if (mVal && !b.vId.includes(mVal)) return false;
+                return true;
+            });
+            renderModalHistory(filtered);
+        };
+        window.clearModalHistoryFilters = () => {
+            document.getElementById('modalHistDate').value = "";
+            document.getElementById('modalHistName').value = "";
+            document.getElementById('modalHistMobile').value = "";
+            renderModalHistory(allHistoryData);
         };
 
         window.onload = () => {
