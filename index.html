@@ -351,7 +351,7 @@
                 <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
                     <button id="generateBtn" onclick="generateVerifiedBill()"
                         class="w-full bg-[#2DB956] hover:bg-green-700 text-white px-4 py-3 rounded-2xl font-black shadow-lg transition-all flex items-center justify-center gap-3 text-sm active:scale-95 group relative overflow-hidden">
-                        <span>SAVE & FINALISE</span>
+                        <span id="generateBtnText">COMPLETE BILLING</span>
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4 transform group-hover:translate-x-1 transition-all" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -360,6 +360,7 @@
                         </svg>
                         <div id="loader" class="loader hidden absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
                     </button>
+                    <p class="text-center text-[9px] font-bold uppercase tracking-wider text-gray-400">Saves, prints &amp; auto-starts new bill</p>
                 </div>
             </div>
         </div> <!-- END LEFT COL -->
@@ -477,25 +478,22 @@
                 <!-- DISTRIBUTION ACTIONS (BOTTOM) -->
                 <div id="printActionArea" class="no-print mt-2">
                     <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 flex flex-col gap-2">
-                        <button onclick="saveAndPrint()"
-                            class="w-full bg-[#2DB956] hover:bg-green-700 text-white px-4 py-3 rounded-xl font-black shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            PRINT & SAVE BILL
-                        </button>
-                        <div class="flex gap-2">
-                            <button onclick="window.print()"
-                                class="flex-1 bg-white border border-blue-600 text-blue-700 px-2 py-2 rounded-lg font-black transition-all active:scale-95 text-[10px] uppercase">PRINT
-                                ONLY</button>
-                            <button onclick="downloadBillAsImage()"
-                                class="flex-1 bg-white border border-green-600 text-green-700 px-2 py-2 rounded-lg font-black transition-all active:scale-95 text-[10px] uppercase">SAVE
-                                PNG</button>
-                            <button onclick="newTransaction()"
-                                class="flex-1 bg-white border border-gray-400 text-gray-500 px-2 py-2 rounded-lg font-black transition-all active:scale-95 text-[10px] uppercase">NEW
-                                BILL</button>
+                        <!-- More Options dropdown -->
+                        <div class="relative" id="moreOptionsWrapper">
+                            <button onclick="toggleMoreOptions()" class="w-full bg-white border border-gray-300 text-gray-600 px-4 py-2.5 rounded-xl font-black transition-all active:scale-95 text-[10px] uppercase flex items-center justify-center gap-2">
+                                MORE OPTIONS
+                                <svg id="moreOptionsChevron" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div id="moreOptionsMenu" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
+                                <button onclick="window.print(); closeMoreOptions()" class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                    Print Only
+                                </button>
+                                <button onclick="downloadBillAsImage(); closeMoreOptions()" class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    Download PNG
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1357,15 +1355,22 @@
                 billIsFinalized = true;
                 finalizeUI(data);
 
+                // Update button text
+                const btnText = document.getElementById('generateBtnText');
+                if (btnText) btnText.innerText = '✓ BILL COMPLETE — RESETTING...';
+                document.getElementById('generateBtn').disabled = true;
+
                 // IMMUTABLE HISTORY SYNC
                 loadHistory();
 
-                // Keep vendor info visible in the bill preview (don't clear yet)
-                // Auto-reset will handle clearing after a delay
-                
+                // Trigger print dialog
+                setTimeout(() => window.print(), 400);
+
                 // Auto-reset: start new bill automatically after 2.5 seconds
                 setTimeout(() => {
                     newTransaction();
+                    if (btnText) btnText.innerText = 'COMPLETE BILLING';
+                    document.getElementById('generateBtn').disabled = false;
                 }, 2500);
             } catch (e) {
                 console.error("BILL SAVE ERR:", e);
@@ -1391,9 +1396,23 @@
             document.getElementById('printActionArea').classList.remove('hidden');
         };
 
+        window.toggleMoreOptions = () => {
+            const menu = document.getElementById('moreOptionsMenu');
+            const chevron = document.getElementById('moreOptionsChevron');
+            menu.classList.toggle('hidden');
+            chevron.style.transform = menu.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        };
+        window.closeMoreOptions = () => {
+            document.getElementById('moreOptionsMenu').classList.add('hidden');
+            document.getElementById('moreOptionsChevron').style.transform = '';
+        };
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('moreOptionsWrapper');
+            if (wrapper && !wrapper.contains(e.target)) closeMoreOptions();
+        });
+
         window.saveAndPrint = () => {
             window.print();
-            setTimeout(() => { window.downloadBillAsImage(); }, 500);
         };
 
         window.downloadBillAsImage = () => {
