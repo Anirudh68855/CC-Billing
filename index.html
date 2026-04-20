@@ -159,11 +159,16 @@
             <div class="flex items-center gap-2">
                 <button onclick="openHistoryModal()"
                     class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all hover:bg-blue-100 active:scale-95">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     History
-                    <span id="historyBadge" class="ml-1 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-full hidden">0</span>
+                    <span id="historyBadge"
+                        class="ml-1 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-full hidden">0</span>
                 </button>
-                <span class="bg-green-100 text-green-700 text-[9px] px-3 py-1 rounded-full font-black uppercase">Online</span>
+                <span
+                    class="bg-green-100 text-green-700 text-[9px] px-3 py-1 rounded-full font-black uppercase">Online</span>
             </div>
     </div>
     </header>
@@ -226,7 +231,8 @@
 
                     <div class="grid grid-cols-12 gap-5 pb-6 border-b border-gray-50">
                         <div class="col-span-12 md:col-span-4">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Pack</label>
+                            <label
+                                class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Pack</label>
                             <select id="pPackType" onchange="syncWeightFromPack(); updateUI();"
                                 onkeydown="if(event.key==='Enter') openGradePicker()"
                                 class="w-full border-2 border-gray-100 rounded-2xl px-4 bg-white text-[11px] font-black h-[55px] uppercase focus:border-blue-600 outline-none transition-all shadow-sm">
@@ -241,14 +247,22 @@
                             </select>
                         </div>
                         <div class="col-span-12 md:col-span-8">
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Grades</label>
+                            <label
+                                class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Grades</label>
                             <div id="gradePickerTrigger" onclick="openGradePicker()"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50/60 hover:bg-gray-100/70 cursor-pointer flex items-center gap-3 text-left transition-all group active:scale-[0.99]">
                                 <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50">
-                                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                    </svg>
                                 </div>
-                                <span id="gradePickerLabel" class="flex-1 text-[13px] font-medium text-gray-700">Select Grades</span>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                <span id="gradePickerLabel" class="flex-1 text-[13px] font-medium text-gray-700">Select
+                                    Grades</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
                             </div>
                             <select id="pGrade" class="hidden">
                                 <option value="SSS">SSS [400 gm]</option>
@@ -293,6 +307,9 @@
                             <tr>
                                 <th class="p-2 text-left">Grade</th>
                                 <th class="p-2 text-right">Qty</th>
+                                <th class="p-2 text-right">PP</th>
+                                <th class="p-2 text-right">Rate</th>
+                                <th class="p-2 text-right">Margin</th>
                                 <th class="p-2 text-right">Value</th>
                                 <th class="p-2"></th>
                             </tr>
@@ -306,10 +323,18 @@
                     <button onclick="openExpensePicker()"
                         class="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/60 px-4 py-3.5 text-left transition-all hover:bg-gray-100/80 active:scale-[0.99]">
                         <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-red-500" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
                         </div>
-                        <span id="expensePickerButtonLabel" class="flex-1 text-[13px] font-medium text-gray-800">Select expense types</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        <span id="expensePickerButtonLabel" class="flex-1 text-[13px] font-medium text-gray-800">Select
+                            expense types</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </button>
                     <div id="selectedExpenseEntryArea" class="hidden mt-3 space-y-2">
                         <div id="selectedExpenseEntries" class="space-y-2"></div>
@@ -319,7 +344,26 @@
                         </button>
                     </div>
                     <div id="expensesListArea" class="hidden mt-3">
-                        <div id="expensesItemsBody" class="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden"></div>
+                        <div id="expensesItemsBody"
+                            class="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden"></div>
+                    </div>
+                </div>
+
+                <!-- INTERNAL PROFIT SUMMARY (Admin Only) -->
+                <div id="internalProfitCard" class="mt-4 mb-4 p-4 bg-gray-50 border border-gray-100 rounded-2xl shadow-inner">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Profit Analysis</span>
+                        <span id="pnlStatus" class="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700">Profitable</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                            <span class="block text-[8px] font-bold text-gray-400 uppercase mb-1">Net Margin</span>
+                            <span id="internalNetProfit" class="text-sm font-black text-gray-900 tracking-tighter">&#x20B9;0.00</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                            <span class="block text-[8px] font-bold text-gray-400 uppercase mb-1">Profitability</span>
+                            <span id="internalProfitPercentage" class="text-sm font-black text-gray-900">0.00%</span>
+                        </div>
                     </div>
                 </div>
 
@@ -336,7 +380,8 @@
                         </svg>
                         <div id="loader" class="loader hidden absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
                     </button>
-                    <p class="text-center text-[9px] font-bold uppercase tracking-wider text-gray-400">Saves, prints &amp; auto-starts new bill</p>
+                    <p class="text-center text-[9px] font-bold uppercase tracking-wider text-gray-400">Saves, prints
+                        &amp; auto-starts new bill</p>
                 </div>
             </div>
         </div> <!-- END LEFT COL -->
@@ -386,7 +431,8 @@
                                 <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1">
                                     <span>TOTAL</span><span>WEIGHT</span>
                                 </div>
-                                <div class="text-lg font-black text-gray-900 flex justify-center items-baseline space-x-0.5">
+                                <div
+                                    class="text-lg font-black text-gray-900 flex justify-center items-baseline space-x-0.5">
                                     <span id="dispTotalWeight">0.00</span><span class="text-[10px]">KG</span>
                                 </div>
                             </div>
@@ -394,13 +440,15 @@
                                 <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1">
                                     <span>TOTAL</span><span>CRATES</span>
                                 </div>
-                                <div class="text-lg font-black text-gray-900 flex justify-center" id="dispTotalCrates">0</div>
+                                <div class="text-lg font-black text-gray-900 flex justify-center" id="dispTotalCrates">0
+                                </div>
                             </div>
                             <div>
                                 <div class="text-[9px] font-bold text-blue-400 flex justify-center space-x-1">
                                     <span>NET</span><span>PAYABLE</span>
                                 </div>
-                                <div class="text-lg font-black text-blue-600 flex justify-center items-baseline" id="dispGrandTotal">
+                                <div class="text-lg font-black text-blue-600 flex justify-center items-baseline"
+                                    id="dispGrandTotal">
                                     <span class="mr-0.5">&#x20B9;</span><span>0.00</span>
                                 </div>
                             </div>
@@ -412,7 +460,8 @@
                             <thead class="border-b-2 border-gray-800 text-[10px] uppercase font-black text-gray-400">
                                 <tr>
                                     <th class="py-3">
-                                        <div class="flex space-x-1 text-left"><span>PRODUCE</span><span>/</span><span>GRADE</span></div>
+                                        <div class="flex space-x-1 text-left">
+                                            <span>PRODUCE</span><span>/</span><span>GRADE</span></div>
                                     </th>
                                     <th class="py-3 text-center" id="dispPackLabel">CRATES</th>
                                     <th class="py-3 text-right">Qty (Kg)</th>
@@ -435,8 +484,10 @@
 
                     <div class="mt-auto pt-8 border-t-2 border-gray-900">
                         <div class="flex justify-between items-center bg-gray-900 text-white p-6 rounded-2xl">
-                            <div class="font-black text-xs tracking-widest opacity-60 flex space-x-1"><span>NET</span><span>PAYABLE</span><span>AMOUNT</span></div>
-                            <div class="text-3xl font-black flex items-baseline" id="sumTotal"><span class="mr-1">&#x20B9;</span><span>0.00</span></div>
+                            <div class="font-black text-xs tracking-widest opacity-60 flex space-x-1">
+                                <span>NET</span><span>PAYABLE</span><span>AMOUNT</span></div>
+                            <div class="text-3xl font-black flex items-baseline" id="sumTotal"><span
+                                    class="mr-1">&#x20B9;</span><span>0.00</span></div>
                         </div>
                     </div>
 
@@ -456,17 +507,34 @@
                     <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 flex flex-col gap-2">
                         <!-- More Options dropdown -->
                         <div class="relative" id="moreOptionsWrapper">
-                            <button onclick="toggleMoreOptions()" class="w-full bg-white border border-gray-300 text-gray-600 px-4 py-2.5 rounded-xl font-black transition-all active:scale-95 text-[10px] uppercase flex items-center justify-center gap-2">
+                            <button onclick="toggleMoreOptions()"
+                                class="w-full bg-white border border-gray-300 text-gray-600 px-4 py-2.5 rounded-xl font-black transition-all active:scale-95 text-[10px] uppercase flex items-center justify-center gap-2">
                                 MORE OPTIONS
-                                <svg id="moreOptionsChevron" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                                <svg id="moreOptionsChevron" xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 transition-transform" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
                             </button>
-                            <div id="moreOptionsMenu" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
-                                <button onclick="window.print(); closeMoreOptions()" class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                            <div id="moreOptionsMenu"
+                                class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
+                                <button onclick="window.print(); closeMoreOptions()"
+                                    class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
                                     Print Only
                                 </button>
-                                <button onclick="downloadBillAsImage(); closeMoreOptions()" class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <button onclick="downloadBillAsImage(); closeMoreOptions()"
+                                    class="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
                                     Download PNG
                                 </button>
                             </div>
@@ -524,23 +592,31 @@
     </div>
 
     <!-- Custom Expense Name Modal -->
-    <div id="customExpensePromptModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border-4 border-white">
+    <div id="customExpensePromptModal"
+        class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div
+            class="bg-white w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border-4 border-white">
             <div class="p-6">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-base font-black text-gray-900 uppercase tracking-tight">New Expense</h3>
                 </div>
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Enter a custom expense type</p>
-                <input type="text" id="customExpensePromptInput" placeholder="Type Expense Name..." onkeydown="if(event.key === 'Enter') confirmCustomExpensePrompt()"
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Enter a custom expense
+                    type</p>
+                <input type="text" id="customExpensePromptInput" placeholder="Type Expense Name..."
+                    onkeydown="if(event.key === 'Enter') confirmCustomExpensePrompt()"
                     class="w-full bg-gray-50 border-2 border-gray-100 placeholder-gray-300 text-gray-900 rounded-xl px-4 py-4 font-black uppercase text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all mb-6">
                 <div class="flex gap-3">
-                    <button onclick="closeCustomExpensePrompt()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
-                    <button onclick="confirmCustomExpensePrompt()" class="flex-[1.5] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 transition-all">Add</button>
+                    <button onclick="closeCustomExpensePrompt()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
+                    <button onclick="confirmCustomExpensePrompt()"
+                        class="flex-[1.5] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 transition-all">Add</button>
                 </div>
             </div>
         </div>
@@ -548,26 +624,46 @@
 
 
     <!-- HISTORY MODAL OVERLAY -->
-    <div id="historyModal" class="hidden fixed inset-0 z-[900] flex flex-col no-print" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="closeHistoryModal()">
-        <div class="mt-auto max-h-[85vh] w-full overflow-y-auto bg-white rounded-t-3xl p-4 md:p-6 shadow-2xl" onclick="event.stopPropagation()" style="animation: slideUp 0.3s ease-out;">
+    <div id="historyModal" class="hidden fixed inset-0 z-[900] flex flex-col no-print"
+        style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="closeHistoryModal()">
+        <div class="mt-auto max-h-[85vh] w-full overflow-y-auto bg-white rounded-t-3xl p-4 md:p-6 shadow-2xl"
+            onclick="event.stopPropagation()" style="animation: slideUp 0.3s ease-out;">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-black text-gray-900 uppercase tracking-tight">Transaction History</h2>
-                <button onclick="closeHistoryModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900 transition-all active:scale-90">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button onclick="closeHistoryModal()"
+                    class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900 transition-all active:scale-90">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                <input type="date" id="modalHistDate" onchange="applyModalHistoryFilters()" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
-                <input type="text" id="modalHistName" oninput="applyModalHistoryFilters()" placeholder="Name" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px] uppercase">
-                <input type="text" id="modalHistMobile" oninput="applyModalHistoryFilters()" placeholder="Mobile" class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
-                <button onclick="clearModalHistoryFilters()" class="w-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 px-2 py-2 rounded-lg font-black text-[9px] uppercase transition-all">Clear</button>
+                <input type="date" id="modalHistDate" onchange="applyModalHistoryFilters()"
+                    class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
+                <input type="text" id="modalHistName" oninput="applyModalHistoryFilters()" placeholder="Name"
+                    class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px] uppercase">
+                <input type="text" id="modalHistMobile" oninput="applyModalHistoryFilters()" placeholder="Mobile"
+                    class="w-full border border-gray-200 rounded-lg p-2 bg-white outline-none font-bold text-[10px]">
+                <button onclick="clearModalHistoryFilters()"
+                    class="w-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 px-2 py-2 rounded-lg font-black text-[9px] uppercase transition-all">Clear</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="modalHistoryQueue">
                 <p class="text-sm text-gray-400 italic py-12 col-span-full text-center">No history yet</p>
             </div>
         </div>
     </div>
-    <style>@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }</style>
+    <style>
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+    </style>
 
     <!-- Microsoft Style Delete Confirmation Modal -->
     <div id="deleteModal"
@@ -639,12 +735,14 @@
 
     <div id="expensePickerModal" class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onclick="closeExpensePicker()"></div>
-        <div class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col">
+        <div
+            class="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col">
             <!-- iOS-style header -->
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <button onclick="closeExpensePicker()" class="text-sm font-medium text-red-500">Cancel</button>
                 <h2 class="text-sm font-semibold text-gray-900">Select Expenses</h2>
-                <button onclick="applyExpensePicker()" class="text-sm font-semibold text-red-500" id="expensePickerDoneBtn">Done</button>
+                <button onclick="applyExpensePicker()" class="text-sm font-semibold text-red-500"
+                    id="expensePickerDoneBtn">Done</button>
             </div>
             <div id="expenseGridContainer" class="divide-y divide-gray-100 px-1 overflow-y-auto max-h-[60vh]">
             </div>
@@ -655,23 +753,32 @@
     </div>
 
     <!-- Beautiful Custom Prompt Modal -->
-    <div id="customPromptModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border-4 border-white">
+    <div id="customPromptModal"
+        class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div
+            class="bg-white w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border-4 border-white">
             <div class="p-6">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4">
+                            </path>
                         </svg>
                     </div>
                     <h3 class="text-base font-black text-gray-900 uppercase tracking-tight">New Grade</h3>
                 </div>
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Create a custom card (e.g. Export, Reject)</p>
-                <input type="text" id="customPromptInput" placeholder="Type Grade Name..." onkeydown="if(event.key === 'Enter') confirmCustomPrompt()"
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Create a custom card (e.g.
+                    Export, Reject)</p>
+                <input type="text" id="customPromptInput" placeholder="Type Grade Name..."
+                    onkeydown="if(event.key === 'Enter') confirmCustomPrompt()"
                     class="w-full bg-gray-50 border-2 border-gray-100 placeholder-gray-300 text-gray-900 rounded-xl px-4 py-4 font-black uppercase text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all mb-6">
                 <div class="flex gap-3">
-                    <button onclick="closeCustomPrompt()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
-                    <button onclick="confirmCustomPrompt()" class="flex-[1.5] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 transition-all">Verify & Add</button>
+                    <button onclick="closeCustomPrompt()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
+                    <button onclick="confirmCustomPrompt()"
+                        class="flex-[1.5] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-200 transition-all">Verify
+                        & Add</button>
                 </div>
             </div>
         </div>
@@ -1136,98 +1243,34 @@
             }, 50);
         };
         window.updateUI = () => {
-            // SMART RESET: If we were viewing an approved/past bill but data is being changed
+            // Smart Reset: If bill is finalized but items are being modified
             if (billIsFinalized && currentItems.length > 0 && currentItems.some(i => i.total === 0)) {
-                document.getElementById('verifiedSeal').style.opacity = '0';
-                document.getElementById('watermark').classList.add('hidden');
-                document.getElementById('editBadge').innerText = "Creation Mode";
-                document.getElementById('editBadge').className = "text-[9px] bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-black uppercase";
-                document.getElementById('draftTag').innerText = "UNOFFICIAL DRAFT";
-                document.getElementById('draftTag').className = "text-[9px] font-black tracking-[.2em] text-gray-300 uppercase";
-                document.getElementById('billPreview').classList.replace('approved-border', 'draft-border');
-                document.getElementById('printActionArea').classList.add('hidden');
+                if (document.getElementById('verifiedSeal')) document.getElementById('verifiedSeal').style.opacity = '0';
+                if (document.getElementById('watermark')) document.getElementById('watermark').classList.add('hidden');
+                const badge = document.getElementById('editBadge');
+                if (badge) {
+                    badge.innerText = "Creation Mode";
+                    badge.className = "text-[9px] bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-black uppercase";
+                }
                 billIsFinalized = false;
             }
 
+            // Sync Header Info
+            const vNameI = document.getElementById('vName');
+            const vIdI = document.getElementById('vId');
+            if (vNameI) document.getElementById('dispName').innerText = (vNameI.value || "---").toUpperCase();
+            if (vIdI) document.getElementById('dispId').innerText = vIdI.value || "---";
 
-            window.syncBillPreview = () => {
-                const previewBody = document.getElementById('dispItemsBody');
-                let tableHTML = currentItems.map(item => {
-                    const crateNum = parseFloat(item.crates) || 0;
-                    const priceNum = parseFloat(item.price) || 0;
-                    const weightNum = (item.total > 0) ? item.weight : (crateNum * (PACK_MULTIPLIERS[item.packType] || 0));
-                    const rowTotal = (item.total > 0) ? item.total : (weightNum * priceNum);
-
-                    return `
-                        <tr class="border-b border-gray-100">
-                            <td class="py-4 font-black text-gray-800">${item.grade}</td>
-                            <td class="py-4 text-center">${crateNum}</td>
-                            <td class="py-4 text-right">${weightNum.toFixed(2)}</td>
-                            <td class="py-4 text-right font-mono">${priceNum.toFixed(2)}</td>
-                            <td class="py-4 text-right font-black font-mono tracking-tighter">\u20B9${rowTotal.toFixed(2)}</td>
-                        </tr>
-                    `;
-                }).join('');
-                previewBody.innerHTML = tableHTML || '<tr><td colspan="5" class="py-20 text-center text-gray-300 italic uppercase font-black tracking-widest text-[10px]">No item entry detected</td></tr>';
-                syncTotals();
-            };
-
-            const syncTotals = () => {
-                let tW = 0, tC = 0, gT = 0;
-                currentItems.forEach(i => {
-                    const crateNum = parseFloat(i.crates) || 0;
-                    const priceNum = parseFloat(i.price) || 0;
-                    const weightNum = (i.total > 0) ? i.weight : (crateNum * (PACK_MULTIPLIERS[i.packType] || 0));
-                    tW += weightNum;
-                    tC += crateNum;
-                    gT += (i.total || (weightNum * priceNum));
-                });
-                let totalExp = 0;
-                currentExpenses.forEach(e => totalExp += e.amount);
-
-                const netPayable = (gT || 0) + (totalExp || 0);
-                if (document.getElementById('dispTotalWeight')) document.getElementById('dispTotalWeight').innerText = tW.toFixed(2);
-                if (document.getElementById('dispTotalCrates')) document.getElementById('dispTotalCrates').innerText = tC.toFixed(0);
-                if (document.getElementById('dispGrandTotal')) document.getElementById('dispGrandTotal').innerText = "\u20B9" + netPayable.toFixed(2);
-                if (document.getElementById('sumTotal')) document.getElementById('sumTotal').innerText = "\u20B9" + netPayable.toFixed(2);
-
-                document.getElementById('dispExpensesBody').innerHTML = renderExpensePreviewRows(gT);
-            };
-
-            const draftArea = document.getElementById('lineItemsArea');
-            const draftBody = document.getElementById('lineItemsBody');
-            const previewBody = document.getElementById('dispItemsBody');
-
-            let tW = 0, tC = 0, gT = 0;
-            currentItems.forEach(i => {
-                const crateNum = parseFloat(i.crates) || 0;
-                const priceNum = parseFloat(i.price) || 0;
-                const weightNum = (i.total > 0) ? i.weight : (crateNum * (PACK_MULTIPLIERS[document.getElementById('pPackType').value] || 0));
-
-                tW += weightNum;
-                tC += crateNum;
-                gT += (i.total || (weightNum * priceNum));
-            });
-
-            let totalExp = 0;
-            currentExpenses.forEach(e => totalExp += e.amount);
-
-            renderExpenseListRows();
-            document.getElementById('dispExpensesBody').innerHTML = renderExpensePreviewRows(gT);
-
-            const netPayable = (gT || 0) + (totalExp || 0);
-
-            const dWeight = document.getElementById('dispTotalWeight');
-            const dCrates = document.getElementById('dispTotalCrates');
-            const dGrand = document.getElementById('dispGrandTotal');
-            const dSum = document.getElementById('sumTotal');
-
-            if (dWeight) dWeight.innerText = tW.toFixed(2);
-            if (dCrates) dCrates.innerText = tC.toFixed(0);
-            if (dGrand) dGrand.innerText = "\u20B9" + netPayable.toFixed(2);
-            if (dSum) dSum.innerText = "\u20B9" + netPayable.toFixed(2);
-
+            renderSpreadsheet();
+            syncTotals();
             syncBillPreview();
+
+            // Update Grade Picker Tag
+            const pickerLabel = document.getElementById('gradePickerLabel');
+            const pendingCount = currentItems.filter(i => i.total === 0).length;
+            if (pickerLabel) {
+                pickerLabel.innerText = pendingCount > 0 ? `${pendingCount} grade${pendingCount > 1 ? 's' : ''} adding...` : "Select Grades";
+            }
         };
 
         window.renderSpreadsheet = () => {
@@ -1236,233 +1279,215 @@
             const packIn = document.getElementById('pPackType').value;
             const headerLabel = document.getElementById('dispPackLabel');
 
-            if (packIn.includes('BOX')) headerLabel.innerText = "BOX";
-            else if (packIn === 'CRATE') headerLabel.innerText = "CRATE";
-            else headerLabel.innerText = "QTY";
+            if (headerLabel) {
+                if (packIn.includes('BOX')) headerLabel.innerText = "BOX";
+                else if (packIn === 'CRATE') headerLabel.innerText = "CRATE";
+                else headerLabel.innerText = "QTY";
+            }
 
             if (currentItems.length > 0) draftArea.classList.remove('hidden');
             else draftArea.classList.add('hidden');
-
-            document.getElementById('itemCount').innerText = currentItems.length + 1;
-
-            draftBody.innerHTML = currentItems.map((item, idx) => {
-                const isPending = item.total === 0;
-                return `
-                <tr class="group border-b cursor-pointer transition-all ${isPending ? 'bg-orange-50/50 hover:bg-orange-100 border-orange-100 animate-pending pending-row' : 'hover:bg-blue-50 focus-within:bg-blue-50'}" ${!isPending ? `onclick="editItem(${idx})"` : ''}>
-                    <td class="p-3">
-                        <div class="flex flex-col">
-                            <span class="font-black text-[11px] ${isPending ? 'text-orange-700' : 'text-blue-800'} uppercase">${item.grade}</span>
-                            ${isPending && item.rawGrade === 'OTHERS' ? '<span class="text-[7px] font-black uppercase text-orange-400 tracking-widest mt-0.5">Custom Naming Active</span>' : ''}
-                        </div>
-                    </td>
-                    <td class="p-3 text-right">
-                        ${isPending ? `
-                            <div class="flex items-center justify-end gap-1">
-                                <input type="text" 
-                                    inputmode="decimal"
-                                    id="inline_qty_${idx}" 
-                                    value="${item.crates || ''}" 
-                                    placeholder="Qty" 
-                                    onfocus="this.select()"
-                                    oninput="updateInlineItem(${idx}, 'crates', this.value)"
-                                    onkeydown="handleInlineKey(${idx}, 'crates', event)"
-                                    class="w-[65px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none transition-all shadow-sm">
-                                <span class="text-[9px] font-bold text-gray-400">Bag</span>
-                                <span id="inline_weight_live_${idx}" class="hidden text-[8px] font-black text-orange-500 ml-1">${item.weight.toFixed(2)}kg</span>
-                            </div>
-                        ` : `
-                            <div class="flex flex-col items-end">
-                                <span class="text-gray-900 font-bold text-xs">${item.weight.toFixed(2)}Kg</span>
-                                <span class="text-[8px] font-bold text-gray-400 uppercase">${item.crates} Unit</span>
-                            </div>
-                        `}
-                    </td>
-                    <td class="p-3 text-right">
-                        ${isPending ? `
-                             <div class="flex items-center justify-end gap-1">
-                                <span class="text-[9px] font-bold text-gray-400">\u20B9</span>
-                                <input type="text" 
-                                    inputmode="decimal"
-                                    id="inline_price_${idx}" 
-                                    value="${item.price || ''}" 
-                                    placeholder="Rate" 
-                                    onfocus="this.select()"
-                                    oninput="updateInlineItem(${idx}, 'price', this.value)"
-                                    onkeydown="handleInlineKey(${idx}, 'price', event)"
-                                    class="w-[75px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none transition-all shadow-sm">
-                                <span id="inline_total_live_${idx}" class="text-[8px] font-black text-orange-500 ml-1 ${item.total <= 0 ? (parseFloat(item.price) > 0 ? '' : 'hidden') : 'hidden'}">₹${(item.weight * (parseFloat(item.price) || 0)).toFixed(2)}</span>
-                            </div>
-                        ` : `
-                            <span class="font-black text-gray-900 font-mono text-xs">₹${item.total.toFixed(2)}</span>
-                        `}
-                    </td>
-                    <td class="p-3 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                             ${isPending ? `
-                                <button onclick="commitInlineItem(${idx})" class="w-8 h-8 flex items-center justify-center bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                </button>
-                             ` : ''}
-                             <button onclick="event.stopPropagation(); removeItem(${idx})" class="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 bg-white border border-transparent hover:border-red-100 rounded-lg transition-all active:scale-95">X</button>
-                        </div>
-                    </td>
-                </tr>
-                `;
-            }).join('');
-        };
-
-        // --- CORE MATH & RENDERING ENGINE ---
-        window.syncTotals = () => {
-
-            let tW = 0, tC = 0, gT = 0;
-            currentItems.forEach(i => {
-                const crateNum = parseFloat(i.crates) || 0;
-                const priceNum = parseFloat(i.price) || 0;
-                const weightNum = (i.total > 0) ? i.weight : (crateNum * (PACK_MULTIPLIERS[i.packType] || 0));
-                tW += weightNum;
-                tC += crateNum;
-                gT += (i.total || (weightNum * priceNum));
-            });
-
-            let totalExp = 0;
-            currentExpenses.forEach(e => totalExp += e.amount);
-            const netPayable = gT + totalExp;
-
-            if (document.getElementById('dispTotalWeight')) document.getElementById('dispTotalWeight').innerText = tW.toFixed(2);
-            if (document.getElementById('dispTotalCrates')) document.getElementById('dispTotalCrates').innerText = tC.toFixed(0);
-            if (document.getElementById('dispGrandTotal')) document.getElementById('dispGrandTotal').innerHTML = `<span class="mr-0.5">\u20B9</span><span>${netPayable.toFixed(2)}</span>`;
-            if (document.getElementById('sumTotal')) document.getElementById('sumTotal').innerHTML = `<span class="mr-1">\u20B9</span><span>${netPayable.toFixed(2)}</span>`;
-
-            // Render Right Side Bill Breakdown
-            const previewBody = document.getElementById('dispItemsBody');
-            let billHTML = currentItems.map(item => {
-                const crateNum = parseFloat(item.crates) || 0;
-                const priceNum = parseFloat(item.price) || 0;
-                const weightNum = (item.total > 0) ? item.weight : (crateNum * (PACK_MULTIPLIERS[item.packType] || 0));
-                const rowTotal = (item.total > 0) ? item.total : (weightNum * priceNum);
-                
-                // Force structural injection of space between text and brackets
-                const printGrade = item.grade.replace(/\(/g, '<span class="mx-0.5"></span>(');
-                return `
-                    <tr class="border-b border-gray-100">
-                        <td class="py-4 font-black text-gray-800">${printGrade}</td>
-                        <td class="py-4 text-center">${crateNum}</td>
-                        <td class="py-4 text-right">${weightNum.toFixed(2)}</td>
-                        <td class="py-4 text-right font-mono">${priceNum.toFixed(2)}</td>
-                        <td class="py-4 text-right font-black font-mono">
-                            <div class="flex justify-end items-center"><span class="mr-0.5">\u20B9</span><span>${rowTotal.toFixed(2)}</span></div>
-                        </td>
-                    </tr> `;
-            }).join('');
-            previewBody.innerHTML = billHTML || '<tr><td colspan="5" class="py-20 text-center text-gray-300 italic uppercase font-black tracking-widest text-[10px]">No item entry detected</td></tr>';
-
-            document.getElementById('dispExpensesBody').innerHTML = renderExpensePreviewRows(gT);
-            renderExpenseListRows();
-        };
-
-        window.renderSpreadsheet = () => {
-            const draftBody = document.getElementById('lineItemsBody');
-            const packIn = document.getElementById('pPackType').value;
-            const headerLabel = document.getElementById('dispPackLabel');
-            if (headerLabel) headerLabel.innerText = (packIn.includes('BOX')) ? "BOX" : (packIn === 'CRATE' ? "CRATE" : "QTY");
-
-            if (currentItems.length > 0) document.getElementById('lineItemsArea').classList.remove('hidden');
-            else document.getElementById('lineItemsArea').classList.add('hidden');
 
             if (document.getElementById('itemCount')) document.getElementById('itemCount').innerText = currentItems.length + 1;
 
             draftBody.innerHTML = currentItems.map((item, idx) => {
                 const isPending = item.total === 0;
+                const buyRate = parseFloat(item.purchasePrice) || 0;
+                const sellRate = parseFloat(item.price) || 0;
+                const rowWeight = parseFloat(item.weight) || 0;
+                const rowProfit = (sellRate - buyRate) * rowWeight;
+                const rowTotal = item.total > 0 ? item.total : (sellRate * rowWeight);
+
                 return `
-                <tr class="group border-b transition-all ${isPending ? 'bg-orange-50/20' : 'hover:bg-blue-50'}" ${!isPending ? `onclick="editItem(${idx})"` : ''}>
-                    <td class="p-1.5">
+                <tr class="group border-b transition-all ${isPending ? 'bg-orange-50/40 animate-pending' : 'hover:bg-blue-50 cursor-pointer'}" ${!isPending ? `onclick="editItem(${idx})"` : ''}>
+                    <!-- 1. GRADE -->
+                    <td class="p-3">
                         <div class="flex flex-col">
-                            <span class="font-black text-[10px] ${isPending ? 'text-orange-700' : 'text-blue-800'} uppercase">${item.grade}</span>
+                            <span class="font-black text-[11px] ${isPending ? 'text-orange-700' : 'text-blue-800'} uppercase">${item.grade}</span>
                         </div>
                     </td>
-                    <td class="p-1.5 text-right">
+                    
+                    <!-- 2. QTY -->
+                    <td class="p-3 text-right">
                         ${isPending ? `
-                                <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
-                                    class="w-[50px] h-[30px] text-right border-2 border-orange-100 rounded-lg px-1 text-[10px] font-black focus:border-blue-600 outline-none">
+                            <div class="flex items-center justify-end gap-1">
+                                <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
+                                    class="w-[60px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm">
+                            </div>
                         ` : `
-                            <div class="flex flex-col items-end"><span class="text-gray-900 font-bold text-[10px]">${item.weight.toFixed(2)}K</span><span class="text-[7px] font-bold text-gray-400 uppercase">${item.crates}U</span></div>
+                            <div class="flex flex-col items-end">
+                                <span class="text-gray-900 font-bold text-xs">${rowWeight.toFixed(2)}Kg</span>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase">${item.crates}U</span>
+                            </div>
                         `}
                     </td>
-                    <td class="p-1.5 text-right">
+
+                    <!-- 3. PP (Buy Rate) -->
+                    <td class="p-3 text-right">
                         ${isPending ? `
-                                <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
-                                    class="w-[60px] h-[30px] text-right border-2 border-orange-100 rounded-lg px-1 text-[10px] font-black focus:border-blue-600 outline-none">
+                             <div class="flex flex-col items-end gap-1">
+                                <span class="text-[7px] font-bold text-gray-400 uppercase">Buy Rate</span>
+                                <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
+                                    class="w-[60px] h-[35px] text-right border-2 border-blue-100 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-blue-50/20">
+                            </div>
                         ` : `
-                            <span class="font-black text-gray-900 font-mono text-[10px]">\u20B9${item.total.toFixed(0)}</span>
+                            <span class="text-gray-400 font-bold text-xs font-mono">\u20B9${buyRate.toFixed(1)}</span>
                         `}
                     </td>
-                    <td class="p-1.5 text-center">
-                        <div class="flex items-center justify-center gap-1">
-                             <button onclick="event.stopPropagation(); removeItem(${idx})" class="w-6 h-6 flex items-center justify-center text-red-300 hover:text-red-600 bg-white border border-gray-50 rounded-lg transition-all active:scale-95 text-[8px font-black]">X</button>
+
+                    <!-- 4. RATE (Sell Rate - Goes to Bill) -->
+                    <td class="p-3 text-right">
+                        ${isPending ? `
+                             <div class="flex flex-col items-end gap-1">
+                                <span class="text-[7px] font-bold text-orange-400 uppercase">Bill Rate</span>
+                                <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
+                                    class="w-[70px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-orange-50/30">
+                            </div>
+                        ` : `
+                            <span class="text-orange-700 font-black text-xs font-mono">\u20B9${sellRate.toFixed(2)}</span>
+                        `}
+                    </td>
+
+                    <!-- 5. MARGIN -->
+                    <td class="p-3 text-right">
+                        <div class="flex flex-col items-end">
+                            <span class="text-[7px] font-bold text-gray-400 uppercase">Profit</span>
+                            <span id="row_profit_${idx}" class="font-black text-[10px] ${rowProfit >= 0 ? 'text-green-600' : 'text-red-500'}">
+                                \u20B9${rowProfit.toFixed(1)}
+                            </span>
                         </div>
                     </td>
-                </tr> `;
+
+                    <!-- 6. VALUE -->
+                    <td class="p-3 text-right">
+                        <div class="flex flex-col items-end">
+                            <span class="text-[7px] font-bold text-gray-400 uppercase">Bill Value</span>
+                            <span id="row_total_${idx}" class="font-black text-gray-900 font-mono text-xs">\u20B9${rowTotal.toFixed(2)}</span>
+                        </div>
+                    </td>
+
+                    <!-- 7. ACTIONS -->
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                             ${isPending ? `
+                                <button onclick="commitInlineItem(${idx})" class="w-8 h-8 flex items-center justify-center bg-green-500 text-white rounded-lg shadow hover:bg-green-600 active:scale-95">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                </button>
+                             ` : ''}
+                             <button onclick="event.stopPropagation(); removeItem(${idx})" class="w-8 h-8 flex items-center justify-center text-red-300 hover:text-red-600 bg-white border border-transparent hover:border-red-50 rounded-lg transition-all active:scale-95 text-xs font-bold">X</button>
+                        </div>
+                    </td>
+                </tr>`;
             }).join('');
         };
 
-        window.updateUI = () => {
-            // IF BILL IS FINALIZED, DO NOT OVERWRITE THE DISPLAY NAMES FROM THE CLEARED INPUTS
-            if (billIsFinalized) return;
+        window.syncTotals = () => {
+            let tW = 0, tC = 0, totalSalesValue = 0, totalPurchaseValue = 0;
+            currentItems.forEach(i => {
+                const crateNum = parseFloat(i.crates) || 0;
+                const priceNum = parseFloat(i.price) || 0;
+                const ppNum = parseFloat(i.purchasePrice) || 0;
+                const weightNum = parseFloat(i.weight) || 0;
+                
+                tW += weightNum;
+                tC += crateNum;
+                totalSalesValue += (i.total || (weightNum * priceNum));
+                totalPurchaseValue += (weightNum * ppNum);
+            });
+            
+            let totalExp = 0;
+            currentExpenses.forEach(e => totalExp += e.amount);
 
-            const vNameI = document.getElementById('vName');
-            const vIdI = document.getElementById('vId');
-            const vIdStatus = document.getElementById('vIdStatus');
+            // Bill Totals
+            const netPayable = totalSalesValue + totalExp;
+            
+            // Internal Dashboard Math: Matches Excel (Margin = Produce Sale - Produce Purchase)
+            const netProfit = totalSalesValue - totalPurchaseValue;
+            const profitPercentage = netPayable > 0 ? (netProfit / netPayable) * 100 : 0;
 
-            if (vIdI && vIdStatus) {
-                const mVal = vIdI.value.replace(/\D/g, ''); // Clean number only
-                if (mVal.length === 0) {
-                    vIdI.style.borderColor = '#f3f4f6'; vIdStatus.innerHTML = "";
-                } else if (mVal.length === 10) {
-                    vIdI.style.borderColor = '#2DB956'; vIdStatus.innerHTML = "<span class='text-green-600 font-black'>\u2705 OK</span>";
+            const netProfitEl = document.getElementById('internalNetProfit');
+            const percEl = document.getElementById('internalProfitPercentage');
+            const statusEl = document.getElementById('pnlStatus');
+
+            if (netProfitEl) netProfitEl.innerText = "\u20B9" + netProfit.toFixed(2);
+            if (percEl) percEl.innerText = profitPercentage.toFixed(2) + "%";
+            if (statusEl) {
+                if (netProfit >= 0) {
+                    statusEl.innerText = "Profitable";
+                    statusEl.className = "text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700";
                 } else {
-                    vIdI.style.borderColor = '#ef4444'; vIdStatus.innerHTML = "<span class='text-red-500 font-black'>\u26A0 " + (mVal.length < 10 ? 'Short' : 'Long') + "</span>";
+                    statusEl.innerText = "Loss";
+                    statusEl.className = "text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-red-100 text-red-700";
                 }
             }
 
-            if (vNameI) document.getElementById('dispName').innerText = (vNameI.value || "---").toUpperCase();
-            if (vIdI) document.getElementById('dispId').innerText = vIdI.value || "---";
-            const pNameI = document.getElementById('pName');
-            if (pNameI) document.getElementById('dispProd').innerText = (pNameI.value || "Pomegranate").toUpperCase();
+            if (document.getElementById('dispTotalWeight')) document.getElementById('dispTotalWeight').innerText = tW.toFixed(2);
+            if (document.getElementById('dispTotalCrates')) document.getElementById('dispTotalCrates').innerText = tC.toFixed(0);
+            if (document.getElementById('dispGrandTotal')) document.getElementById('dispGrandTotal').innerText = "\u20B9" + netPayable.toFixed(2);
+            if (document.getElementById('sumTotal')) document.getElementById('sumTotal').innerText = "\u20B9" + netPayable.toFixed(2);
 
-            renderSpreadsheet();
-            syncTotals();
-
-            // Update Grade Picker Main Label
-            const pickerLabel = document.getElementById('gradePickerLabel');
-            const pendingCount = currentItems.filter(i => i.total === 0).length;
-            if (pickerLabel) {
-                if (pendingCount > 0) pickerLabel.innerText = pendingCount + " grade" + (pendingCount > 1 ? "s" : "") + " selected";
-                else pickerLabel.innerText = "Select Grades";
-            }
+            document.getElementById('dispExpensesBody').innerHTML = renderExpensePreviewRows(totalSalesValue);
+            renderExpenseListRows();
         };
 
+        window.syncBillPreview = () => {
+            const previewBody = document.getElementById('dispItemsBody');
+            if (!previewBody) return;
+
+            let tableHTML = currentItems.map(item => {
+                const crateNum = parseFloat(item.crates) || 0;
+                const priceNum = parseFloat(item.price) || 0;
+                const weightNum = parseFloat(item.weight) || 0;
+                const rowTotal = (item.total > 0) ? item.total : (weightNum * priceNum);
+
+                return `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-4 font-black text-gray-800">${item.grade}</td>
+                        <td class="py-4 text-center">${crateNum}</td>
+                        <td class="py-4 text-right">${weightNum.toFixed(2)}</td>
+                        <td class="py-4 text-right font-mono">${priceNum.toFixed(2)}</td>
+                        <td class="py-4 text-right font-black font-mono tracking-tighter">\u20B9${rowTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+            previewBody.innerHTML = tableHTML || '<tr><td colspan="5" class="py-20 text-center text-gray-300 italic uppercase font-black tracking-widest text-[10px]">No item entry detected</td></tr>';
+        };
         window.updateInlineItem = (idx, field, value) => {
             const item = currentItems[idx];
             item[field] = value;
-            if (item.packType !== 'MANUAL') item.weight = (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
-
-            // Granular Live Labels (Fast, no flicker)
-            const wLabel = document.getElementById(`inline_weight_live_${idx}`);
-            const tLabel = document.getElementById(`inline_total_live_${idx}`);
-            if (wLabel) { wLabel.innerText = item.weight.toFixed(2) + "kg"; wLabel.classList.toggle('hidden', item.weight <= 0); }
-            if (tLabel) {
-                const p = parseFloat(item.price) || 0;
-                tLabel.innerText = "\u20B9" + (item.weight * p).toFixed(2);
-                tLabel.classList.toggle('hidden', (item.weight * p) <= 0);
+            if (item.packType !== 'MANUAL' && field === 'crates') {
+                item.weight = (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
             }
 
-            // Silent Update (Right Side Totals)
+            // TARGETED UPDATE: Calculate and update only the necessary row displays
+            const buyRate = parseFloat(item.purchasePrice) || 0;
+            const sellRate = parseFloat(item.price) || 0;
+            const rowWeight = (item.total > 0) ? item.weight : (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
+            const rowProfit = (sellRate - buyRate) * rowWeight;
+            const rowTotal = sellRate * rowWeight;
+
+            const profitEl = document.getElementById(`row_profit_${idx}`);
+            const totalEl = document.getElementById(`row_total_${idx}`);
+
+            if (profitEl) {
+                profitEl.innerText = "\u20B9" + rowProfit.toFixed(1);
+                profitEl.className = `font-black text-[10px] ${rowProfit >= 0 ? 'text-green-600' : 'text-red-500'}`;
+            }
+            if (totalEl) {
+                totalEl.innerText = "\u20B9" + rowTotal.toFixed(2);
+            }
+
+            // Sync everything in real-time
             syncTotals();
+            syncBillPreview();
         };
 
         window.handleInlineKey = (idx, field, event) => {
             if (event.key === 'Enter') {
                 if (field === 'crates') {
+                    const el = document.getElementById(`inline_pp_${idx}`);
+                    if (el) { el.focus(); el.select(); }
+                } else if (field === 'purchasePrice') {
                     const el = document.getElementById(`inline_price_${idx}`);
                     if (el) { el.focus(); el.select(); }
                 } else {
@@ -1505,9 +1530,30 @@
 
         window.syncWeightFromPack = () => {
             const packType = document.getElementById('pPackType').value;
-            const crates = parseFloat(document.getElementById('pCrates').value) || 0;
+
+            // SYNC PENDING ITEMS: Update all items currently being edited to use the new pack type
+            currentItems.forEach(item => {
+                if (item.total === 0) {
+                    item.packType = packType;
+                    
+                    // Logic to rebuild the grade label with the correct suffix
+                    let label = item.rawGrade || item.manualGrade || "GRADE";
+                    if (packType !== 'MANUAL') label += " (" + packType + ")";
+                    item.grade = label;
+                    
+                    // Immediately recalculate weight so it's ready for syncTotals
+                    item.weight = (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
+                }
+            });
+
+            // Handle legacy/top-level weight input if it exists
+            const cratesIn = document.getElementById('pCrates');
             const weightInput = document.getElementById('pWeight');
-            weightInput.value = (crates * (PACK_MULTIPLIERS[packType] || 0)).toFixed(2);
+            if (weightInput && cratesIn) {
+                const crates = parseFloat(cratesIn.value) || 0;
+                weightInput.value = (crates * (PACK_MULTIPLIERS[packType] || 0)).toFixed(2);
+            }
+
             updateUI();
         };
 
@@ -1518,12 +1564,12 @@
 
         window.generateVerifiedBill = async () => {
             if (isSaving) return;
-            
+
             const mVal = (document.getElementById('vId').value || "").replace(/\D/g, '');
             if (mVal.length !== 10) { alert("ERROR: Please enter a valid 10-digit mobile number."); return; }
 
             if (currentItems.length === 0) { alert("Add items first."); return; }
-            
+
             isSaving = true;
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden');
@@ -1650,7 +1696,7 @@
         window.downloadBillAsImage = () => {
             if (isDownloading) return;
             isDownloading = true;
-            
+
             const bill = document.getElementById('billPreview');
             const vendor = (document.getElementById('dispName').innerText || "Vendor").trim().replace(/\s+/g, '_');
             const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).replace(' ', '');
@@ -1660,7 +1706,7 @@
             // Clone-based export to prevent layout issues
             const exportHost = document.createElement('div');
             exportHost.style.cssText = 'position:fixed;left:-10000px;top:0;z-index:-1;padding:24px;background:white;';
-            
+
             const clonedBill = bill.cloneNode(true);
             clonedBill.style.width = '700px';
             clonedBill.style.minWidth = '700px';
@@ -1669,16 +1715,16 @@
             clonedBill.style.boxShadow = 'none';
             clonedBill.style.zoom = '1';
             clonedBill.style.border = '1px solid #e2e8f0';
-            
+
             // Fix table layout in clone
             const tables = clonedBill.querySelectorAll('table');
             tables.forEach(t => { t.style.tableLayout = 'fixed'; t.style.width = '100%'; });
             const cells = clonedBill.querySelectorAll('td, th');
             cells.forEach(c => { c.style.wordBreak = 'break-word'; c.style.overflow = 'visible'; });
-            
+
             exportHost.appendChild(clonedBill);
             document.body.appendChild(exportHost);
-            
+
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     html2canvas(clonedBill, {
@@ -1746,13 +1792,13 @@
         window.renderGradeGrid = () => {
             const container = document.getElementById('gradeGridContainer');
             const select = document.getElementById('pGrade');
-            
+
             let html = '';
-            
+
             // 1. Render Predefined Master Grades
             Array.from(select.options).forEach(opt => {
                 if (opt.value === 'OTHERS') return; // Skip default OTHERS inside grid loop
-                
+
                 const isSelected = pickerSelected.some(p => p.value === opt.value);
                 html += `
                     <div onclick="toggleGradeInPicker('${opt.value}')" class="picker-grade-btn border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-white border-gray-100'}">
@@ -1862,6 +1908,7 @@
                         grade: label,
                         weight: 0,
                         price: 0,
+                        purchasePrice: 0,
                         crates: 0,
                         total: 0
                     });
@@ -1895,14 +1942,18 @@
             // Set vendor info in the preview directly
             document.getElementById('dispName').innerText = (bill.name || '---').toUpperCase();
             document.getElementById('dispId').innerText = bill.vId || '---';
+            
+            // Restore historical metadata
+            if (bill.ts) document.getElementById('displayDate').innerText = new Date(bill.ts).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('dispGrn').innerHTML = `REF: ${bill.id}`;
 
             // Populating visual elements directly for the preview
             billIsFinalized = true;
-            finalizeUI(bill);
-
-            // Render items and totals directly (bypass updateUI guard)
+            
+            // Render everything
             renderSpreadsheet();
             syncTotals();
+            syncBillPreview();
 
             // Highlight search context
             document.getElementById('editBadge').innerText = "Viewing Record";
@@ -2045,7 +2096,7 @@
             if (!pendingDeleteId) return;
             try {
                 await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(pendingDeleteId).delete();
-                
+
                 // Trigger Google Sheets deletion
                 if (GOOGLE_SHEETS_URL) {
                     syncToGoogleSheets({ id: pendingDeleteId, action: 'delete' });
