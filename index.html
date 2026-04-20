@@ -1605,7 +1605,14 @@
                     return;
                 }
 
-                const totalAmount = (data.items.reduce((acc, i) => acc + (i.total || 0), 0) + data.expenses.reduce((acc, e) => acc + (e.amount || 0), 0));
+                const totalSalesValue = data.items.reduce((acc, i) => acc + (i.total || 0), 0);
+                const totalPurchaseValue = data.items.reduce((acc, i) => acc + (i.weight * (parseFloat(i.purchasePrice) || 0)), 0);
+                const totalExp = data.expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
+                const totalAmount = totalSalesValue + totalExp;
+
+                // Produce Margin (Sales - Purchase)
+                const netProfit = totalSalesValue - totalPurchaseValue;
+                const profitPercentage = totalAmount > 0 ? (netProfit / totalAmount) * 100 : 0;
 
                 // --- CATEGORIZE EXPENSES FOR COLUMNS ---
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
@@ -1619,6 +1626,8 @@
                     ...data,
                     vId: mVal,
                     total: totalAmount,
+                    margin: netProfit,
+                    marginPercent: profitPercentage,
                     expenseBuckets: buckets
                 };
 
