@@ -1614,6 +1614,9 @@
                 const netProfit = totalSalesValue - totalPurchaseValue;
                 const profitPercentage = totalAmount > 0 ? (netProfit / totalAmount) * 100 : 0;
 
+                // DEBUG POPUP: Proves the terminal has the data
+                alert(`SYNC DEBUG:\nMargin: \u20B9${netProfit.toFixed(2)}\nProfitability: ${profitPercentage.toFixed(2)}%\n\nIf your Google Sheet doesn't show these, you must redeploy your Apps Script!`);
+
                 // --- CATEGORIZE EXPENSES FOR COLUMNS ---
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
                 data.expenses.forEach(e => {
