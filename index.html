@@ -1455,14 +1455,16 @@
         window.updateInlineItem = (idx, field, value) => {
             const item = currentItems[idx];
             item[field] = value;
-            if (item.packType !== 'MANUAL' && field === 'crates') {
-                item.weight = (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
+            if (field === 'crates') {
+                const multiplier = (item.packType === 'MANUAL') ? 1 : (PACK_MULTIPLIERS[item.packType] || 0);
+                item.weight = (parseFloat(item.crates) || 0) * multiplier;
             }
 
             // TARGETED UPDATE: Calculate and update only the necessary row displays
             const buyRate = parseFloat(item.purchasePrice) || 0;
             const sellRate = parseFloat(item.price) || 0;
-            const rowWeight = (item.total > 0) ? item.weight : (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
+            const multiplier = (item.packType === 'MANUAL') ? 1 : (PACK_MULTIPLIERS[item.packType] || 0);
+            const rowWeight = (item.total > 0) ? item.weight : (parseFloat(item.crates) || 0) * multiplier;
             const rowProfit = (sellRate - buyRate) * rowWeight;
             const rowTotal = sellRate * rowWeight;
 
@@ -1542,7 +1544,8 @@
                     item.grade = label;
                     
                     // Immediately recalculate weight so it's ready for syncTotals
-                    item.weight = (parseFloat(item.crates) || 0) * (PACK_MULTIPLIERS[item.packType] || 0);
+                    const multiplier = (item.packType === 'MANUAL') ? 1 : (PACK_MULTIPLIERS[item.packType] || 0);
+                    item.weight = (parseFloat(item.crates) || 0) * multiplier;
                 }
             });
 
