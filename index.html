@@ -12,20 +12,64 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --brand-blue: #2563eb;
+            --brand-blue-dark: #1d4ed8;
+            --brand-green: #059669;
+            --surface-border: rgba(148, 163, 184, 0.14);
+            --surface-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+        }
+
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f8fafc;
+            font-family: 'Manrope', Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 28%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.10), transparent 24%),
+                radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.9), transparent 26%),
+                linear-gradient(180deg, #f8fbff 0%, #eef4fb 45%, #f6f9fd 100%);
+            min-height: 100vh;
+            color: #0f172a;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::before {
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.7), transparent 22%),
+                radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.55), transparent 18%),
+                radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.35), transparent 24%);
+            opacity: 0.95;
+        }
+
+        body::after {
+            background-image:
+                linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 85%);
+            opacity: 0.22;
         }
 
         .bill-container {
-            background: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.10);
             width: 155mm;
             min-height: auto;
             padding: 10mm;
             margin: 0 auto;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 28px;
             zoom: 0.85;
             transform-origin: top;
         }
@@ -145,6 +189,147 @@
         .animate-pending {
             animation: subtle-pulse 2s infinite;
         }
+
+        #inputFormArea,
+        #billPreview,
+        #expensesArea,
+        #internalProfitCard,
+        #historyPanel,
+        header {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--surface-border) !important;
+            border-top: 3px solid rgba(37, 99, 235, 0.16) !important;
+            box-shadow: var(--surface-shadow);
+        }
+
+        header {
+            position: sticky;
+            top: 12px;
+            z-index: 30;
+            border-radius: 28px;
+        }
+
+        #inputFormArea,
+        #billPreview,
+        #expensesArea,
+        #internalProfitCard,
+        #historyPanel {
+            border-radius: 28px;
+        }
+
+        #inputFormArea label,
+        #expensesArea h3,
+        #internalProfitCard span,
+        .section-kicker {
+            letter-spacing: 0.22em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            border-color: rgba(203, 213, 225, 0.8);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+            background-color: rgba(248, 250, 252, 0.95);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        #generateBtn,
+        #printActionArea button,
+        #gradePickerTrigger,
+        #btnSales,
+        #btnPurchase {
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .compact-panel {
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        header .uppercase,
+        #inputFormArea label,
+        #expensesArea h3,
+        #internalProfitCard span,
+        .section-kicker {
+            letter-spacing: 0.22em;
+        }
+
+        #inputFormArea .pb-3.border-b,
+        #inputFormArea .pb-2.border-b,
+        #inputFormArea .bg-blue-50\/30,
+        #inputFormArea #lineItemsArea,
+        #inputFormArea #expensesArea,
+        #inputFormArea #internalProfitCard {
+            border-radius: 24px;
+        }
+
+        #inputFormArea .bg-blue-50\/30,
+        #inputFormArea #expensesArea,
+        #inputFormArea #internalProfitCard {
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(255, 255, 255, 0.96));
+        }
+
+        #expensesArea {
+            background: linear-gradient(180deg, rgba(240, 249, 255, 0.72), rgba(255, 255, 255, 0.96)) !important;
+        }
+
+        #internalProfitCard {
+            background: linear-gradient(180deg, rgba(240, 253, 244, 0.8), rgba(255, 255, 255, 0.96)) !important;
+        }
+
+        #billPreview {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.92)) !important;
+        }
+
+        #historyPanel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
+        }
+
+        #btnSales {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            color: #fff !important;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18) !important;
+        }
+
+        #btnPurchase {
+            background: rgba(255, 255, 255, 0.78) !important;
+            color: #94a3b8 !important;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05) !important;
+            border: 1px solid rgba(148, 163, 184, 0.16) !important;
+        }
+
+        #generateBtn {
+            background: linear-gradient(135deg, #2db956 0%, #159a46 100%) !important;
+            box-shadow: 0 18px 36px rgba(45, 185, 86, 0.24) !important;
+        }
+
+        #generateBtn:hover {
+            box-shadow: 0 20px 40px rgba(45, 185, 86, 0.30) !important;
+            transform: translateY(-1px);
+        }
+
+        #gradePickerTrigger {
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.98)) !important;
+        }
+
+        #expensesItemsBody > div {
+            border-radius: 18px;
+            margin: 8px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+        }
+
+        .compact-chip {
+            letter-spacing: 0.18em;
+        }
     </style>
 </head>
 
@@ -157,8 +342,7 @@
                 const map = [
                     { id: 'btnSales', fn: () => window.setBillType('SALES') },
                     { id: 'btnPurchase', fn: () => window.setBillType('PURCHASE') },
-                    { id: 'gradePickerTrigger', fn: () => window.openGradePicker() },
-                    { id: 'expensePickerButtonLabel', fn: () => window.openExpensePicker() }
+                    { id: 'gradePickerTrigger', fn: () => window.openGradePicker() }
                 ];
                 map.forEach(item => {
                     const el = document.getElementById(item.id);
@@ -204,15 +388,16 @@
     </header>
 
     <!-- MAIN TERMINAL WORKSPACE (Dual Column - Locked Side-by-Side) -->
-    <div class="flex flex-col md:flex-row gap-4 items-start relative mb-6">
+    <div class="flex flex-col md:flex-row gap-3 items-start relative mb-5">
 
         <!-- COLUMN 1: TRANSACTION ENTRY (45% Width) -->
         <div id="inputFormArea"
-            class="w-full md:w-[45%] bg-white p-4 rounded-3xl shadow-xl border border-gray-100 no-print h-fit">
-            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 h-10">
-                <button onclick="newTransaction()" 
-                <button id="backBtn" onclick="newTransaction()" 
+            class="w-full md:w-[44%] bg-white p-3 rounded-2xl compact-panel border border-gray-100 no-print h-fit">
+            <div class="flex items-center justify-between mb-5 pb-3 border-b border-gray-100 h-10">
+                <button id="backBtn" onclick="newTransaction()"
                     class="hidden bg-gray-100 text-gray-700 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase hover:bg-gray-200 transition-all flex items-center gap-2 active:scale-95 border border-gray-200 group">
+                    <svg class="w-3.5 h-3.5 text-gray-500 group-hover:-translate-x-0.5 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path>
                     </svg>
                     Back
@@ -223,50 +408,50 @@
                 </div>
             </div>
 
-            <div class="space-y-4" id="formInputs">
-                <div class="pb-4 border-b border-gray-50">
-                    <div class="flex items-center justify-between mb-3">
+            <div class="space-y-3" id="formInputs">
+                <div class="pb-3 border-b border-gray-50">
+                    <div class="flex items-center justify-between mb-2">
                         <p class="text-[8px] font-black text-gray-400 uppercase tracking-[.25em]">Party Details</p>
-                        <p class="text-[8px] font-black uppercase tracking-widest text-gray-400">CUSTOMER</p>
+                        <p id="partyRoleLabel" class="text-[8px] font-black uppercase tracking-widest text-gray-400">CUSTOMER</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer Name</label>
+                                <input type="text" id="vendorName" oninput="updateUI()"
+                                    onkeydown="handlePartyEnter(event, 'vendorMob')"
+                                    class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
+                                    placeholder="Enter farmer name">
+                            </div>
+                            <div>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer Mobile (10 Digits)</label>
+                                <div class="relative">
+                                    <input type="text" id="vendorMob" oninput="updateUI()"
+                                        onkeydown="handlePartyEnter(event, 'customerName')"
+                                        class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
+                                        placeholder="Farmer mobile">
+                                    <div id="vendorMobStatus"
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2.5">
                             <div>
                                 <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer Name</label>
                                 <input type="text" id="customerName" oninput="updateUI()"
                                     onkeydown="handlePartyEnter(event, 'customerMob')"
-                                    class="w-full border border-gray-100 rounded-xl p-2.5 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
+                                    class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
                                     placeholder="Enter customer name">
                             </div>
                             <div>
                                 <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer Mobile (10 Digits)</label>
                                 <div class="relative">
                                     <input type="text" id="customerMob" oninput="updateUI()"
-                                        onkeydown="handlePartyEnter(event, 'vendorName')"
-                                        class="w-full border border-gray-100 rounded-xl p-2.5 bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
+                                        onkeydown="handlePartyEnter(event, 'pName')"
+                                    class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
                                         placeholder="Customer mobile">
                                     <div id="customerMobStatus"
-                                        class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Vendor Name</label>
-                                <input type="text" id="vendorName" oninput="updateUI()"
-                                    onkeydown="handlePartyEnter(event, 'vendorMob')"
-                                    class="w-full border border-gray-100 rounded-xl p-2.5 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
-                                    placeholder="Enter vendor name">
-                            </div>
-                            <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Vendor Mobile (10 Digits)</label>
-                                <div class="relative">
-                                    <input type="text" id="vendorMob" oninput="updateUI()"
-                                        onkeydown="handlePartyEnter(event, 'pName')"
-                                        class="w-full border border-gray-100 rounded-xl p-2.5 bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
-                                        placeholder="Vendor mobile">
-                                    <div id="vendorMobStatus"
                                         class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
                                     </div>
                                 </div>
@@ -276,7 +461,7 @@
                 </div>
 
                 <div class="pb-2 border-b border-gray-50">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center mb-1.5">
                         <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Product</label>
                         <input type="text" id="pName" oninput="updateUI()"
                             onkeydown="handlePartyEnter(event, 'pPackType')"
@@ -285,19 +470,19 @@
                     </div>
                 </div>
 
-                <div class="bg-blue-50/30 p-4 rounded-3xl border border-blue-100/50 space-y-4">
+                <div class="bg-blue-50/30 p-3 rounded-2xl border border-blue-100/50 space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="text-[10px] font-black text-blue-800 uppercase tracking-widest">Product & Pack
                         </h3>
                     </div>
 
-                    <div class="grid grid-cols-12 gap-5 pb-6 border-b border-gray-50">
+                    <div class="grid grid-cols-12 gap-3 pb-4 border-b border-gray-50">
                         <div class="col-span-12 md:col-span-4">
                             <label
                                 class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Pack</label>
                             <select id="pPackType" onchange="syncWeightFromPack(); updateUI();"
                                 onkeydown="if(event.key==='Enter') openGradePicker()"
-                                class="w-full border-2 border-gray-100 rounded-2xl px-4 bg-white text-[11px] font-black h-[55px] uppercase focus:border-blue-600 outline-none transition-all shadow-sm">
+                                class="w-full border-2 border-gray-100 rounded-2xl px-4 bg-white text-[11px] font-black h-[44px] uppercase focus:border-blue-600 outline-none transition-all shadow-sm">
                                 <option value="MANUAL">MANUAL [Custom Weight]</option>
                                 <option value="CRATE">CRATE [20 Kg]</option>
                                 <option value="CRATE19">CRATE [19 Kg]</option>
@@ -312,7 +497,7 @@
                             <label
                                 class="block text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Grades</label>
                             <div id="gradePickerTrigger" onclick="openGradePicker()"
-                                class="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50/60 hover:bg-gray-100/70 cursor-pointer flex items-center gap-3 text-left transition-all group active:scale-[0.99]">
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50/60 hover:bg-gray-100/70 cursor-pointer flex items-center gap-3 text-left transition-all group active:scale-[0.99]">
                                 <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50">
                                     <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor"
                                         stroke-width="2.5" viewBox="0 0 24 24">
@@ -363,18 +548,8 @@
                 </div>
 
                 <div id="lineItemsArea"
-                    class="hidden border border-gray-100 rounded-2xl overflow-x-auto overflow-y-hidden mt-4 shadow-sm bg-white" style="-webkit-overflow-scrolling: touch;">
-                    <div class="px-4 py-3 bg-gray-50/50 border-b border-gray-100 flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Active Bill For</span>
-                            <h5 id="gridDispName" class="text-[11px] font-black text-blue-800 uppercase">---</h5>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Mobile</span>
-                            <p id="gridDispId" class="text-[10px] font-bold text-gray-700 font-mono">---</p>
-                        </div>
-                    </div>
-                    <table class="w-full min-w-[720px] text-[9px]">
+                    class="hidden border border-gray-100 rounded-2xl overflow-x-auto overflow-y-hidden mt-3 shadow-sm bg-white" style="-webkit-overflow-scrolling: touch;">
+                    <table class="w-full min-w-[680px] text-[9px]">
                         <thead class="bg-gray-50 text-gray-400 font-bold uppercase">
                             <tr>
                                 <th class="p-2 text-left">Grade</th>
@@ -390,25 +565,12 @@
                     </table>
                 </div>
 
-                <div id="expensesArea" class="border border-gray-100 rounded-2xl p-5 mt-6 shadow-sm bg-white">
-                    <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Expenses</h3>
-                    <button onclick="openExpensePicker()"
-                        class="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/60 px-4 py-3.5 text-left transition-all hover:bg-gray-100/80 active:scale-[0.99]">
-                        <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-red-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                        </div>
-                        <span id="expensePickerButtonLabel" class="flex-1 text-[13px] font-medium text-gray-800">Select
-                            expense types</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div id="selectedExpenseEntryArea" class="hidden mt-3 space-y-2">
+                <div id="expensesArea" class="border border-gray-100 rounded-2xl p-3 mt-4 compact-panel bg-white">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Expenses</h3>
+                        <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">Common</span>
+                    </div>
+                    <div id="selectedExpenseEntryArea" class="mt-2 space-y-2">
                         <div id="selectedExpenseEntries" class="space-y-2"></div>
                         <button id="addAllExpensesBtn" onclick="addAllSelectedExpenses()"
                             class="hidden w-full rounded-xl bg-red-50/80 py-2.5 text-[11px] font-semibold text-red-600 transition-all hover:bg-red-100 active:scale-[0.99]">
@@ -422,17 +584,17 @@
                 </div>
 
                 <!-- INTERNAL PROFIT SUMMARY (Admin Only) -->
-                <div id="internalProfitCard" class="mt-4 mb-4 p-4 bg-gray-50 border border-gray-100 rounded-2xl shadow-inner">
-                    <div class="flex justify-between items-center mb-3">
+                <div id="internalProfitCard" class="mt-3 mb-3 p-3 bg-gray-50 border border-gray-100 rounded-2xl shadow-inner">
+                    <div class="flex justify-between items-center mb-2">
                         <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Profit Analysis</span>
                         <span id="pnlStatus" class="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700">Profitable</span>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
                             <span class="block text-[8px] font-bold text-gray-400 uppercase mb-1">Net Margin</span>
                             <span id="internalNetProfit" class="text-sm font-black text-gray-900 tracking-tighter">&#x20B9;0.00</span>
                         </div>
-                        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                        <div class="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
                             <span class="block text-[8px] font-bold text-gray-400 uppercase mb-1">Profitability</span>
                             <span id="internalProfitPercentage" class="text-sm font-black text-gray-900">0.00%</span>
                         </div>
@@ -442,7 +604,7 @@
                 <!-- COMPACTED ACTIONS -->
                 <div class="flex flex-col gap-2 pt-2 border-t border-gray-100">
                     <button id="generateBtn" onclick="generateVerifiedBill()"
-                        class="w-full bg-[#2DB956] hover:bg-green-700 text-white px-4 py-3 rounded-2xl font-black shadow-lg transition-all flex items-center justify-center gap-3 text-sm active:scale-95 group relative overflow-hidden">
+                        class="w-full bg-[#2DB956] hover:bg-green-700 text-white px-4 py-2.5 rounded-2xl font-black shadow-lg transition-all flex items-center justify-center gap-3 text-sm active:scale-95 group relative overflow-hidden">
                         <span id="generateBtnText">COMPLETE BILLING</span>
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4 transform group-hover:translate-x-1 transition-all" fill="none"
@@ -452,36 +614,36 @@
                         </svg>
                         <div id="loader" class="loader hidden absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
                     </button>
-                    <p class="text-center text-[9px] font-bold uppercase tracking-wider text-gray-400">Saves, prints
+                    <p class="text-center text-[8px] font-bold uppercase tracking-wider text-gray-400">Saves, prints
                         &amp; auto-starts new bill</p>
                 </div>
             </div>
         </div> <!-- END LEFT COL -->
 
         <!-- RIGHT COLUMN: BILL PREVIEW (55% Width - Locked Beside) -->
-        <div id="previewContainer" class="w-full md:w-[55%] flex flex-col gap-4 min-w-0">
+        <div id="previewContainer" class="w-full md:w-[56%] flex flex-col gap-3 min-w-0">
 
             <div class="h-fit w-full flex flex-col">
-                <div class="flex justify-end items-center mb-3 no-print">
-                    <div class="p-1 bg-white border border-gray-200 rounded-2xl flex gap-1 shadow-sm">
-                        <button id="btnSales"
-                            class="px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-100 cursor-pointer active:scale-95">
-                            Sales Bill
-                        </button>
+                <div class="flex justify-end items-center mb-2 no-print">
+                    <div class="p-1 bg-white/85 backdrop-blur-xl border border-white/70 rounded-2xl flex gap-1 shadow-lg shadow-slate-200/60">
                         <button id="btnPurchase"
                             class="px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 text-gray-400 hover:bg-gray-50 cursor-pointer active:scale-95">
                             Purchase
                         </button>
+                        <button id="btnSales"
+                            class="px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 bg-blue-600 text-white shadow-lg shadow-blue-100 cursor-pointer active:scale-95">
+                            Sales Bill
+                        </button>
                     </div>
                 </div>
 <div id="billPreview"
-                    class="bill-container p-4 md:p-6 border rounded-2xl shadow-xl mx-auto w-full max-w-full md:max-w-none flex flex-col draft-border relative transition-all origin-top h-fit">
+                    class="bill-container p-4 md:p-5 border rounded-2xl shadow-xl mx-auto w-full max-w-full md:max-w-none flex flex-col draft-border relative transition-all origin-top h-fit">
                     <div id="watermark"
                         class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] rotate-[-45deg] hidden">
                     </div>
 
                     <!-- Branding & Terminal Summary -->
-                    <div class="flex justify-between items-start pb-6 mb-8 border-b-2 border-gray-100">
+                    <div class="flex justify-between items-start pb-4 mb-5 border-b-2 border-gray-100">
                         <div class="flex flex-col">
                             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABKEAAAEOCAYAAABRtQS7AAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nO3df2wcaZ7f95JW2+reaNWa2/FtdLcXcjaAYIM4k4NGfjgJwh47SAyjAvYgQRwfgpAyFIBG7iwOHOQ/QS0ISAzkh1qAAxCJEDUNOEFiGEMdKkFiG1HTPgeI7b4h78yLI1wwpBexvL69W7ZOt93q3VkFD/Utqdhq9s96flW9XwAxs7MSu7r76a6nPvV9vs+F169fBwAAAAAAAIBOF3l1AQAAAAAAoBshFAAAAAAAALQjhAIAAAAAAIB2l3iJs+XVoxtVeUIrQRBcG/LvyuoMT3pv4H+35J8nQRDsq3+5fOtZ6/2/BgAAAAAAEAQ0JveQBE2L8hMHTLMES7rsJcKpI/VDQAUAAAAAQL4RQjlOAqeqhE0qdFr2+OkcSzC1L5VU+5dvPTtx4LgAAAAAAIBmhFAOefXoxmIicKp6HjhN6iARSrUu33p25MdhAwAAAACAaRBCWfTq0Y1rEjapn1oQBAu5fTHeOZZAaldCKSqlAAAAAADIAEIow6TaqSY/LvVxctWeBFK7VEkBAAAAAOAvQigDXj26sZIInvKwxE6XYwmkmpdvPdvP5lMEAAAAACCbCKE0SVQ8bRA8aaECqQYVUgAAAAAA+IEQKmWvHt3YkOCJpXbmqCV7TQmk6CEFAAAAAICDCKFSIFVPdal8Knv/hPzVkeV6DZbrAQAAAADgFkKoOVD15LQ96R3VzPsLAQAAAACACwihpvTq0Y1rEjxtBUGw4NXB51PcO6rJUj0AAAAAAOwhhJqQhE9b8sOSO/90JIxqEEYBAAAAAGAeIdQYhE+ZQxgFAAAAAIAFhFDnIHzKPMIoAAAAAAAMIoQaQPiUO4RRAAAAAAAYQAiVILvd1Wk4nksqjNpiNz0AAAAAAPQghHoTPlWlGmbZgcOBXQcSRrV4HwAAAAAASE+uQ6hXj24sSvi05sDhwC1PJIw64n0BAAAAAGB+F/P6Gr56dEP1fNongMI51LjYl3ECAAAAAADmlLtKqFePbqwEQdBk6R2moJbobVy+9WyfFw3wU6FYUpWvi4mDP+n3unym4YVCsVQdOM6jfq9LpS4AAPBOrkKoV49uqKbjdx04FPjp3uVbz+q8d4D7JHSqyc/qiANWIbPqAdcklIIrCsVSPHarIzZL6cjYjccvO7wCAADn5SKEovoJKaIqCnCYhE8qLF6f4Sj31N/t97psTAArCsXSPLv07qhehoRRAADAZZkPoah+giZURQGOKRRLaX3fq40JNriYhykSnjbHVO1NoiNBVJM3DwAAuCizIZTsfJfGhA44z55URdGXA7CsUCw1Z6x+Os+xWg7FEj3oViiWVmRJXTnFh9rp97obvHkAAMA1mQyhXj26UZMAKs0Jna/25LiP5CemLqwmvcufbIh6LQiCFfn3FV7j07vOKojadeBYgFwqFEu7mnY6VZ/vKkEUdNEUQMUIogAAgHMyF0K9enSjEQTBbQcOxaS9RMikJrMnJnsWSc+tOJxalH/mLaB6ePnWsy0HjgPIlUKxpPs7/0CCKJbmIVWFYumanLd1nis/6/e6Dd45AADgisyEUK8e3bgmAUzWm4/vSRWTeq77Li8FkyWRcSBVzUEwpS5WayzPA8yQbeufGniwh/1el5AZqdJYwTfoY6r5AACAKzIRQkkljq5ydtv24i2YL9965v2OTfJeVRM/WXvPOhJEsbsWoFmhWDqacRexWXzU73UJmJEKgwGqstfvdasT/DkAAADtvA+hXj26ofodPHbgUNKimuHuSuiU+T5Drx7dUBPjmoRSWapiu3n51jN2JwI0ka3sTX73018HqSkUSy3DG6dQDQUAAJzgdQj16tGNtHdDsiUOnpomezm5RpbvqUBqIyOB1M7lW8+4aAU0MLiUKdbp97rXeC8xr0KxpM51Xxp+IVlSCgAAnOBlCCX9n5qGL0DSRvA0ggRSG/JjarmNDnuyPI+mxkCKCsWSjZPXJ/1el6W2mEuhWFJh0APDr+Jxv9dd5J0DAAC2eRdCZaAB+RMJntjSf0KyZG/D46q30921CKKAdBjup5N0r9/r1nkbMQ8LVXyn+r3uBd44AABg20Wf3gFpan3kYQClmlXfU41tL996ViOAmo5q8i3L2j5Q201LFZlP1Hg9kvELYH62Pkssx0MarIwjCW8BAACs8qYSytMd8FRYUqdBdfqkIf2G4cauI3Uvfi14VroSHBa+cSYkW/jq1c8uvOqWvvOq25GKKJZfAnMoFEuqGumuhdeQXcYwN0tLSQOWkwIAABdc8uFd8DCA2pPwicmeJhLsNWWpXt1mGKWCp7/yzT/0vb9x8eu/IP9poIfVN4PgG0Hws69f//SX+r//v/1rf/mP/oWP/sPf+Cs2jhUAAAAAAFucX44nFS9feBJAqfDpk8u3nlUJoMyQpXoqiPpEXn9jfu/rl4P/9Gc/+sFG+eeCRAB1rn964cIHjctXv73+M//cf/crv/pv/SfZfEeATKOKEWno8CoCAIC8cjqEkgDqsQOHMs4B4ZNdpsMoVf30p7+10P21i1//cNq/+wdBUPo/L379v6hE4YaeowMy78jSE2RzAaTBSpjJUjwAAOACZ0MoTwIo1fvn5uVbz1YIn9yQCKM+1dXAXAVQqvpJhUlz/qrHBFHATGxVJPE9jzTYCFF929ADAABklJMhlAcBVLzb3QpNx92kdiC8fOvZorxPqS19UEvw/uPyz3VTfNIEUcCU+r3uvqUlTSzHQxpshJkEqAAAwAnOhVCPf+XP/2nHA6gnEj6pxuMszXCcep9kO/cnaRzpX/zg536QQgXUIIIoYHq7hl+zJ/1el+98pMH02FW4YQYAAJzgVAi1VN1e+WPf+e3/yoFDGUaVsn96+daz2uVbz2z1I8EM1Pul3jfpFzXzkoS/c/VnZuoBNSEVRNV4f4GJmb6obvDWIA0SZu4YfDGP6QcFAABc4UwIpQKoj8sv/vZH3/rtn3fgcAY9lOonG3cvkRLp27Ui7+fU/vvSB3+g+b1oVqJwhfcbGE8uqk3tiLnHRTxSVjf4gm7x5gEAAFc4EUItVbdV757W2j//Zc+Bw0k6ll3vtlh6lw3qfVTv57RVUaoX1P994Wu6qqBiZfU5IIgCJrZhoDdUh4t4pK3f6x5Jz0Ld1DJSbqABAABnWA+hlqrb16Q/QvmP/cJvfeXOS/O29xN3vzMoURU10ZKIv/+Nq6YCUhVE7Vai8JqhxwO8JRfyugOiLWmEDqSq3+uqaqgDja/qsQS1AAAAznChEkqFAcvqX/7QN59/2/7hnN71vim9n6h+yjCpilIT9E/HVVP84OKl7xt8JRakIoogChij3+uq3lA3Nb1ON+X3A7pUNQVR6pxWo5k+AABwzSWbx7NU3W7GAZQj1ERw4/KtZ9z1zhHV6+vVoxsrUpE3dDz+3a+XTH9WlqXxMs3KgTFUUFQonm5a2ZBqwjQQQEE7FRIViqWqfN+vpfR4BxJAsYkKAACOKBRLKxo3uvGqcv/C69evrTzwUnVbLaF4kPxvv/4f/NdWjkWoZVn0fsqxV49uXJMvhvXBV+GXv/3d41+/cGnBwqvzsB1G9KMBJlAolhblYn51jtdrjyV4sKFQLG1Jw/J5gtR7sswPAAA4RG46PdV0RJ/4tImOleV4S9Xt2mAAZdlnalkWAVS+JZbnvbe051uvX9taunq7EoX09AAmoCo/+r1uVTYeeDLla/ZETuBVAijY0O911U0QFaR+Ns3GGbL0Tu36+hEBFAAAcJ3xSqil6vaK9IF6707f//Vn/pvu17/2qmTwcE57JtB8HINked7bcfo/fHD9+C9d/qaNSqhAxmm1HUZcGANTKBRL16Tnzor8DPZZU59x9blq0TsHrpGy/aoEU4O7ph7JT8unO58AAOQVlVDvGA2hZCe81nl9d3b+xN/83i9e/41fMHQ4xxJAcWGPoV49urEY94k6+GfKwZ/7ptW++Wq8rrTDiAtlAAAAAPAIIdQ7ppcYNUY1Iv+1f/TdK4aOQzXtXCGAwiiXbz07incuutF9afu1WpBADAAAAAAALxkLoaQR+XsNn5P+2tF3PvjxV5e7mg9F9f2o0v8Jk5A+USuln3618+/+pPs9yy/aaiUK6fcBAAAAAPCSkRBK+kCNbUT+ez8uBP/jb/yJvsZD2bl861mNAArTUg3L//Xe7/+WAy/c3UoUVh04DgAAAAAApqI9hJI+UM1J//xffvbdcqf3Mx0Nh7IjO58BM/lX//2/+ye/+/qnjx149ZqVKBxssAwAAAAAgNNMVELVR/WBGqSqobb++r/z3s55cyKAQir+6r/9v/5Z2T7bpoVpgl0AAAAAAFygNYRaqm7XgiC4Pe3fO3jxzeAv/u1/L63eUARQSFU7jFSD/ZuWX9W1ShQyrgEAAAAA3tAWQk27DG/Q/3z8ndLNX/2Pgv5Pir05DoMAClq0w0iN7YeWX91GJQoXLR8DAAAAAAAT0VkJpS7S51pWpyqi/tRfu1Xc+3//le9P8/fUDnt/9Tf/zb9FAAWd2mGkdnzcsfgil1mWBwAAAADwxYXXr1+nfqiyDO/zNH/nR9/4UfBv/Pw/+eGnf+TvffXPXv3/Phz2Z37z+R/93v/y23/4w7/zTz7c/ev/+9Yvpfn4wHkqUaiCoHWLL9BnskQQAAAAAOCYQrGkdjh/qumoPun3ui1f3vPUQyhZhnc0bxXUOMtXfz+48vUfn/6pf9wtBl/+6Bvx3zg4bG2u6HxsYFAlCndVnyZLL4zaTXKxHUYnvDEAAAAA4BZCqHcuafiddd0BVCBL9Yb95yAIqrofGxhCLf1sTbMTZIriZXk13hgAAAAAgKtS7Qm1VN2uzrIbXkpUNUjtsLVJNQiMkyokNf6PLb36arc8AlgAAAAAgLPSbkxuqy+NCqCqh63NI0uPD8RBVE3Gow00KQcAAAAAOCu1EGqpur1laSmSsnXY2ty39NjAW+0w2peleTYsVKKwzrsBAAAAAHBRKiGUNCO3dfH78LC1SQUInNEOI9Wk/J6l49mqROEiowEAAAAA4Jq0KqEaJpqRD7F32NrcsvC4E1OBgOrVU4lCduxLwdU7VRV4vv2nq9phpELZJxYOr2wxEAYAAAAA4Fxz7463VN1WVRfrFl7ijou7gUkVyoYc2/LA/xfIDn5qF7WmLN3ChCR4Uq+dCvRWrt6pVl/cb7kcuKhxoN7jBcOPu16JQjW+vNmmEwAAAACQfWlUQtlaCufUTniVKLymLvyDIPgyCIK7I/pjLcsOgl9UorBFhdRUGgOv610VRLl6sIlG5TZQDQUAAAAAcMpcIdRSdVsFAKsWntC9w9amM1UesjX+0QwVYasSRjm9pNAFV+9Ua+e8vrsuL82Tajcb/aFWZVwCAAAAAOCEeSuhbFRbHBy2Np2p8qhEoVpy9XTOnlgPpIoKQ1y9U10cUXFXtliNNxHpD7Vn4aEZUwAAAAAAZ8zcE8pSFVTH4vb375GldI9T+nWqj8+RBBY4qzkm5FtTlVIv7rd2HX7d4v5QJhv4L6iQtB1GhFEZUSiWVCB7ZvfDfq9L7y84q1AsXZM+fkn7/V7XmeX0yIdhY5HvTxSKJTUmzlTUMy78MWRedNLvdem5CzU24hUhjAkHzdOY3EZYUj9sbToxiFQPKLUULOVfe1f1iaKh9DtX71Q3Jgw7m6pi6sX9lpMXNu0wOqpEofrMPDD80HUqotyXmERVZTIcXyitjAsuC8XS4H86luXBJxJ8qn8/YlKNNA2M2SDxz7FjNnh/3A6O2RMJqhizOFciPBj8ZzDjOIwdyBg8Mx7le/SId8R9icAx/p6Kx8a1ET1b3xoyLgbHBOdVTRKf6+Q5Jf5cT1T8cM7nOl6RMPi55qaIR4aMj/ifiyM2gtpL/Dk44sLr16+nPhKpgnpq+CmoZXjONPGWQOGuhl990A4jmpW/2w3vaHAi+eJ+64I0JB8cgzsv7recqZQbRoWMFioIb2apGqpQLGn57PV73Qtp/85hZHJclYmV6YrSA5l0qXHYysoFla4xoSYu/V537omL3I1L/ZxpaswG755DNTF2TVV1Hst43Zcxm7m7mYViafqJ2GQ+ycJFciJQqCaChbFBgkZ78cVrlr5HfTUwPkx/PwXyHZU8r1JxMQG5kbGSeO9GhQi6dRLvYfy59j6Y0jX3MHVuSYyR+HM963x55rlcoViycd2WBWPHyKyVUDaqoFxahqdOeLqaiS+rgItleafqU04k1q/eqTZf3G+5POm2sSyPaijL5M5NTX5sXjwty89pk/9CsXQsFZ1NJs5IkslfPGZtTsAWZLwmx6z6jt/t97ouL8HGjGTsJUNPWxem51lNfiYYk+Y5dE4NZHyqn7XgzbF14vFASPmOvGfJz7XJefA45SGf64PE55qKN0NknGzIGLH92YZGU4dQlnpB3XNlGZ6oaf7y3FKNytUSLo2P4TRpRn57hmNsDOk/4gxZltfQVLVxHtUbqtYOIybHBsmF1Ib8uHYRFVuQz9ntRCDVYNKcT4ngacPhyd/bUEou9pqEqP4rFEtxoOBi6DROckyqP7pDIJW+xBjRPQefV1kCqTiUOpC56W6eln1JhVr8mXb9PRsmvml3W8418Q07AqmUJYKnmoff/5jRLLvjma7QOZYvb5fUNB+L8zu+GTDr81+WPlLOkiq3Y8PHp6tyDwMKxdKGlO9+KWGjLyfUOJD6Uh1/oqEjMk6914ViaVfG7AOP7j6WZcx+IWPW6e9+vKMuUOW7cleWI34uQU4WLkDU8/i8UCydqKXCEu5iBuq1KxRLjUKxdJQYIz6GGWoTox8WiqVmls+tyc+1er7yvH18zwaV5Xk8VWOxUCxtSciGOSTmy1/IuZwAKkemCqGWqtuLFqqgtg5bm67dOTBRabOqqlcMPI5zpN/TPOPMh6WMpi+W1HgiVNBITqZHMunyff34qky2CKMyLDFmn8Z37T2mxuxjuUAgjHKUBJ5N6ff4OAPjbpSy3Ij4UsIHwqgJqaqnxM2cLF2cxkHGfpa+p+T9SgZPWf5cL8jNmiMJmQmjppSx+TJmNG0llOmL+73D1qaL5cymToYN6T+VN/OOswUPqqHU5OqJ4YflwkyDgZNp1u7iJMMoNkzICLlgyOqYXZAwap8A1Q1SHbGVCDyzUBkxrXXCqPES59PPM35xuux7aC5VavXE+5Xl4GmYOGQmjJpQxucemNLEIdRSdfuagWVog/J+0bzgSVVPalKogor58LqZXiK3XolCJr8pkTv6+zk5ma7KkqcGEy1/qSBRqgs+z8GYXZYAdZcxa0e8lEqqnh5w0XFKhVH7sqMnRMZv5oziXWgun+umhy0HdEmGUXm/bh1Kxkxe5h6Y0DSVUBuG71ztHLY2aY4bBLcrUZinCoS0ghkfqqHU+H5o+GE5Qc5J7uo35Y5+3nbuuC0XUFSYeETGbEP6LuSt9H1NLg5yubzdhoGL1Ns5rHoa5/SiVYKHXFeY5uxmzihxaN50NTQf+FyvO3BIrilLoNii2vEdVQUru4Kz7A5nTBNCmaza6OStAmiMXDQplx3x0izn9SFwqct4N4UG5XOQ8OUo5xOwBZks8x3tAbnI3Z9xt9GsKEujaNc2OcmURNjJRepklqXCNHfn5ZzfzBll3bXQnPBpaqtysy7XNz7kM74rVbDciMB7JgqhlqrbprfMbVAFdcZyJQrzMElJ+zmuXr1TdfouYzuMTgzv/liuRCHVUDOQ0OUpJ9O37sodP5Y6OUoubr+g/P2t21J9wphNmYy1o5yHnbN6kKdlo4mxQqAxXByaWx0TEiLUCZ9mkusbH3Lzq5XDPmGYwqSVUCYvWjuGL8p9Uc9BPx8d48yH8K5huBqKEGoKMhFryZp/nKXu+BFEOSZRZfAg76/FEMtSaUCj/RQkllNxt3s+a1n/LqUyYmprUlFj/LtKqniOmPfM7Xbe+hImAigqHDHS2BBKGpKbTMBVFdSJwcfzRTnL4dzVO9WapkmJ8+WwFqqhVmlQPhlZ199iLftIXNQ7RCa7Le5cj1SWC37G7IwSS+9YTpWe5ayOy8RSdiojprMgY8LIzcNEUPg5QWFqMh8wxxIBFGMHY01SCWX6Ip4qqPOtVaIwqw2BdZ1gy643KBdUQzkm0UuHC6zxuKh3QCKAYsyOx5idEX3GtIqDqMzcKGIp+9zihtda522J6ieCwvQt56DSkQAKU5kkhDK5nGmHKqixmpUozOKXmM4Jl/Ovl4VqKEKoETiZzqTM0jx7CKBmQhA1JfqMGaHGpfdLeBJVNSzpSsdjWWadOqlqpPpJr2U5R2cOc2bMYmQItVTdXjQ8oWW3pfEWMrrDmarwOtDwe3de3G/5Ul1n8jgXKlHIhdcQnEznQhBlAQHUXBizE5ILVfqMmeF15UTiO4mqmnStpx1ESc9LqhrNWNYVJNqS+KwzZ8ZUxlVCmVyKt8OOeBO7m6UAQfWDenG/daIhiFIB1MbVO9Vrru+SF7yrhtox+JBUQw2Qk2mTk+lcluU1hAEEUKkoZ/UOdcp4jcxa9rFFBY2JtUs7iOJzbda6VJRmBQEUZjIuhDJ5kcpFy3Sy1DurefVOtZlyEPU2gJIvSF8CF5Pvq/NN2y1g4pyONekDAv0ajNlUZO4Oddr6va5aWrWXrWflvHVTTanTQABlTJrjQp1Djj14zlnyIAvLwKU6ls86ZnJuCGV4Kd7BYWuTJH46aocz7ytZpEJJJejrKQZRgwHUsi+BSzuM9g1O8lmSl8DJNHV3ZUckaCJ3U9kFLz3r0pwX5yNcNq/hQ6NylrIbl0qz8n6ve8Ln2gqv+77J/I5lnJjZpRF/0eREjB3xZtOoROGuLOPyVfIiVQVRgQRI1Rnvpg0LoJSFq3eqiy/ut3xY8qnuxq8aeqyNjPYYmwUn0/Q11YWJTHKRPvrzpE+N2UXG7HD9Xlf1KdpxMPxUN65OEkuLTmQHv1HUPCG+EbMi/9vUuXcaZZkXOBvqS0jmSwAV3+gbd/N7MfHjaiN+FVDu93vdcWN9pH6v25SbGq7diBt8r47kZ5TFxGZHVflcu3iDcUHCP1/n4HmpHG6mvGR1UeP5c2eCz4cpY49jVAhlqspGbUu/a+ixsqYsAZ7PFVGDk6p5gqjzAqjYikMfznO1w0jtgNgwNJmrEUJZdSwXSvGPunA66ve6Y8ep3HWOL6IW5Z+uXUD5PsnC+5JjNr4gmHTMLg5c2FVl3Lp04Rpf8FMRdb66xRCqI2OvFY/DScbeCO/NP+W7dUXGZ9WRAGJVVb2osMCBYzlDqjl2HQygOolx0pKxMnO47Oi4KEtwXk0hOFfn6acpHde0kueVud+rYeT9qyZ+XBivt9Uy8HlDRAvqedkhNe3vXKkg03X+VGPJm5VlQ0Oopeq2ydR497C1yR3H2a1XorDZDiNflzMOu7M3SxA1LoCKH8uXwLNpqDLndEmeLAOEfscyBtUYbc0zyUpMWs589mWiVZMfF+7++TrJwhvHMsZ2UxizQ+9iJy4ONhwZs2tyUUebgCHU+1golu4Z3Hr/SeI7U/v3iDzGfnynX8bnhnyn2rzwqheKpV0Hq/Rc6gEVn2NTP+cMGReLMiZsf28tp3FDWqoc9wzdzOoMzIW03yBOvH+nq28kDIg/1zYDqYbLVY7nsHnD81jmEfGN22BMpdJK4s/BIedVQpm8A0gj0Pk1E6Wn3lDL40Z88U8TRE0SQAWJsnsfmAqhAjn5ERDo05H300gQk5ho1WWSvCUTLSZZmFR8gdAwPGbj3jcb8mPzgt/L86pBDflu0fG9Eo+/XWmGbpWMT/Vct6QHz4ali7AFOQ5n+vdIM3/bAZTR76uYBCcN+d5akffGVqCxLgHlvJ8XNba/TOmYBh0nPtfWA345hpZU8tUsVvesctNjpCdxhdyMrxGvq6POa0xu6mLhmIbkqVDVLD42FRwXCk3SrHzSACpwtNfDUFKZlMYugZNg2Yke6v272e91r/V73S0blUBqkqweWy6m78lk3YZVmpR7QV0k3FTjpd/rblgcs/V+r7sox2Jr16YFn3YlM01TM+Mnie/MDRcCqEFqaUa/11XfZZ9YGptbrjQzdmBjhI6c16x9X8XUY6tjsHyubc47NiRY20nvkE6p3/ep+k6XuZBT133qu0w+1zbPOfRGfqeTGDMX+r1uTeYE5AUZc14IZeqilF5Q6blbiULf7tpOUpk0KoiaJoA6JdVXvjBVJehNOOeJYzl5rrjSv0MmWXWZID+0dBjsvuOuY7n4X5TJuBOl6/L5WZGLOhsYsyP0e900tnaPg4SP5GLDi+p4dUEkF62mx2bZhT6gUvlja2OEZPhUd2l5ouVzbTmlMGMrhRDtWN6jD1wNlIdJnHNMv3fL3Kg7c+PWmzGD2b0XQi1Vt002CWUpXrp8ez0nDYTeBlEv7rdOg6sX91utaQOoKR/TBca+gCtRSDXU/NSk7TO5kHfy5CkT5C1Ld/GphnKTulBwJjAdlLio+9hgdWiMaqjxZt104HggSPBh59r3WBqbVjd6SDQit2HHxfBpUOJca3psrM97npXXddYwK3lDw+n36DwD8ySTFW15vemh+pB94tKNW5gxrBLK5FI8+tCka9WzMGGaQOg0iEr+hxkCqMCnvlDtMDoyOHkhHJjPnlzIe1FSLWXNK7L8xSR2yXOH+m752JcLBVlqU9WwVGQcxuwIErjvTfFXTqtYfL5IHZQYm6bO1yoctTnXs9E751guVDd8GjOyTM9kNeeTlHaBnrbK8Uw1bQqPb53Mk0x+rlelJ2JexGOGflg5ZTOEosxOD7W9vxP9AiYwbSD0NoiaMYAKZEt7n5g6mRNCze6enES9upMvd/tqhi/q13I2yXLVjtx19OpGkIzZDcNLoFgmMd6kd/AfxlUsNg9WBxmbKwa/T61U6MlnwdSmKbEncpPH2wtVGfM6K2s60gaglsZcZIqeb8lQOXNVLBYC5rxU3j50uQIbZhBCZU/Zo5LOWZZ9xk0wV0cM9EUAACAASURBVGbckcWnHfICg7s6LHsUXrqiI3dxvL6gkot6k0EUlSV23ZT33Fvymbtp8PhZkjeChAOjvkP2pOpuKwuVT2NsGbpgXbPUoNz0ReNnEqxkoWIurkBOe3zESxRTva6SgGDUscbhYKaXkcnYqxpqYZD1c00clubhXIAxzoRQBvtBddgVT6vblSjkzu1wXgUtskueqd49vgV0NqkTaTVDZecmgyj6j9lzM0NjtmlyzLqyI5nDzrsQ/UwqRXPRfsHwBavR79JCsWRyGV58sZqpXcOkSimtyhoTSxSH3TRKterKB/L61gz0iFqQpv9ZdCDzZopQcGqwEsrUwCeA0s/pE/fVO1VCssmZ+sLmPZlMHEBl7aLK1B38BZY3WZGZACom4amJvmZlwtPR5GI0uUwy7jmWu63HExesuhkbk7KM2lQVayfLF6uJoHKe8+1DE0sU5fcne77t6ai68oHM+Ux8BrJ4rjnI6LwZcxgMoViKlx1qeRXbS7/Px7vZpkJbgoHJ1LJ4IjV4py/ggt64zAVQCRuMWWc05L14kvcLDnnuunuXmTxn102tlMjD2JkjiDqwsLQ1XiL2UKoac7uMSs6jum98ZO1cEwdQLL/DGVRCZdtWJQppAnzWLH2kbDP1eWE53ng3s7yLh1QzmAivuaA3516Wm38arDpZM/AYXosvrLPSwycF0+4wNq2yiapSqYJan+CPzisXAVRshqWb92xsKCHzgo9U8GXycR2m+3VYztDybwIonGswhDJxgX582NrMxRpiB5RdX5aH8dphdGJomVSZ0HKknTzs5CHLZ6bZcn0WWe574JK9rDeNDd4tGdG+LM/ytvheYLnFO1PsMDYPE9VQpr5DtvI2fiasQI4b+1v7Ls9L76dJDFl6rEMWViZ0CKAwytsQaqm6bWrAUwVl1lolCpk4+49qKLuOc7arm4nJLss/9erkrOLMxOeTMYupyI0LndVQWs/ZBqugMl2xOcqIXkOdvDX294jusZqFuTgBFEZKVkKZqoDgi9S8Btvve48Qyi6du884Z0gzUh24oNcrb2P2yMBueYxZzELnBavuMWnihkQuKjZHGbLb5540Hmc1g4MMnG98P9fcIzjFOMkQin5Q2bVgsJwaehBC2bOT5T5QI2RhGUle7eV0G2TdY9bHnoKwT2cIVdbVP0Z+r+5qyk6i8XXexTvUfirVTyyBc5vOc6zPc/GDvIfKmIzxEOqwtUkyasftShQSMHhK+kLpLOmP0RPqrE5eA1wJ3nT2IivLUg+kL5cNZOWiTWtvKBONoJEtMi51fpfqmtttGNgRb4uw5Q1VuSqNx9lB3APyPunamVVbuGwAoTImYno5nu7lHRgtl+vtB/g8Bk0EuNzpP6uR8wmy7qUABOPp28l5GTy9OuAineNSZwil015e+0AhM6iGOivv8w9MIRlCLRh44RiYdi1XotCVO+T7hnZ8G/a4vjJy7FTMnZH3fgy678gy1tKX994qOu9OB4xZzEjnku7UKyZk91LdN6XY8h++0/m59q1SvMNnGtM4DaEM7oxHya19dRealL+43zqRnjAmg6idF/dbPn9BmupLRBP7N3byvrOHPH+d1YNc0Kdrj6Utp3SGpywhxdQ0VwfomMPrroKiYgJZQAj1TjPvc2ZM56Lh14sTjn1lV5blGQ6iVADl+zplUxeX9Dx5I+9VUDEu6P3BmH1D54XBqsbfjWzzqR2A7obkNC6G9zTf9PFtfsT8A1OJQyhTF52EUG5Yq0Sh9aDh6p3qhqEg6jSAunqneu3qnaruiZU27TAyFUJRCfVmdw++r97QeUFPD7L0HNPQ9i1eB7hI1zk81YtVWYqns0XHDhWbyBBd4bJPIRSfaUzNZCVU57C1SZmeO5oOLMtTwVBTcxD1NoCSi2nfAxYTd1JZIkUT/7cI47xB8CJkSYC23UTZIQ8z0nWRlnZgpHt8UzGBLOHalvkHZmCyEooLGbcsONBATo2JdY1B1GAAtZyBvmSc7MzghHqWtvCTC/rUMGbPMtVDD5iUL/MPnRXjVBkja3SNZ19umlOFjZmYrISiTM89dy3vhBYHKjqCqGEBVJCBMNTE8ee958kBZcXv4aLBbZ1+r0vocpbOzzDVopiFL+cVnXMAqqCAyfjSroAACjOJQygT6065qHOTzQlB8qIpzSDqvACqI7/fZ1RC6cfF/Pt0fn/Tg2x+jNn3ebUlPjCPQrGUypg0UJnKBSuQLcw/MJM4hNLZgDDGxbObVitRaGvXuMHqijSCqPMCqGGP5yMjz8GBfmE2cUJ9n85xR1XJ/Biz7+PGF/Ikre9RnSHUE7ZwRwbl+vzLUjzMyuRyPJZzuKthI3SQsGmweew8QdSoACrI+4liSnkOBhgn7+OC3m2cXwewpBaYic5zP+dWIFtMbJaEjLq4VN32aQtI6FG2uCxv2MXTLEHUuADqvMfySjuMmMTpdcyd2vdxQe82+kEZR/UesooQCsCk+ExjZhcN9YMKuJPuvPVKFNrYpeq8L7BpgqhJAqhRjwXE+J6Cb9LcUTRrdN2lpScUskpXe44Ou+IBmcN1FWZmbDneYWuTizv3NS0c4ai1xJMEUZMGUAcZaEpuUl7v9HNCPR9hh5s4twKYm+am5JxbgewhWMbMLvHSOethEAS3DR/cQiUK6+0wqpt6wBf3W0dX71SPR9x9U0FUIEFTdWAiM2kAFWRsAnRgYOvWvN7pJ6g8H6+Nm5gEAqJQLK04fP5y/eaOzteN7ynMzMCujfPI603bDu0rMA9CKHftyhfbquEj3KpEYbMdRibvrquAaH3E//82iIq/7F/cb6m/05owgAosVXnpwpe+PkyU4Ru+D5BphWLpmpz7Fwd+AgtzpCyjHxSMKRRL8ec5Do6TATKfa/cxX8ZcLhlKcDu8TTPZkA952eBjliWwMXnXYXdMCBUMBFGnpgigOi/ut/iyBJBFfLchMyRwqsrcNP6nyTlQnumshCIszzEJnOLPs40b7EgfrQAwl4uGypaZJM9AqpFs7Fq3WonCmqkHe3G/tTthUHnaIyqYLoAKxvSdApL4rgIAgwrFUq1QLDUKxZL6/v1hEASfB0FwVy5UCaDM0XZTmqbk+aLC5EKxtFEolpqFYkldy3wZBMFjaTNCAJUNhFCYi7HG5JiN9Gey0RC4WYlCk30VJg2K4oqplSn6ImVpKR40Yn07AOgnwZO6QD2R0Om2gV6HsOOY1z37EsHTroTJj2XOrmvHRdjFfBlzIYTyw5aFo1R3H401KNcYFB1L/ygAyJx+r8v3G7ygluRIxVMcPK1T6ZQLVExkmNoMQAXK8j6r4Gkt769JTlDdiLkQQnmgHUbqImPHwpHerkShkd5QEhTpuFtGFRQAAJZI+NSUJTm3CZ6cxTIpTEztWFcoltTc/QsCZQDTIoTyx5alBu8me1LpeCxCKAAADBsIn8ZtPgLAA1L5pMKnpwSXAGZFCOWJdhidWFqWt1yJQlOP20w5aNt5cb9FGTgAAAYViqW6LNcgfAJLhjNAej41pPKJ8AnAXAihPNIOIxXS7Fk44nolChd1P8iL+62TlHeyowoKAABDpEpiX3a3Y3kOkAFq6Z2Eyrd5PwGkgRDKPxsWjrhscFleWs3Q92hIDgCAGWpnLKl6YZc7ICOkqvEpu9wBSNNFQ1ssrvCupaMdRmp52T0LD71WicKa7geR5XNpNGE3ubOfadcy/NwAAJ6RZTqPqX4CskGW3+1KVSMApOqioS0WmZSkqB1GdU07yY3TqEShiQBk3gAp61VQ3GUGADhBmo+zTAfnMbLLMtKjAiipalzjZQWgA8vx/GVjWd6CiQqjFKqhslwFZQpLGQEAI0kARfNxICMSARQ3PAFoQwjlqXYYqRPEEwtHf7sShSaWV27NuFPekyxXQRl67QEAGIkAKnMO8v4C4NQuARQA3YyFUEvVbe27q+XQxoxBzby0NymXnfJmeZwtDYfjElOfIxO94gAAHioUS1sEUJmj67zP/N8TEiyv5v11AKCfCqGODL3OnIRS1g6jE0tLz1YrUag97Hlxv1Wf8s7cPVnKl2VGKqHaYWSiVxwAwDOFYkmdhx7wvmFC7KrmAdndkmAZgBGXDlubR0vVbV5tT7XDqCG71pm+c1GvRGFTgjCdtmRr2HGOJbTKOhMhlI3qOgCA46RfzK4DR9mRjXX2pYInXoZ/1O91nbwZVSiWqhPOZ2w50jWXLBRLi66+L3jz/phY5TCBYxmHLflcxzdE9/u9rpMV+h58rgEnXTJ4UFWaHWujgpovDD+m2vFQle3WdD6I6u909U714QQ779ho1G6DiRCKKigAwDBblipbOhJ+qXlki0BDC52v6aLBlReYXtPSTubH8pnelaCJMQLkRNwTysZ2/0iJLJ26Z+H1XKtEoYmtd+tjxujDLDcjj1Wi8JqhyT+TAADAGVItcdfwq6I2YPm03+te6/e6G/1et8mFqjY6X1c2VXGUVPKYXk2hdsD+pN/rLsrnepfPNZAvcQhl4oPPCUivhqUwsSnhiDbSpPy8iquDF/dbWW9GHjMR+AWEUACAIUwueVfh00f9XremLlB5M4wghMqnpsFnvSOfaxU8sToGyDFju+MFQaA1qMg76c1kI4xZMPG4L+63VLXXZwP/uZOjZXiBwRCKiQEA4C2pgjLRtPhYKiRqVEYYp3Mpvqn5C6ZQKJZqhirs1SZDH0v4xOcawNsQysRFJ1t+atYOo125e2ja3UoUat/98MX9VmPg+W1IOJUXWvtvJdATCgCQZKIKSp3fV6iQsEMaP+vamGRBgky4xcTN64f9Xld9rplbAnjLZCVUsFTdphpKvy1Lu5sZKed9cb9Vk3+2Xtxv5aZEvxKFK4buVh0b2PEQAOAX3TdBdqT6ifOPXVRD5YSEgroLBG72e928tMwAMAWTlVABa8L1a4fRkeG+DbHVShTmaWmcaaYmb9ypAgC8JUt2dO6cpQIo5g9u0Hk9QAjlFt3B8j21kYBvLwoAM+IQytSdJ0IoA9ph1JD116Y1dDcpzzFTE3SWQQAAknRerB5b6meJ4XTeiDLVUgCT0Tmv3Ov3ujZuiAPwxGkIddjaNFX9QAhljo27imXZpQ8pkqV4y4ZeU0IoAECSzvBggyV4TtE5ByhLVR0sk6V4uuaVeds0CMAMkj2hTGzvTwhlSDuMVLD40MJDr1eikJLrdJk6mXdk3AAAoC5WVzQuxXtCE3K3SCCos5KecMINOufpDXbAAzBOMoQy8YVhqpoDb9Sz3KQ8R1iKBwCwQevFKu+ok3TOBdbYJc8JOosC+FwDGCsZQhm5AF2qblMlY4jscmbjrtNCJQpZC54CafausyFsUm52GwQATERXYHBMFZSzdM8FqIayT1cI9YTltQAmYboSKmBJnlntMFKTiT0LD71ViULuds3PZJjHBQEAIEnXnI2bHo6ScFBnFf1WoVhiExu7+FwDsCoZQpnqBUMllHkbFpbllVmWN59KFKoGnguGHu6gHUas4QcAJOm6mcRND7fpDBPK7Ihona4Ke/qKApjI2xDK4A55hFCGSbhgY432qgQpmI3JSRqBIQBgkK4bIdz0cJvuihaqoSwpFEvarsP6vS4hFICJXBz4QyaWbZWXqtssyTOsHUZ1zTuenKdZiUImGlOS8G7V4ENSQg0AMIKLVbf1e91dzbtmlw23G4B+JnZZdxHXOMAMBkMoqqGyzUb5MxON2ZisXGMpHgDgjEKxxA3DdPk299V9c+o2YyxT8jqPpNE+MANbIRRLtCxoh5HqwbBj4aFvV6KQicaEKlG4ZbAXVMBSPADAENzhT5dvfZBM3Axj/pFQKJZqLFP0R6FYUj3z1vL+OgCzGAyhTDWKXF2qbvMla8eWhSblARONycjSRdOVY7w3AABoUiiWNjQ2g9ai3+uqypYnmh9muVAsUS3/rlfT56ogQGffJqSKsYtp6awY9CpbORNCHbY2jwyu6eUL1oJ2GJ1Yuhu3LBU+GK1peKK6I2MCAACkTCpbfL1YNVENdTfvoYuMkXj5o6qEf1oolpqeVUXlqrhAqqDWHTgUeETCfV28WnU0WAkVGKyGYkmeJe0wahpqQj+oXolCXds9e0+akZsu66UKCgAwjLYbFDnrBWR6iX1q+r1uy9B8cVcu6vNqd8gNSBVwHEkVnQ+Wc/be2dh1HBjFq+9QQqj8snFSK/OlPZwswzMdCB1LnzAAAM7QvINdLgIHCVZ8rwI3UcVVliAqd606VMXTiN2Q1evyuFAstXwI6fISLkvlHr2g4BoqoSZUXqpuE0RZIruh3bPw6GtS8YOzTC/DC1jLDgCwJC/Lr2yc21NlsBpKVdK08hRESZXTJEu6VEj1ZUr9s3S2YMh8CCXjk1UEmMeBpldv2afvz/dCKMN9oQgjLGqHUd3ge53UlMofvNsNz/QdlY6B7ZcBAH7TNUfI/PxPAoPzKlx8Y+qmVW6CKAmgHk/511T/rLkal2uucMzDdV3D1+W1cIbOINibGzzDKqECluTliq1leQQgbwIoddfogYWHbtCQHAAwhq4mqgtZXrojIcFdBw4lFVINpXunvFjmg6gZA6jYsjQub8zxGukKl9dy8L7RjBzzyn0QHIwIoUwFBGpJni8N9zJJegKZmlgkrVaiMNfLwaRJu42eTB16cwEAJqDzHJXJHXMlXMvijbYtmT+YEAdRmQsq5wygkm5L4/JZLjp17tCV1c91NaX3DdBZBLDuSxBsuxIqoBrKCRsGJxZJdytRmMtteWU54rDdUEygCgoAMAmdd2zXsxYyJLba97oP1DCytbjJm4dxEJWZ6wRpQp5mkKHG2eeFYmna3QW1hstZq4bKcLAMO3TnLF4EwUNDqMPW5onB6pi1peo22/ZbJIGEraqkXVmSljctS9vZUgUFAJiU7slyZs5HEgK0stwvpt/rNjQ21R0mDlm8HidqbKheThqXcqm+oqpX1KQXnzo/1+UsbXwjAVQri8EyrNF5cyfwJQg+rxIqMJz4siTPsnYYNQztfjKonLdG5ZUobFoKoAKqoAAAk+r3uieaQ4fVlHb8skouVPctnttNslE9f3vehty2SCWXibGh5tMPZLnfSNLjS+d7eDsLFWzyHAigkCo5r+rcGKzsww6OhFBIslW+d1pynYcgSgIoW00NqYICAExL93zw7iQXzq6SY8/NharsrmYjOIwbcjd9uMsv1U9qXHxucGzs9XvdSS8+dVc5Nn1ebitVZSbfO+SL7s/fmuvn1XNDKMNL8hZoUG5fO4zUxOKepQPJdBClnpflAErZogoKADAlE3dUH/sWRKkgRJaJPc7bhaosy7OxqU0g8yjVkLvuYhgl40KFdF+qSj/DDz/NzWTdn+uyj83l5f3btbRzNfLDRLGPtfOqCnElhD/XqEqogGqoXGpoLhEcJZNBlDyfluUA6qAdRs6XZgIA3CINqU0s1388RU8bq2RZ2L7sUJZXG4b7QyWpgOOuhFHNKZtyayGVTw3Zee6uhUO4J1VqE+n3ursGllWWfWouLxfsR9JjC9DJ1CZwRoOoRAXoA1luf+4SapdCqNWl6nYud0pziVTK2JwEZiqIqkThosUm5EmZ3DIXAGCEqZsYD2bY6csYmWCrufHTLDcgn4T0NbG1u3KsLDf4vpSeURumq6PkMXel8um2paq4g36vO8sSSRMtGt42l3d1GaW6UJYL59xVNcIO+f40VU36WPfnb0QF6LkB2MgQyvCSvIALZTe0w2jXYpl1kAiivN41sRKFVUcalT5sh5GpxB0AkDHSZ8ZUlXS805czy60kfGrKBJsqCSGVN67cQF6WEOGHEkjVdTQyl7GwIWHpa3lMm2NChYCzVho1DIaIt+Vz7czKl0T49NTC0knA5AoVLZ8/tdxWzo3nVYCun3dTaVwlVGC4GmptqbrtdfCQIVuW726pycS+BDneqURhXU5qtu+oHGdpq1wAgDUmzyXJ5VZWwii5s7shF6lfWl5S7ywJom46dnzLMn5UI/PXEko1ZSzVJHwYeb0hf6YqY0D9PbWs7ETGgu3gKWlDlsxOTaoxTG5YsyBVGUc2qtaCs5/rfcIn2CRLYk22wEl+/hqz9muT78WGfIa+kHPjqOvdocHXpXEPdNjabC5VtxsGL6br9Ieyrx1GRxKk2GzMp8bc00oUftYOIy92dZPqraZDJzWakQMA5qaqoaRnk8nq3jiMUjvoPZEbo7ty8Zw6CSaqUllSZWnOZGRsBBLOuGh52LiVY/bZPbmQnUdDbjybHOsLMlYaspRR/bQ0f67jzzSVjHBJ00IPuQWpjLpdKJY6smonXjEzuHJGBVUqLF6Un1mub7eG3cQaG0KJpsHmi+tL1e36YWtzplQf6VHBTyUKaw4EKg/kODZUOGb5WM5VicL4Q+bKpPWhLK0EACANW1I9YMOa/Kg7uQcyWVaT56N+rzv1knO5MI1Dp/ifue7zNA8Pgqis2ZmxD9QZKviRcNnG+xb39DqtMiwUS3vymZ7ncx1fNFflAnqFzzUcZiMETirLdX58ra8jECur6kNZ1v+WiyFUQDWUUzbkZGA7WFmV5Xl116qiZMlgw4HeT0kswwMApEpdFBaKpYcO7Ap3prIlUdGiwqlx1RQrFuc0nSxXVxFEGaMakad2nSTv24YDN52TF8PTfq5tHnumP9fQR0LghqUdNU3aGuyBNUlPKLUkb9/Q9ryxdXbKc4NUHrkSZpSlKsqJXlGVKFypRGHc0NClAEqpsQwPAJC2fq+7ZXFr/nGWExey5/3YvFj0Yqv6ecjdbtd6RGXJgaZm8DXLvWBHmeRzbUuHjbUwp4bh3lA2LA9uFDFRCCVMdnAPqOJwh1Qe2dwtb9Cy9Ipq2Qij1GNK+PSFow0NVQ+tfQeOAwCQTS5fsLrq3izLi3wkQdTHjJHUnQZQOnonye/MfEiqwYbsDAbMRD57eQgyzzzHiUMo1aDc8MlklWoop2w4mNKuShilmqhvVaJQ2y4b6nfLY7i+m8YTX5q4AwD8JLtxccE6uVT69/hEds1bcbhqzjdPdAVQMQlJqWKbXBqN4YF4pzyXCj50WEvuSjpNJVRgeBvPwEL1Fc4hS7tcnXAuyC5+P6xE4a6ERTNtO5kky+3U71JfDD+Ux3Bt2V3SAb3UAAAmcME6sVT79/hEwkp1Q3knj88/RSrErOkMoGJSxXbP8PPzUe6CZWjnYsFH2t5WQ03amDxmunHWguyUx4fcAWqJVyUKbzrecDLePUeFSMltJ0/k30+1w6glf+aa3KkLEttPVi03Lp1FR3YPpA8UAMAIGlGPpat/jzckONkoFEstuY6ggfN0bg7uKqWbClcKxdI1BzYgcNVOXoNl6CNNymty3ZrV70l1Lqir5zpVJdRha/PEwt2MraXq9uIEfw4GtMOo6dEdrXjbybtSxfQ0/qlE4Wv1IxVO8X9/LH/WduPSWdToAwUAME0ukD+l/897dnQvn/KJjJMVwxsd+UxVRHxsOoCKyQYEVDq+jwAK2sgy5iwvdS/Hz2/a5XiBhYbhZQvLADFCO4w2mEQ45WZc2QUAgGnSz6Kag6UEk3qoLlQJoM5Sy/P6va4aJ58RWo6kesOsyAWpNQTM77lJAAXdcrDU/TRLmjqEOmxtHlmohFlbqm7TANMtNZpNOuGmVKcBAGBNohF1nm9SdeRClS3bR+j3ug0ZK/SKOkuNn09N9X+aRCJgzvOcv2OzKg35I2PtZkYD4AW17HCWSqjAQjWU0liqbmvb/QzTkd5D3PW0a4cACgDgCnXhnONKlz2pXuG8PAGpilJVJZ9QXX/qoepL6uJuaypg7ve6K3KMefNE3hdaXsAoOZdUM3guVYH2/kwhlKVqqAVL4RfOkdgxjzJd83ZkWSQAAE5JVLrkIVxQc6DPVPgmu8FhCmrpiQSXeQ2j1HP+SFXPub58Uyr8Ps7J+3TsWlUa8kfCz8UMfebiXolHs1ZCBZYCodssy3OLNMPOYkrrMgIoAIDTEv1/PsnwUp64eoXepXPKYRilnuMnvoWXUhVVlaVCWVwNoa5n7klVo3NVacifjFQYx6Hu216JM4dQlqqhlCbL8txCEGUUARQAwBsSLqzIRWuW7uZ6Ub3im0QY9ZGEfFmbW8ZjpyoNiL2klgr1e93FDIVRcfikQuU6n2u4xtNeeueGuvNUQgWWqqHUbnmst3dMIoiiR5Q+NwmgAAA+kovWuNLFx4bUxzKZ/kDu5rL0TiOppFMh3zUJOp54/HQOpIohc2MnEUZ96ul7dCDji/AJzkv00vvI8fPo2FB3rhDKYjWU2i2PnUccI0HUCrvmacEueAAA70mli5pEf+BBuNCRea5aNsVFqiUSdNQGxozrFVJx8KSqnlQVQCPLY0dVOch79JE8b5evBY6lyu5jeW+afK7hk4Ew6p5DRSATh7qXUniwLWlOXU7hd03jwVJ1u3XY2mS3AoeoZuWVKFR3OlWJ8XLeX48UqElWVQI+AAAyQSan6uZKs1AsXZO5ZFV+Fiw+xz2Zw+yyI5ZbkmNGHVihWKomxsyKhWuRpGMZN6c/ea2Uk+etlg01CsXSorw38Wfb1vuj5tLqs7wr7w2fa2SCfN7UyrR6oViqJT5vJs+he/LZ2p3me+/C69ev537kpeq2evJ35/5F01Nf+CuHrU2j6XUlCud/0cb7pB1G3q4VD968TmqSsO7AofhKpcm1dhhR8p8gk5pFHb/b5/4MuhWKJTXB19GP72jeybrGMXGSxmRVLrBX0jmksxiz59M4ZlMZF7FCsaRrTvGJr+NDPtMriZ9FDTe24gtT9aO+g/ZNvF4SnKRtn0qOt5/5eLxU5fOv44boQTxm4h+WZ4438LmuyvuU9sXy8ZD3RmvopOscP+/3kc65B985bksEwPHnbTWlA44/X3HYPvMYTSWECt4EUUeW7lztHbY2dZzQz0UINblKFKpKuQe+HK9DVPn/lqosy/sLAQBZRgg1uYHAedq5n7oQPUk7RIT7y4y4oAAADJlJREFUBsbNtOH0iYydgAtvPeb8XMffcXyugREGQslJP2dvv//Snk+kGUKp0q/PU/ll03t42No01iOKEGo6lShckZOEzTJpX3QkfKL/EwDkACEUAADIk3l3x3vrsLW5a3Hr3dtL1W12DXOU9DNa9HxnExNUefcKARQAAAAAIItSC6HEhsXdKh4vVbd1rXsdZKIDfabWlqtlZe0wqsmOGa7vaGLDvXYYrdD/CQAAAACQVamGUIetzXhHBFtahoIo3WuOO1kNI9ph1JD1qLaq5lyjXoeP2mFUz/sLAQAAAADItrQroVQQVZdlRTaonkO7S9VtHbvhJOnusZDpHg4qYGuHkWqIdjPHVVGqmu5T9TpQ/QQAAAAAyIPUQyhhsz/TglRE6QyidPfsyUVPIOl9pHpF3XPgcEzpyPNVS+928/GUAQAAAABIcXe8QUvVbVURddfia6yqsaqHrU0tW6lWolAFKOsafvVxO4wWJ/hzmVKJQvWc65peUxd0ZKlqQ/XHytv7CwAYjt3xAABAnuiqhLK9LE9Z1lwRtaVpKVkud/mTJXrquX8UBMGOA4eUlmOpfFpUfZ8IoAAAsUKxZGpDFQAAACdoq4QK3lRDqcnVF5afqLaKqEoUqt3ePk/xVz5sh9FWir/PW5UovCZB34YssfSNajjelCWHAAC8p1Asqf6ITzW9MlRCAQAA52gNoYI3QZQKEh5YfuI6gygVkjxO4VftSCUQ3n+NVdgX/5Qdfn2OpZ9Xk2bjAIBxCsVSWnOI9/R73Qu8AQAAwDXaQ6jgTRCl7sSt2nzu/+JXP372n33xu//S9Zd1XUFUY46AhAqoCTkYSKmAUzUY322H0b4DxwMA8EShWNLWP5MQCgAAuMhUCKWWVh3ZDA0+DH4a/KXf/r3/58OTn/zLmoKoRamCmSZsU5UzG+0wolx+BpUoVMs9q/KzYmjZnlpmp8Im9Z616PEEAJhVoVjSdZPuuN/r5m6TEwAA4D4jIVTwJojS2fdgIr/88mWn9g9fqjCsqiOICt4FI1sSjAwLRToSYDTZoj9d0kdqRX6uyXsQyP+eJgA9ltA0/lGh0xGVTgCANGncGW+v3+tWJ/hzAAAARhkLoYI3QZS2svNJfPenXwX/7a//TiBBkAqitIYKiVAkdkSvIPuGvC/7VDQBAEwqFEtpb26S9LDf67LMHwAAOMdoCBU40B/qf3r2O9//1ouvvi1BVO36yzpL4QAAgFGFYkkt4V/X9Jg3+70uu7MCAADnXLRwQDVZ7mTFP/iw8BN5XLU86+nzK3V2pAMAAMYUiqVrMh/SheXjAADAScZDqMPW5olMvDo2XpAfXbr4k4H/9Pj5lTp3CwEAgClbGjdr6fR7XUIoAADgJBuVUCqIUpMjKxVIX10IikP+8/rzK/X951fq7CQDAAC0kSoonf2aaDMAAACcZSWECt4EUWpnuM9MP+7XXge9c/6vZVW+/vxKnd1kAACALnWNVVABIRQAAHCZtRAqeBNENYIg2HHo9Yn7RDUcOBYAAJCiQrG0WCiWVmy9poViSVWB39b8MLuafz8AAMDMrIZQwZsgSk3Inph6vF/8Yf/SBH/sNsvzAADIHDXnaBWKJZ1NwYeS8Ev3Ta6Dfq97pPkxAAAAZmY9hBJqUnig+0E+DH4afOd3fvzzE/7xeHmezr4NAADAnA2pev68UCztqsooE48soVdL8zI8hY1WAACA05wIoWTHvKruIOqPv3rVnfKvqMnig+dX6i2qogAA8JcshVtIPIE1dbOpUCw1dIVRqgm5+v0q9DIQQAUsxQMAAK5zpRIqGUR1dD3GL335sj/jX12lKgoAAK8N25W3LD2avpTKqNSW6UnotW+gB1Rsh6V4AADAdRdev37t1CEuVbdXdJSs//LLl53aP3yZxu9U1Vpb11/W2X0GAAAPSD+mL6Y40icSIKlz/X6/1z0Z9xdU1ZPcTKvJj4nKp6RP+r0ucxMAAOA050KoQEMQtfLTnwT/5a//II1flbQjYdTYiSnskqWUyaUW+7xvAJAfhWJJ9Upan/MJ7434/1YshE5Je/1et2rx8QEAACbiZAgVpBhEqQDqP//N3+1+/cevS+kd3Vsd2emmQajhludX6lVZenHe3eiO9M5oUtUGANklFUpHlkMi3aiCAgAAXnA2hApSCKL+1I9f/ehXfuvkgqYAKuk4CIL69Zd1dqWxTMKnuvTxmtSeVLXt5/V1A4CsKhRLqp/jgww/RdULali/KwAAAOc4HUIFEkT92R/9wf/xq98offCDCfuofxj8NPgLP3jx/X/hqPdt7Qd4FmGUJTOGT4M+u/6y3sjKawIAOA2hjgZ2xcsSVdW7OEnPKgAAABc4H0IFbwKGlc43v/ar7W9fLv2tK8UPf+1SYeif+5M/fhX88ZPu937xH7/60ED10yiEUYakFD4l7Vx/WeeOMgBkQKFYUueIpxl+L2/2e13mGgAAwBtehFDBm7DhmizNW1b/+3evfu37ry5d6Kl/v/yT18VvvfjKdNXTJFQY1aRnVPqeXzkNirbi8ZAyKqIAIAMKxZLq/beW0ffySb/XrTlwHAAAABPzJoQKhgRRHombYKvqqCPPjt0Z8v5vScNx3UsrPqZHFAD4q1AsqV1Rv8zoW3gQBEGVZXgAAMA3XoVQwbsgopHCVsu27MmObJTPT+j5lXpNdrkz+Z7vXX9ZZ7trAPBUoVhSc4XbGXz/OhJAcaMEAAB4x7sQKvb8St33yWVcHaUCKbZVHqD6gEnFU81iQ1mqoQDAU4Vi6WTW3XUdRgAFAAC85m0IFbzrC/TYgUOZ13EikMrtxFKCp5qh5XaTeHj9ZX3LgeMAAEyhUCxlZX6QRAAFAAC853UIFbzbHW03Q3c74wop9dPKekNzWWpXtVzxdJ6D6y9PgzEAgEcKxdK+h/0jR1E3q2oEUAAAwHfeh1DBmyBjUUKbLE04Y3vSjL2VhWV7EhrGP6sOHNJI11/WLzh8eACAAYViSd08+CJDr8ueBFA0IQcAAN7LRAgVZKNh+aTUZHQ//nF5+Z6EgysSOK34EDoNIoQCAP8UiqV6EAR3M/DW3ev3unUHjgMAACAVmQmhYhnqEzUNFUwdyY+qljoxGU5JL6drEjYtyo93gdM5aE4OAB6Siqimp1XSB6o/IsvvAABA1mQuhArehSK+TjzT1JGKqUD+GZfynyT++ySqiT8Th0xBhoKmc1EJBQB+kybldQf7Dg6jej/V+71u071DAwAAmF8mQ6ggX8vzoBEhFABkg4RRW47eoCJ8AgAAuZDZEComu681M7R7HszZu/6yXuX1BoDskGV6G47syrqjNlbp97q7WXqNAQAAzpP5ECp4VxW1m4flY0jVZ9df1hu8pACQTRJI1Qzu2HosvRvVnKTFjncAACBvchFCxZ5fqW9JXwiqojCJj66/rB/xSgFAPkgotSK9D+NNN2YNp/YSPRhPf/q9LucUAACQa7kKoYJ3VVFqed6aA4cDd+1cf3m60yIAAKcKxdK4JdpHBE0AAADny10IFZNeUQ1PdsuBWWpXwcXrL+sskwAAAAAAICUX8/pCXn9Z35VS+3sOHA7cUiOAAgAAAAAgXbmthEp6fqW+KEv0aFyOm9df1tkiGwAAAACAlBFCJTy/crodf5Mlerl0LBVQ+3l/IQAAAAAA0IEQaojnV04bUtcJo3KhI73BGizBAwAAAABAH0KoEZ5fqasgaisIgrKzB4l57Kiw8frLOjsZAQAAAACgGSHUGM+v1K9JEEUYlR2ETwAAAAAAGEYINSEJozYkjGKZnn860u+rQfgEAAAAAIB5hFAzoGeUV44T4RM9nwAAAAAAsIQQag6ym56qjFrz9klk14EET828vxAAAAAAALiAECoFz6/UF2Wp3gbVUVapJXe7Ej7t5/h1AAAAAADAOYRQKXt+pV6TMIrqKHNOq55UAMWSOwAAAAAA3EQIpUmikbn6Wc7kk7Qr7vXUpNE4AAAAAADuI4QyQJbr1Qik5nYsy+2aLLcDAAAAAMAvhFCGJQKpKkv2JrInwdMuFU8AAAAAAPiLEMoy6SFVlR+qpN5VO7XUDz2eAAAAAADIBkIoh0gfqWrOQqkDCZz2JXSi2gkAAAAAgAwihHLc8yt1FUatJH58DqZU4HSUCJxaDhwTAAAAAAAwgBDKQ8+v1FUYtZgIplQF1apDz0T1cTqRsEmFTkcETgAAAAAA5BshVMZI5VSQCKcCWdqXNEtgtZf49zhgOvPvBE0AAAAAAOA8hFAAAAAAAADQ7iIvMQAAAAAAAHQjhAIAAAAAAIB2hFAAAAAAAADQKwiC/x9Fnhlv9a13SAAAAABJRU5ErkJggg==" alt="Ninjacart" class="h-10 mb-2">
                             <span class="text-[9px] font-black tracking-[.25em] text-gray-300 uppercase">OFFICIAL CC TERMINAL</span>
@@ -498,9 +660,9 @@
                     </div>
 
                     <!-- Vendor/Produce Details Row -->
-                    <div class="flex justify-between items-end mb-4">
+                    <div class="flex justify-between items-end mb-3">
                         <div>
-                            <p id="partyRoleLabel" class="text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">VENDOR / CUSTOMER</p>
+                            <p id="partyPreviewRoleLabel" class="text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-wider">CUSTOMER</p>
                             <h4 class="text-2xl font-black text-gray-900 leading-tight" id="dispName">---</h4>
                             <p class="text-[10px] text-gray-500 font-bold font-mono mt-1 inline-block">MOB: <span id="dispId">---</span></p>
                         </div>
@@ -511,7 +673,7 @@
                     </div>
 
                     <!-- Stats Row -->
-                    <div class="grid grid-cols-3 gap-3 text-center bg-gray-50 p-3 rounded-xl border border-gray-100 mb-4">
+                    <div class="grid grid-cols-3 gap-2 text-center bg-gray-50 p-2.5 rounded-xl border border-gray-100 mb-3">
                         <div>
                             <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1">
                                 <span>TOTAL</span><span>WEIGHT</span>
@@ -940,10 +1102,18 @@
         let expenseSPAmounts = {};
         let expenseSPManual = {};
         let expenseModes = {};
+        let expenseDraftDefaults = {
+            types: [],
+            pp: {},
+            sp: {},
+            manual: {},
+            modes: {}
+        };
         let isLocked = false;
         let isSaving = false;
         let isDownloading = false;
         let billIsFinalized = false;
+        let lastFinalizedBill = null;
         let activeBillType = 'SALES'; // 'SALES' or 'PURCHASE'
         let currentBillTimestamp = Date.now();
         let allHistoryData = [];
@@ -977,6 +1147,17 @@
             const safeName = nameSource || document.getElementById('dispName')?.innerText || 'Vendor';
             const dateSource = bill?.ts || currentBillTimestamp || Date.now();
             return `CC_Bill_${sanitizeFilePart(safeName.toUpperCase())}_${formatBillDateForFile(dateSource)}`;
+        };
+
+        const getExportBillContext = () => lastFinalizedBill || {
+            type: activeBillType,
+            ts: currentBillTimestamp,
+            customerName: getPartyDetails().customerName,
+            customerMob: getPartyDetails().customerMob,
+            vendorName: getPartyDetails().vendorName,
+            vendorMob: getPartyDetails().vendorMob,
+            name: getActivePartyDetails().name,
+            vId: getActivePartyDetails().mob
         };
 
         const getPartyDetails = () => ({
@@ -1038,9 +1219,11 @@
         const syncPartyLabels = () => {
             const isSales = activeBillType === 'SALES';
             const roleLabel = document.getElementById('partyRoleLabel');
-            const roleText = isSales ? 'CUSTOMER' : 'VENDOR';
+            const previewRoleLabel = document.getElementById('partyPreviewRoleLabel');
+            const roleText = isSales ? 'CUSTOMER' : 'FARMER';
 
             if (roleLabel) roleLabel.innerText = roleText;
+            if (previewRoleLabel) previewRoleLabel.innerText = roleText;
         };
 
         const PACK_MULTIPLIERS = {
@@ -1054,6 +1237,11 @@
             { value: 'Commission', label: 'Commission' },
             { value: 'Packing', label: 'Packing Material' }
         ];
+
+        const DEFAULT_EXPENSE_TYPES = EXPENSE_TYPE_OPTIONS.map(opt => opt.value);
+        expenseDraftDefaults.types = [...DEFAULT_EXPENSE_TYPES];
+        selectedExpenseTypes = [...DEFAULT_EXPENSE_TYPES];
+        expensePickerSelected = [...DEFAULT_EXPENSE_TYPES];
 
         window.checkManualGrade = () => {
             const select = document.getElementById('pGrade');
@@ -1075,6 +1263,33 @@
 
         const expenseTypeKey = (type) => type.toLowerCase().replace(/[^a-z0-9]+/g, '_');
 
+        const syncExpenseDraftDefaults = () => {
+            const nextTypes = [...new Set([...(expenseDraftDefaults.types || []), ...selectedExpenseTypes])];
+            expenseDraftDefaults = {
+                types: nextTypes.length > 0 ? nextTypes : [...DEFAULT_EXPENSE_TYPES],
+                pp: { ...expenseDraftDefaults.pp, ...expensePPAmounts },
+                sp: { ...expenseDraftDefaults.sp, ...expenseSPAmounts },
+                manual: { ...expenseDraftDefaults.manual, ...expenseSPManual },
+                modes: { ...expenseDraftDefaults.modes, ...expenseModes }
+            };
+        };
+
+        const restoreExpenseDraftDefaults = () => {
+            selectedExpenseTypes = [...(expenseDraftDefaults.types && expenseDraftDefaults.types.length ? expenseDraftDefaults.types : DEFAULT_EXPENSE_TYPES)];
+            expensePickerSelected = [...selectedExpenseTypes];
+            expensePPAmounts = {};
+            expenseSPAmounts = {};
+            expenseSPManual = {};
+            expenseModes = {};
+
+            selectedExpenseTypes.forEach(type => {
+                if (expenseDraftDefaults.pp[type] !== undefined) expensePPAmounts[type] = expenseDraftDefaults.pp[type];
+                if (expenseDraftDefaults.sp[type] !== undefined) expenseSPAmounts[type] = expenseDraftDefaults.sp[type];
+                if (expenseDraftDefaults.manual[type] !== undefined) expenseSPManual[type] = expenseDraftDefaults.manual[type];
+                if (expenseDraftDefaults.modes[type] !== undefined) expenseModes[type] = expenseDraftDefaults.modes[type];
+            });
+        };
+
         const formatExpenseAmount = (amount) => amount < 0
             ? `-\u20B9${Math.abs(amount).toFixed(2)}`
             : `\u20B9${amount.toFixed(2)}`;
@@ -1083,8 +1298,8 @@
             const label = document.getElementById('expensePickerButtonLabel');
             if (!label) return;
             label.innerText = selectedExpenseTypes.length > 0
-                ? `${selectedExpenseTypes.length} expense${selectedExpenseTypes.length > 1 ? 's' : ''} selected`
-                : 'Select expense types';
+                ? `${selectedExpenseTypes.length} expense${selectedExpenseTypes.length > 1 ? 's' : ''} ready`
+                : 'Edit expense types';
         };
 
         const renderExpenseListRows = () => {
@@ -1099,22 +1314,22 @@
                     const sp = e.sp !== undefined ? parseFloat(e.sp) : Math.abs(parseFloat(e.amount || 0));
 
                     return `
-                    <div class="bg-white px-4 py-3 transition-colors hover:bg-gray-50 min-w-[420px] sm:min-w-0">
-                        <div class="flex items-start gap-3 sm:items-center">
+                    <div class="bg-white px-3 py-2.5 transition-colors hover:bg-gray-50 min-w-[360px] sm:min-w-0">
+                        <div class="flex items-center gap-2.5 sm:items-center">
                             <div class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold">+</div>
                             <div class="flex-1 min-w-0">
-                                <div class="text-[13px] font-medium text-gray-800">${e.type}</div>
-                                <div class="mt-1 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:hidden">
+                                <div class="text-[12px] font-semibold text-gray-800">${e.type}</div>
+                                <div class="mt-0.5 flex items-center gap-2.5 text-[9px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:hidden">
                                     <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
                                     <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
                                 </div>
                             </div>
-                            <div class="hidden flex-shrink-0 items-center gap-4 text-[10px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:flex">
+                            <div class="hidden flex-shrink-0 items-center gap-3 text-[9px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:flex">
                                 <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
                                 <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
                             </div>
                             <button onclick="removeExpense(${idx})" class="ml-1 flex-shrink-0 rounded-md p-1 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500" title="Remove">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
                     </div>
@@ -1154,16 +1369,15 @@
             if (!area || !container || !addAllBtn) return;
 
             updateExpensePickerButton();
+            addAllBtn.classList.add('hidden');
 
             if (selectedExpenseTypes.length === 0) {
                 area.classList.add('hidden');
                 container.innerHTML = '';
-                addAllBtn.classList.add('hidden');
                 return;
             }
 
             area.classList.remove('hidden');
-            addAllBtn.classList.toggle('hidden', selectedExpenseTypes.length <= 1);
 
             container.innerHTML = selectedExpenseTypes.map(type => {
                 const safeType = type.replace(/'/g, "\\'");
@@ -1184,13 +1398,15 @@
                                 <input type="number" step="0.01" id="${ppId}" value="${expensePPAmounts[type] || ''}"
                                     oninput="updateExpensePP('${safeType}', this.value)"
                                     onfocus="this.select()"
-                                    onkeydown="if(event.key==='Enter') addSelectedExpense('${safeType}')"
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
+                                    onblur="autoAddSelectedExpense('${safeType}')"
                                     placeholder="PP &#x20B9;"
                                     class="w-full min-w-[50px] bg-gray-50 rounded px-2 py-1 text-right text-[13px] font-bold text-gray-800 outline-none border border-gray-100 placeholder:text-gray-400 focus:border-blue-300 focus:bg-white transition-colors">
                                 <input type="number" step="0.01" id="${spId}" value="${expenseSPAmounts[type] || ''}"
                                     oninput="updateExpenseSP('${safeType}', this.value)"
                                     onfocus="this.select()"
-                                    onkeydown="if(event.key==='Enter') addSelectedExpense('${safeType}')"
+                                    onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
+                                    onblur="autoAddSelectedExpense('${safeType}')"
                                     placeholder="SP &#x20B9;"
                                     class="w-full min-w-[50px] bg-gray-50 rounded px-2 py-1 text-right text-[13px] font-bold text-blue-900 outline-none border border-gray-100 placeholder:text-blue-400 focus:border-blue-400 focus:bg-white transition-colors">
                             </div>
@@ -1342,6 +1558,7 @@
             expenseSPAmounts = nextSP;
             expenseSPManual = nextSPMan;
             expenseModes = nextModes;
+            syncExpenseDraftDefaults();
             renderSelectedExpenseDrafts();
             closeExpensePicker();
         };
@@ -1355,15 +1572,26 @@
                     spEl.value = value;
                 }
             }
+            syncExpenseDraftDefaults();
         };
 
         window.updateExpenseSP = (type, value) => {
             expenseSPAmounts[type] = value;
             expenseSPManual[type] = true;
+            syncExpenseDraftDefaults();
+        };
+
+        window.autoAddSelectedExpense = (type) => {
+            const ppAmt = parseFloat(expensePPAmounts[type]) || 0;
+            const spAmt = parseFloat(expenseSPAmounts[type]) || 0;
+            if (ppAmt > 0 && spAmt > 0) {
+                addSelectedExpense(type);
+            }
         };
 
         window.toggleExpenseMode = (type) => {
             expenseModes[type] = expenseModes[type] === 'subtract' ? 'add' : 'subtract';
+            syncExpenseDraftDefaults();
             renderSelectedExpenseDrafts();
         };
 
@@ -1390,12 +1618,7 @@
         };
 
         const resetExpenseDrafts = () => {
-            selectedExpenseTypes = [];
-            expensePickerSelected = [];
-            expensePPAmounts = {};
-            expenseSPAmounts = {};
-            expenseSPManual = {};
-            expenseModes = {};
+            restoreExpenseDraftDefaults();
             renderSelectedExpenseDrafts();
             updateExpensePickerUI();
         };
@@ -1419,6 +1642,7 @@
                 addMode: !isSubtract
             });
 
+            syncExpenseDraftDefaults();
             clearExpenseDraft(type);
             updateUI();
         };
@@ -1445,6 +1669,7 @@
 
             if (added === 0) return;
 
+            syncExpenseDraftDefaults();
             resetExpenseDrafts();
             updateUI();
         };
@@ -1495,6 +1720,7 @@
             renderSpreadsheet();
             syncTotals();
             syncBillPreview();
+            renderSelectedExpenseDrafts();
 
             // Update Grade Picker Tag
             const pickerLabel = document.getElementById('gradePickerLabel');
@@ -1542,7 +1768,7 @@
                     <td class="p-3 text-right">
                         ${isPending ? `
                             <div class="flex items-center justify-end gap-1">
-                                <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
+                                <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)" onblur="autoCommitInlineItem(${idx})"
                                     class="w-[60px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm">
                             </div>
                         ` : `
@@ -1558,7 +1784,7 @@
                         ${isPending ? `
                              <div class="flex flex-col items-end gap-1">
                                 <span class="text-[7px] font-bold text-gray-400 uppercase">Buy Rate</span>
-                                <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
+                                <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)" onblur="autoCommitInlineItem(${idx})"
                                     class="w-[60px] h-[35px] text-right border-2 border-blue-100 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-blue-50/20">
                             </div>
                         ` : `
@@ -1571,7 +1797,7 @@
                         ${isPending ? `
                              <div class="flex flex-col items-end gap-1">
                                 <span class="text-[7px] font-bold text-orange-400 uppercase">Bill Rate</span>
-                                <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
+                                <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)" onblur="autoCommitInlineItem(${idx})"
                                     class="w-[70px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-orange-50/30">
                             </div>
                         ` : `
@@ -1600,11 +1826,6 @@
                     <!-- 7. ACTIONS -->
                     <td class="p-3 text-center">
                         <div class="flex items-center justify-center gap-2">
-                             ${isPending ? `
-                                <button onclick="commitInlineItem(${idx})" class="w-8 h-8 flex items-center justify-center bg-green-500 text-white rounded-lg shadow hover:bg-green-600 active:scale-95">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                </button>
-                             ` : ''}
                              <button onclick="event.stopPropagation(); removeItem(${idx})" class="w-8 h-8 flex items-center justify-center text-red-300 hover:text-red-600 bg-white border border-transparent hover:border-red-50 rounded-lg transition-all active:scale-95 text-xs font-bold">X</button>
                         </div>
                     </td>
@@ -1735,6 +1956,16 @@
             syncBillPreview();
         };
 
+        window.autoCommitInlineItem = (idx) => {
+            const item = currentItems[idx];
+            if (!item || item.total > 0) return;
+            const qty = parseFloat(item.crates) || 0;
+            const price = parseFloat(item.price) || 0;
+            if (qty > 0 && price > 0) {
+                commitInlineItem(idx);
+            }
+        };
+
         window.handleInlineKey = (idx, field, event) => {
             if (event.key === 'Enter') {
                 if (field === 'crates') {
@@ -1744,8 +1975,8 @@
                     const el = document.getElementById(`inline_price_${idx}`);
                     if (el) { el.focus(); el.select(); }
                 } else {
-                    const nextIdx = idx + 1;
                     commitInlineItem(idx);
+                    const nextIdx = idx + 1;
                     if (nextIdx < currentItems.length && currentItems[nextIdx].total === 0) {
                         setTimeout(() => {
                             const nextEl = document.getElementById(`inline_qty_${nextIdx}`);
@@ -1898,6 +2129,7 @@
                     marginPercent: profitPercentage,
                     expenseBuckets: buckets
                 };
+                lastFinalizedBill = finalData;
                 currentBillTimestamp = finalData.ts;
 
                 const ref = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(finalData.id);
@@ -1991,7 +2223,7 @@
 
         window.saveAndPrint = () => {
             const prevTitle = document.title;
-            document.title = buildBillFileBaseName();
+            document.title = buildBillFileBaseName(getExportBillContext());
             setTimeout(() => {
                 window.print();
                 setTimeout(() => { document.title = prevTitle; }, 1000);
@@ -2003,7 +2235,7 @@
             isDownloading = true;
 
             const bill = document.getElementById('billPreview');
-            const filename = `${buildBillFileBaseName()}.png`;
+            const filename = `${buildBillFileBaseName(getExportBillContext())}.png`;
 
             // Clone-based export to prevent layout issues
             const exportHost = document.createElement('div');
@@ -2065,9 +2297,19 @@
 
                 // 1. Immediate Visual Response (Guaranteed)
                 if (type === 'SALES') {
-                    if (btnSales) { btnSales.style.backgroundColor = "#2563eb"; btnSales.style.color = "white"; }
-                    if (btnPurchase) { btnPurchase.style.backgroundColor = "transparent"; btnPurchase.style.color = "#9ca3af"; }
-                    if (indicator) indicator.style.backgroundColor = "#2563eb";
+                    if (btnSales) {
+                        btnSales.style.background = "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)";
+                        btnSales.style.color = "white";
+                        btnSales.style.boxShadow = "0 12px 24px rgba(37, 99, 235, 0.22)";
+                        btnSales.style.borderColor = "transparent";
+                    }
+                    if (btnPurchase) {
+                        btnPurchase.style.background = "rgba(255,255,255,0.78)";
+                        btnPurchase.style.color = "#94a3b8";
+                        btnPurchase.style.boxShadow = "0 10px 20px rgba(15, 23, 42, 0.05)";
+                        btnPurchase.style.borderColor = "rgba(148, 163, 184, 0.16)";
+                    }
+                    if (indicator) indicator.style.background = "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)";
                     if (badge) {
                         badge.innerText = "Sales Mode";
                         badge.className = "text-[8px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-black uppercase tracking-tight";
@@ -2075,9 +2317,19 @@
                     if (dispProd) dispProd.style.color = "#2563eb";
                     if (draftTag) draftTag.innerText = "Sales Bill";
                 } else {
-                    if (btnPurchase) { btnPurchase.style.backgroundColor = "#059669"; btnPurchase.style.color = "white"; }
-                    if (btnSales) { btnSales.style.backgroundColor = "transparent"; btnSales.style.color = "#9ca3af"; }
-                    if (indicator) indicator.style.backgroundColor = "#059669";
+                    if (btnPurchase) {
+                        btnPurchase.style.background = "linear-gradient(135deg, #059669 0%, #047857 100%)";
+                        btnPurchase.style.color = "white";
+                        btnPurchase.style.boxShadow = "0 12px 24px rgba(5, 150, 105, 0.22)";
+                        btnPurchase.style.borderColor = "transparent";
+                    }
+                    if (btnSales) {
+                        btnSales.style.background = "rgba(255,255,255,0.78)";
+                        btnSales.style.color = "#94a3b8";
+                        btnSales.style.boxShadow = "0 10px 20px rgba(15, 23, 42, 0.05)";
+                        btnSales.style.borderColor = "rgba(148, 163, 184, 0.16)";
+                    }
+                    if (indicator) indicator.style.background = "linear-gradient(135deg, #059669 0%, #047857 100%)";
                     if (badge) {
                         badge.innerText = "Purchase Mode";
                         badge.className = "text-[8px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-black uppercase tracking-tight";
@@ -2324,6 +2576,7 @@
         window.viewPastBill = (id) => {
             const bill = allHistoryData.find(b => b.id === id);
             if (!bill) return;
+            lastFinalizedBill = bill;
 
             // Restore historical mode (default to SALES for old records)
             const historicalType = bill.type || 'SALES';
@@ -2506,6 +2759,44 @@
             }
         };
 
+        const refreshHistoryViews = () => {
+            const histDate = document.getElementById('histDate');
+            const histName = document.getElementById('histName');
+            const histMobile = document.getElementById('histMobile');
+            const modalHistDate = document.getElementById('modalHistDate');
+            const modalHistName = document.getElementById('modalHistName');
+            const modalHistMobile = document.getElementById('modalHistMobile');
+
+            const panelFiltered = allHistoryData.filter(b => {
+                const dVal = histDate?.value || "";
+                const nVal = (histName?.value || "").toLowerCase().trim();
+                const mVal = (histMobile?.value || "").trim();
+                if (dVal) {
+                    const bDate = new Date(b.ts).toISOString().split('T')[0];
+                    if (bDate !== dVal) return false;
+                }
+                if (nVal && !b.name.toLowerCase().includes(nVal)) return false;
+                if (mVal && !b.vId.includes(mVal)) return false;
+                return true;
+            });
+
+            const modalFiltered = allHistoryData.filter(b => {
+                const dVal = modalHistDate?.value || "";
+                const nVal = (modalHistName?.value || "").toLowerCase().trim();
+                const mVal = (modalHistMobile?.value || "").trim();
+                if (dVal) {
+                    const bDate = new Date(b.ts).toISOString().split('T')[0];
+                    if (bDate !== dVal) return false;
+                }
+                if (nVal && !b.name.toLowerCase().includes(nVal)) return false;
+                if (mVal && !b.vId.includes(mVal)) return false;
+                return true;
+            });
+
+            renderHistoryQueue(panelFiltered);
+            renderModalHistory(modalFiltered);
+        };
+
         let pendingDeleteId = null;
         window.requestDelete = (id) => {
             pendingDeleteId = id;
@@ -2520,12 +2811,16 @@
             try {
                 await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(pendingDeleteId).delete();
 
+                allHistoryData = allHistoryData.filter(b => b.id !== pendingDeleteId);
+                if (lastFinalizedBill && lastFinalizedBill.id === pendingDeleteId) lastFinalizedBill = null;
+
                 // Trigger Google Sheets deletion
                 if (GOOGLE_SHEETS_URL) {
                     syncToGoogleSheets({ id: pendingDeleteId, action: 'delete' });
                 }
 
                 closeDeleteModal();
+                refreshHistoryViews();
             } catch (e) {
                 console.error("Delete Error:", e);
                 alert("STABILITY ALERT: Failed to delete. Try again.");
