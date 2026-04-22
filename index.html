@@ -279,7 +279,7 @@
         }
 
         #expensesArea {
-            background: linear-gradient(180deg, rgba(240, 249, 255, 0.72), rgba(255, 255, 255, 0.96)) !important;
+            background: #ffffff !important;
         }
 
         #internalProfitCard {
@@ -294,18 +294,7 @@
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
         }
 
-        #btnSales {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-            color: #fff !important;
-            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18) !important;
-        }
-
-        #btnPurchase {
-            background: rgba(255, 255, 255, 0.78) !important;
-            color: #94a3b8 !important;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05) !important;
-            border: 1px solid rgba(148, 163, 184, 0.16) !important;
-        }
+        /* Default state — overridden by setBillType() inline styles */
 
         #generateBtn {
             background: linear-gradient(135deg, #2db956 0%, #159a46 100%) !important;
@@ -322,9 +311,20 @@
         }
 
         #expensesItemsBody > div {
-            border-radius: 18px;
-            margin: 8px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+            background: transparent;
+        }
+
+        /* Hide number input spinners globally */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button,
+        .no-spinner::-webkit-outer-spin-button,
+        .no-spinner::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"], .no-spinner {
+            -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         .compact-chip {
@@ -403,33 +403,32 @@
                     Back
                 </button>
                 <div class="flex flex-col items-end">
-                    <span id="editBadge" class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-tight">Active Terminal</span>
-                    <p class="text-[7px] text-gray-400 font-bold uppercase mt-1">Creation Mode</p>
+                    <span id="editBadge" class="hidden"></span>
                 </div>
             </div>
 
             <div class="space-y-3" id="formInputs">
                 <div class="pb-3 border-b border-gray-50">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-[.25em]">Party Details</p>
+                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-[.25em]">Party</p>
                         <p id="partyRoleLabel" class="text-[8px] font-black uppercase tracking-widest text-gray-400">CUSTOMER</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                         <div class="space-y-2.5">
                             <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer Name</label>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer</label>
                                 <input type="text" id="vendorName" oninput="updateUI()"
                                     onkeydown="handlePartyEnter(event, 'vendorMob')"
                                     class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
-                                    placeholder="Enter farmer name">
+                                    placeholder="Name">
                             </div>
                             <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer Mobile (10 Digits)</label>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="vendorMob" oninput="updateUI()"
                                         onkeydown="handlePartyEnter(event, 'customerName')"
                                         class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
-                                        placeholder="Farmer mobile">
+                                        placeholder="Mobile">
                                     <div id="vendorMobStatus"
                                         class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
                                     </div>
@@ -438,19 +437,19 @@
                         </div>
                         <div class="space-y-2.5">
                             <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer Name</label>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer</label>
                                 <input type="text" id="customerName" oninput="updateUI()"
                                     onkeydown="handlePartyEnter(event, 'customerMob')"
                                     class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
-                                    placeholder="Enter customer name">
+                                    placeholder="Name">
                             </div>
                             <div>
-                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer Mobile (10 Digits)</label>
+                                <label class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="customerMob" oninput="updateUI()"
                                         onkeydown="handlePartyEnter(event, 'pName')"
                                     class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
-                                        placeholder="Customer mobile">
+                                        placeholder="Mobile">
                                     <div id="customerMobStatus"
                                         class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
                                     </div>
@@ -565,21 +564,24 @@
                     </table>
                 </div>
 
-                <div id="expensesArea" class="border border-gray-100 rounded-2xl p-3 mt-4 compact-panel bg-white">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Expenses</h3>
+                <div id="expensesArea" class="border border-gray-100 rounded-2xl p-4 mt-4 compact-panel bg-white">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-gray-700 uppercase tracking-widest">
+                            <span class="inline-block h-4 w-1 rounded-full bg-blue-600"></span>
+                            Expenses
+                        </h3>
                         <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">Common</span>
                     </div>
-                    <div id="selectedExpenseEntryArea" class="mt-2 space-y-2">
-                        <div id="selectedExpenseEntries" class="space-y-2"></div>
+                    <div id="selectedExpenseEntryArea" class="mt-1">
+                        <div id="selectedExpenseEntries"></div>
                         <button id="addAllExpensesBtn" onclick="addAllSelectedExpenses()"
-                            class="hidden w-full rounded-xl bg-red-50/80 py-2.5 text-[11px] font-semibold text-red-600 transition-all hover:bg-red-100 active:scale-[0.99]">
+                            class="hidden mt-2 w-full rounded-xl bg-blue-50/80 py-2.5 text-[11px] font-semibold text-blue-600 transition-all hover:bg-blue-100 active:scale-[0.99]">
                             Add All at Once
                         </button>
                     </div>
-                    <div id="expensesListArea" class="hidden mt-3">
-                        <div id="expensesItemsBody"
-                            class="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-x-auto overflow-y-hidden touch-pan-x" style="-webkit-overflow-scrolling: touch;"></div>
+                    <div id="expensesListArea" class="hidden mt-3 pt-3 border-t border-gray-100">
+                        <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400">Added</p>
+                        <div id="expensesItemsBody" class="divide-y divide-gray-100"></div>
                     </div>
                 </div>
 
@@ -1379,42 +1381,59 @@
 
             area.classList.remove('hidden');
 
-            container.innerHTML = selectedExpenseTypes.map(type => {
+            const rowsHTML = selectedExpenseTypes.map(type => {
                 const safeType = type.replace(/'/g, "\\'");
                 const ppId = `expense_pp_${expenseTypeKey(type)}`;
                 const spId = `expense_sp_${expenseTypeKey(type)}`;
                 const isSubtract = expenseModes[type] === 'subtract';
+                const isCustom = !DEFAULT_EXPENSE_TYPES.includes(type);
 
                 return `
-                    <div class="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-3">
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleExpenseMode('${safeType}')"
-                                class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg transition-all active:scale-90 ${isSubtract ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}"
-                                title="${isSubtract ? 'Subtract from total' : 'Add to total'}">
-                                <span class="text-xs font-bold">${isSubtract ? '-' : '+'}</span>
-                            </button>
-                            <span class="min-w-[70px] text-[12px] font-semibold text-gray-800">${type}</span>
-                            <div class="flex-1 flex gap-2">
-                                <input type="number" step="0.01" id="${ppId}" value="${expensePPAmounts[type] || ''}"
-                                    oninput="updateExpensePP('${safeType}', this.value)"
-                                    onfocus="this.select()"
-                                    onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
-                                    onblur="autoAddSelectedExpense('${safeType}')"
-                                    placeholder="PP &#x20B9;"
-                                    class="w-full min-w-[50px] bg-gray-50 rounded px-2 py-1 text-right text-[13px] font-bold text-gray-800 outline-none border border-gray-100 placeholder:text-gray-400 focus:border-blue-300 focus:bg-white transition-colors">
-                                <input type="number" step="0.01" id="${spId}" value="${expenseSPAmounts[type] || ''}"
-                                    oninput="updateExpenseSP('${safeType}', this.value)"
-                                    onfocus="this.select()"
-                                    onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
-                                    onblur="autoAddSelectedExpense('${safeType}')"
-                                    placeholder="SP &#x20B9;"
-                                    class="w-full min-w-[50px] bg-gray-50 rounded px-2 py-1 text-right text-[13px] font-bold text-blue-900 outline-none border border-gray-100 placeholder:text-blue-400 focus:border-blue-400 focus:bg-white transition-colors">
-                            </div>
-                        </div>
-                            </div>
-                        </div>
+                    <div class="flex items-center gap-2 py-2.5">
+                        <button onclick="toggleExpenseMode('${safeType}')"
+                            class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-all active:scale-90 ${isSubtract ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}"
+                            title="${isSubtract ? 'Subtract' : 'Add'}">
+                            <span class="text-xs font-bold">${isSubtract ? '−' : '+'}</span>
+                        </button>
+                        <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${type}</span>
+                        <input type="text" inputmode="decimal" id="${ppId}" value="${expensePPAmounts[type] || ''}"
+                            oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateExpensePP('${safeType}', this.value)"
+                            onfocus="this.select()"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
+                            
+                            placeholder="PP &#x20B9;"
+                            class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-gray-800 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:ring-blue-300 transition-colors">
+                        <input type="text" inputmode="decimal" id="${spId}" value="${expenseSPAmounts[type] || ''}"
+                            oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateExpenseSP('${safeType}', this.value)"
+                            onfocus="this.select()"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault(); autoAddSelectedExpense('${safeType}')}"
+                            
+                            placeholder="SP &#x20B9;"
+                            class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-blue-900 outline-none placeholder:text-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-400 transition-colors">
+                        ${isCustom ? `<button onclick="removeSelectedExpenseType('${safeType}')" class="rounded-md p-1 text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove"><svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></button>` : ''}
                     </div>`;
             }).join('');
+
+            const addOtherHTML = `
+                <button onclick="addCustomExpenseType()" class="flex w-full items-center gap-2 py-2.5 text-left transition-colors hover:bg-gray-50/60">
+                    <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    </div>
+                    <span class="flex-1 text-[13px] font-medium text-blue-600">Add Other Expense</span>
+                </button>`;
+
+            container.innerHTML = `<div class="divide-y divide-gray-100">${rowsHTML}${addOtherHTML}</div>`;
+        };
+
+        window.removeSelectedExpenseType = (type) => {
+            const idx = selectedExpenseTypes.indexOf(type);
+            if (idx > -1) selectedExpenseTypes.splice(idx, 1);
+            const cIdx = customExpenseTypes.indexOf(type);
+            if (cIdx > -1) customExpenseTypes.splice(cIdx, 1);
+            delete expensePPAmounts[type];
+            delete expenseSPAmounts[type];
+            delete expenseModes[type];
+            renderSelectedExpenseDrafts();
         };
 
         window.openExpensePicker = () => {
@@ -1507,11 +1526,16 @@
         window.confirmCustomExpensePrompt = () => {
             const input = document.getElementById('customExpensePromptInput');
             const name = input ? input.value.trim().toUpperCase() : '';
-            if (!name) return;
+            if (!name) {
+                closeCustomExpensePrompt();
+                return;
+            }
             if (!customExpenseTypes.includes(name)) customExpenseTypes.push(name);
+            if (!selectedExpenseTypes.includes(name)) selectedExpenseTypes.push(name);
             if (!expensePickerSelected.includes(name)) expensePickerSelected.push(name);
-            renderExpensePickerGrid();
-            updateExpensePickerUI();
+            renderSelectedExpenseDrafts();
+            if (typeof renderExpensePickerGrid === 'function') renderExpensePickerGrid();
+            if (typeof updateExpensePickerUI === 'function') updateExpensePickerUI();
             closeCustomExpensePrompt();
         };
 
@@ -1565,10 +1589,11 @@
 
         window.updateExpensePP = (type, value) => {
             expensePPAmounts[type] = value;
+            // Auto-mirror to SP only if user hasn't manually edited SP
             if (!expenseSPManual[type]) {
                 expenseSPAmounts[type] = value;
                 const spEl = document.getElementById(`expense_sp_${expenseTypeKey(type)}`);
-                if (spEl) {
+                if (spEl && document.activeElement !== spEl) {
                     spEl.value = value;
                 }
             }
@@ -1577,7 +1602,14 @@
 
         window.updateExpenseSP = (type, value) => {
             expenseSPAmounts[type] = value;
-            expenseSPManual[type] = true;
+            // Mark SP as manually edited only if it differs from PP
+            const ppVal = expensePPAmounts[type] || '';
+            if (value !== ppVal && value !== '') {
+                expenseSPManual[type] = true;
+            } else if (value === '' || value === ppVal) {
+                // If user clears SP or matches PP, allow auto-mirror to resume
+                expenseSPManual[type] = false;
+            }
             syncExpenseDraftDefaults();
         };
 
@@ -1609,7 +1641,9 @@
         };
 
         const clearExpenseDraft = (type) => {
-            selectedExpenseTypes = selectedExpenseTypes.filter(item => item !== type);
+            if (!selectedExpenseTypes.includes(type)) {
+                selectedExpenseTypes.push(type);
+            }
             delete expensePPAmounts[type];
             delete expenseSPAmounts[type];
             delete expenseSPManual[type];
@@ -1675,7 +1709,21 @@
         };
 
         window.removeExpense = (index) => {
+            const removed = currentExpenses[index];
             currentExpenses.splice(index, 1);
+
+            if (removed?.type) {
+                if (!selectedExpenseTypes.includes(removed.type)) {
+                    selectedExpenseTypes.push(removed.type);
+                }
+                expensePPAmounts[removed.type] = removed.pp !== undefined ? String(removed.pp) : '';
+                expenseSPAmounts[removed.type] = removed.sp !== undefined ? String(removed.sp) : '';
+                expenseSPManual[removed.type] = String(removed.pp ?? '') !== String(removed.sp ?? '');
+                expenseModes[removed.type] = removed.addMode === false ? 'subtract' : 'add';
+                syncExpenseDraftDefaults();
+                renderSelectedExpenseDrafts();
+            }
+
             updateUI();
         };
 
