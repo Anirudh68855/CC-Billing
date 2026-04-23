@@ -2339,38 +2339,41 @@
 
                 await ref.set(finalData);
 
-                // --- START GOOGLE SHEETS SYNC ---
-                if (GOOGLE_SHEETS_URL !== "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
-                    syncFinalBillToGoogleSheets(finalData);
+                // Critical save succeeded, so don't let sheet/UI hiccups mark it as failed.
+                try {
+                    if (GOOGLE_SHEETS_URL !== "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
+                        syncFinalBillToGoogleSheets(finalData);
+                    }
+                } catch (syncErr) {
+                    console.error("Sheets Sync Error:", syncErr);
                 }
-                // --- END SYNC ---
 
-                // FINAL LOCK AND UI SYNC
-                billIsFinalized = true;
-                finalizeUI(finalData);
+                try {
+                    billIsFinalized = true;
+                    finalizeUI(finalData);
 
-                // Update button text
-                const btnText = document.getElementById('generateBtnText');
-                if (btnText) btnText.innerText = 'BILL COMPLETE - RESETTING...';
-                document.getElementById('generateBtn').disabled = true;
+                    const btnText = document.getElementById('generateBtnText');
+                    if (btnText) btnText.innerText = 'BILL COMPLETE - RESETTING...';
+                    const generateBtn = document.getElementById('generateBtn');
+                    if (generateBtn) generateBtn.disabled = true;
 
-                // IMMUTABLE HISTORY SYNC
-                loadHistory();
+                    loadHistory();
 
-                // Trigger print dialog â€” set title so PDF filename = customer + date
-                setTimeout(() => {
-                    const prevTitle = document.title;
-                    document.title = buildBillFileBaseName(finalData);
-                    window.print();
-                    setTimeout(() => { document.title = prevTitle; }, 1000);
-                }, 400);
+                    setTimeout(() => {
+                        const prevTitle = document.title;
+                        document.title = buildBillFileBaseName(finalData);
+                        window.print();
+                        setTimeout(() => { document.title = prevTitle; }, 1000);
+                    }, 400);
 
-                // Auto-reset: start new bill automatically after 2.5 seconds
-                setTimeout(() => {
-                    newTransaction();
-                    if (btnText) btnText.innerText = 'COMPLETE BILLING';
-                    document.getElementById('generateBtn').disabled = false;
-                }, 2500);
+                    setTimeout(() => {
+                        newTransaction();
+                        if (btnText) btnText.innerText = 'COMPLETE BILLING';
+                        if (generateBtn) generateBtn.disabled = false;
+                    }, 2500);
+                } catch (uiErr) {
+                    console.error("Post-save UI Error:", uiErr);
+                }
             } catch (e) {
                 console.error("BILL SAVE ERR:", e);
                 alert("STABILITY ALERT: Save failed. Try again.");
