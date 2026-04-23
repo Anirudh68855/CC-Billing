@@ -1003,8 +1003,12 @@
                 <div class="flex justify-between items-center px-2">
                     <span id="pickerCountLabel" class="text-[10px] font-black text-blue-600 uppercase">0 Grades
                         Selected</span>
-                    <button onclick="clearPickerSelection()"
-                        class="text-[9px] font-black text-red-400 uppercase hover:text-red-600">Clear All</button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="selectAllGradesInPicker()"
+                            class="text-[9px] font-black text-blue-500 uppercase hover:text-blue-700">Select All</button>
+                        <button onclick="clearPickerSelection()"
+                            class="text-[9px] font-black text-red-400 uppercase hover:text-red-600">Clear All</button>
+                    </div>
                 </div>
                 <button onclick="applyGradePicker()"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 transition-all active:scale-95 text-xs uppercase tracking-widest">
@@ -1563,11 +1567,11 @@
             if (!area || !container || !addAllBtn) return;
 
             updateExpensePickerButton();
-            addAllBtn.classList.add('hidden');
 
             if (selectedExpenseTypes.length === 0) {
                 area.classList.add('hidden');
                 container.innerHTML = '';
+                addAllBtn.classList.add('hidden');
                 return;
             }
 
@@ -1615,6 +1619,17 @@
                 </button>`;
 
             container.innerHTML = `<div class="divide-y divide-gray-100">${rowsHTML}${addOtherHTML}</div>`;
+
+            const filledCount = selectedExpenseTypes.filter(type => {
+                const ppAmt = parseFloat(expensePPAmounts[type]) || 0;
+                const spAmt = parseFloat(expenseSPAmounts[type]) || 0;
+                return ppAmt > 0 || spAmt > 0;
+            }).length;
+
+            addAllBtn.classList.toggle('hidden', filledCount === 0);
+            if (filledCount > 0) {
+                addAllBtn.innerText = `Add All at Once (${filledCount})`;
+            }
         };
 
         window.removeSelectedExpenseType = (type) => {
@@ -2331,15 +2346,26 @@
 
                 let otherExp = 0;
                 let advanceAmt = 0;
+                let expenseMargin = 0;
                 data.expenses.forEach(e => {
-                    if (e.type === 'Advance') advanceAmt += (e.amount || 0);
-                    else otherExp += (e.amount || 0);
+                    const isSub = e.addMode === false || (e.amount || 0) < 0;
+                    const pp = e.pp !== undefined ? (parseFloat(e.pp) || 0) : Math.abs(e.amount || 0);
+                    const sp = e.sp !== undefined ? (parseFloat(e.sp) || 0) : Math.abs(e.amount || 0);
+                    const activeAmt = activeBillType === 'SALES' ? sp : pp;
+                    const finalAmt = isSub ? -Math.abs(activeAmt) : Math.abs(activeAmt);
+
+                    if (e.type === 'Advance') {
+                        advanceAmt += Math.abs(finalAmt);
+                    } else {
+                        otherExp += finalAmt;
+                        expenseMargin += isSub ? (pp - sp) : (sp - pp);
+                    }
                 });
 
                 const totalAmount = produceValue + otherExp - advanceAmt;
 
-                // Produce Margin (Sales - Purchase)
-                const netProfit = totalSalesValue - totalPurchaseValue;
+                // Match the dashboard's profit analysis
+                const netProfit = totalSalesValue - totalPurchaseValue + expenseMargin;
                 const profitPercentage = totalAmount > 0 ? (netProfit / totalAmount) * 100 : 0;
 
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
@@ -2813,6 +2839,28 @@
                     }
                 }, 100);
             }
+        };
+
+        window.selectAllGradesInPicker = () => {
+            const select = document.getElementById('pGrade');
+            const allSelected = [];
+
+            if (select) {
+                Array.from(select.options).forEach(opt => {
+                    if (!opt.value || opt.value === 'OTHERS') return;
+                    allSelected.push({ value: opt.value, manual: "" });
+                });
+            }
+
+            customGradesList.forEach(name => {
+                if (!allSelected.some(p => p.value === 'OTHERS' && p.manual === name)) {
+                    allSelected.push({ value: 'OTHERS', manual: name });
+                }
+            });
+
+            pickerSelected = allSelected;
+            renderGradeGrid();
+            updatePickerUI();
         };
 
         const forceCloseHistoryViews = () => {
