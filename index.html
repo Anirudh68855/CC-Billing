@@ -1226,6 +1226,103 @@
                 : { name: party.vendorName, mob: party.vendorMob, role: 'Vendor' };
         };
 
+        const getBillSidePartyDetails = (bill, side) => {
+            if (side === 'PURCHASE') {
+                return {
+                    name: bill?.vendorName || bill?.name || getPartyDetails().vendorName || getActivePartyDetails().name || 'Vendor',
+                    mob: bill?.vendorMob || bill?.vId || getPartyDetails().vendorMob || getActivePartyDetails().mob || ''
+                };
+            }
+
+            return {
+                name: bill?.customerName || bill?.name || getPartyDetails().customerName || getActivePartyDetails().name || 'Customer',
+                mob: bill?.customerMob || bill?.vId || getPartyDetails().customerMob || getActivePartyDetails().mob || ''
+            };
+        };
+
+        const getExpenseAmountForSide = (expense, side) => {
+            const fallback = Math.abs(parseFloat(expense?.amount) || 0);
+            const sideAmount = side === 'SALES'
+                ? (expense?.sp !== undefined ? parseFloat(expense.sp) || 0 : fallback)
+                : (expense?.pp !== undefined ? parseFloat(expense.pp) || 0 : fallback);
+            const isNegative = expense?.addMode === false || parseFloat(expense?.amount) < 0;
+            return isNegative ? -Math.abs(sideAmount) : Math.abs(sideAmount);
+        };
+
+        const calculateBillSideTotals = (bill, side) => {
+            const items = bill?.items || [];
+            const expenses = bill?.expenses || [];
+
+            const produceValue = items.reduce((acc, item) => {
+                const weight = parseFloat(item?.weight) || 0;
+                const rate = side === 'SALES'
+                    ? (parseFloat(item?.price) || 0)
+                    : (parseFloat(item?.purchasePrice) || 0);
+                return acc + (weight * rate);
+            }, 0);
+
+            let advanceAmt = 0;
+            const expenseTotal = expenses.reduce((acc, expense) => {
+                const expenseType = (expense?.type || '').toString();
+                if (expenseType.toLowerCase() === 'advance') {
+                    advanceAmt += Math.abs(parseFloat(expense?.amount) || 0);
+                    return acc;
+                }
+                return acc + getExpenseAmountForSide(expense, side);
+            }, 0);
+
+            return {
+                produceValue,
+                expenseTotal,
+                advanceAmt,
+                totalAmount: produceValue + expenseTotal - advanceAmt
+            };
+        };
+
+        const buildSheetPayloadForSide = (bill, side) => {
+            const party = getBillSidePartyDetails(bill, side);
+            const totals = calculateBillSideTotals(bill, side);
+            const sideLabel = side === 'SALES' ? 'Sales Bill' : 'Purchase Invoice';
+
+            return {
+                id: `${bill.id}-${side}`,
+                transactionId: bill.transactionId || bill.id,
+                masterBillId: bill.id,
+                billSide: side,
+                billLabel: sideLabel,
+                type: side,
+                status: bill.status || 'ACCEPTED',
+                ts: bill.ts,
+                name: party.name.toUpperCase(),
+                vId: (party.mob || '').replace(/\D/g, ''),
+                customerName: bill.customerName || '',
+                customerMob: (bill.customerMob || '').replace(/\D/g, ''),
+                vendorName: bill.vendorName || '',
+                vendorMob: (bill.vendorMob || '').replace(/\D/g, ''),
+                items: bill.items || [],
+                expenses: bill.expenses || [],
+                total: totals.totalAmount,
+                grossTotal: totals.produceValue,
+                expenseTotal: totals.expenseTotal,
+                advanceTotal: totals.advanceAmt,
+                margin: bill.margin,
+                marginPercent: bill.marginPercent,
+                action: 'upsert'
+            };
+        };
+
+        const syncFinalBillToGoogleSheets = (bill) => {
+            if (GOOGLE_SHEETS_URL === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") return;
+            const payloads = [
+                buildSheetPayloadForSide(bill, 'SALES'),
+                buildSheetPayloadForSide(bill, 'PURCHASE')
+            ];
+
+            payloads.forEach((payload, idx) => {
+                setTimeout(() => syncToGoogleSheets(payload, { quiet: idx > 0, statusKey: idx === 0 ? 'histSyncStatus' : null }), idx * 150);
+            });
+        };
+
         const updateMobileStatus = (inputId, statusId) => {
             const input = document.getElementById(inputId);
             const status = document.getElementById(statusId);
@@ -2215,9 +2312,6 @@
                 const netProfit = totalSalesValue - totalPurchaseValue;
                 const profitPercentage = totalAmount > 0 ? (netProfit / totalAmount) * 100 : 0;
 
-                // DEBUG POPUP
-                alert(`SYNC DEBUG [${activeBillType} MODE]:\nMargin: \u20B9${netProfit.toFixed(2)}\nFinal Total: \u20B9${totalAmount.toFixed(2)}\n\nRedeploy Apps Script if totals don't match!`);
-
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
                 data.expenses.forEach(e => {
                     if (buckets.hasOwnProperty(e.type)) buckets[e.type] += (e.amount || 0);
@@ -2247,7 +2341,7 @@
 
                 // --- START GOOGLE SHEETS SYNC ---
                 if (GOOGLE_SHEETS_URL !== "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
-                    syncToGoogleSheets(finalData);
+                    syncFinalBillToGoogleSheets(finalData);
                 }
                 // --- END SYNC ---
 
@@ -2937,7 +3031,13 @@
 
                 // Trigger Google Sheets deletion
                 if (GOOGLE_SHEETS_URL) {
-                    syncToGoogleSheets({ id: pendingDeleteId, action: 'delete' });
+                    syncToGoogleSheets({
+                        id: pendingDeleteId,
+                        masterBillId: pendingDeleteId,
+                        transactionId: pendingDeleteId,
+                        action: 'delete',
+                        billSide: 'ALL'
+                    });
                 }
 
                 closeDeleteModal();
@@ -2948,10 +3048,10 @@
             }
         };
 
-        const syncToGoogleSheets = (data) => {
-            const statusTag = document.getElementById('histSyncStatus');
+        const syncToGoogleSheets = (data, options = {}) => {
+            const statusTag = options.statusKey ? document.getElementById(options.statusKey) : document.getElementById('histSyncStatus');
             try {
-                if (statusTag) {
+                if (statusTag && !options.quiet) {
                     statusTag.innerHTML = "\u231B Syncing to Sheets...";
                     statusTag.className = "text-[7px] font-black px-2 py-1 bg-blue-50 text-blue-500 rounded-full animate-pulse";
                     statusTag.classList.remove('hidden');
@@ -2975,7 +3075,7 @@
                 form.appendChild(input);
 
                 iframe.onload = () => {
-                    if (statusTag) {
+                    if (statusTag && !options.quiet) {
                         statusTag.innerHTML = "\u2705 Saved to Sheet";
                         statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
                         setTimeout(() => statusTag.classList.add('hidden'), 5000);
@@ -2991,7 +3091,7 @@
                 form.submit();
             } catch (e) {
                 console.error("Sheets Sync Error:", e);
-                if (statusTag) {
+                if (statusTag && !options.quiet) {
                     statusTag.innerHTML = "\u26A0 Sync Failed";
                     statusTag.className = "text-[7px] font-black px-2 py-1 bg-red-50 text-red-600 rounded-full";
                 }
