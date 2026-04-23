@@ -1258,6 +1258,26 @@
             return isNegative ? -Math.abs(sideAmount) : Math.abs(sideAmount);
         };
 
+        const formatSheetItemSummary = (item, side) => {
+            const label = (item?.grade || item?.rawGrade || item?.manualGrade || 'Item').toString().trim();
+            const crates = parseFloat(item?.crates) || 0;
+            const weight = parseFloat(item?.weight) || 0;
+            const rate = side === 'PURCHASE'
+                ? (parseFloat(item?.purchasePrice) || parseFloat(item?.price) || 0)
+                : (parseFloat(item?.price) || parseFloat(item?.purchasePrice) || 0);
+            const crateText = `${crates}U`;
+            const weightText = `${weight.toFixed(2)}Kg`;
+            const rateText = `₹${rate.toFixed(2)}`;
+            return `${label} - ${crateText} / ${weightText} @ ${rateText}`;
+        };
+
+        const buildSheetItemsSummary = (items, side) => {
+            return (items || [])
+                .filter(item => (parseFloat(item?.weight) || 0) > 0 || (parseFloat(item?.crates) || 0) > 0)
+                .map(item => formatSheetItemSummary(item, side))
+                .join(', ');
+        };
+
         const calculateBillSideTotals = (bill, side) => {
             const items = bill?.items || [];
             const expenses = bill?.expenses || [];
@@ -1309,6 +1329,7 @@
                 vendorName: bill.vendorName || '',
                 vendorMob: (bill.vendorMob || '').replace(/\D/g, ''),
                 items: bill.items || [],
+                sheetItemsSummary: buildSheetItemsSummary(bill.items || [], side),
                 expenses: bill.expenses || [],
                 total: totals.totalAmount,
                 grossTotal: totals.produceValue,
