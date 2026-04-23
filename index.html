@@ -648,6 +648,15 @@
                         </svg>
                         <div id="loader" class="loader hidden absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
                     </button>
+                    <button id="newBillBtn" onclick="newTransaction()"
+                        class="hidden w-full bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-2xl font-black shadow-sm transition-all flex items-center justify-center gap-2 text-[11px] uppercase active:scale-95">
+                        New Bill
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M4 12h16M12 4l8 8-8 8" />
+                        </svg>
+                    </button>
                     <p class="text-center text-[8px] font-bold uppercase tracking-wider text-gray-400">Saves, prints
                         &amp; auto-starts new bill</p>
                 </div>
@@ -2581,6 +2590,8 @@
             const watermark = document.getElementById('watermark');
             const itemsArea = document.getElementById('lineItemsArea');
             const newBtn = document.getElementById('newBillBtn');
+            const generateBtn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('generateBtnText');
 
             if (customerName) customerName.value = "";
             if (customerMob) customerMob.value = "";
@@ -2601,10 +2612,23 @@
             if (watermark) watermark.classList.add('hidden');
             if (itemsArea) itemsArea.classList.add('hidden');
             if (newBtn) newBtn.classList.add('hidden');
+            if (generateBtn) generateBtn.disabled = false;
+            if (btnText) btnText.innerText = 'COMPLETE BILLING';
             const backBtn = document.getElementById('backBtn');
             if (backBtn) backBtn.classList.add('hidden');
 
             updateUI();
+
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const firstInput = activeBillType === 'SALES'
+                    ? document.getElementById('vendorName')
+                    : document.getElementById('customerName');
+                if (firstInput && typeof firstInput.focus === 'function') {
+                    firstInput.focus();
+                    if (typeof firstInput.select === 'function') firstInput.select();
+                }
+            });
         };
 
         // --- MULTI-GRADE PICKER LOGIC ---
@@ -2838,7 +2862,8 @@
             // Show Back button when viewing history
             const backBtn = document.getElementById('backBtn');
             if (backBtn) backBtn.classList.remove('hidden');
-            document.getElementById('newBillBtn').classList.remove('hidden');
+            const newBillBtn = document.getElementById('newBillBtn');
+            if (newBillBtn) newBillBtn.classList.remove('hidden');
 
             // Render everything
             renderSpreadsheet();
@@ -3060,28 +3085,30 @@
                     statusTag.classList.remove('hidden');
                 }
 
-                fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-store',
-                    keepalive: true,
-                    headers: {
-                        'Content-Type': 'text/plain;charset=UTF-8'
-                    },
-                    body: JSON.stringify(data)
-                }).then(() => {
-                    if (statusTag && !options.quiet) {
-                        statusTag.innerHTML = "\u2705 Saved to Sheet";
-                        statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
-                        setTimeout(() => statusTag.classList.add('hidden'), 5000);
-                    }
-                }).catch((err) => {
-                    console.error("Sheets Sync Fetch Error:", err);
-                    if (statusTag && !options.quiet) {
-                        statusTag.innerHTML = "\u26A0 Sync Failed";
-                        statusTag.className = "text-[7px] font-black px-2 py-1 bg-red-50 text-red-600 rounded-full";
-                    }
-                });
+                const body = `data=${encodeURIComponent(JSON.stringify(data))}`;
+                const beaconPayload = new Blob([body], { type: 'application/x-www-form-urlencoded;charset=UTF-8' });
+                const beaconSent = navigator.sendBeacon ? navigator.sendBeacon(GOOGLE_SHEETS_URL, beaconPayload) : false;
+
+                if (!beaconSent) {
+                    fetch(GOOGLE_SHEETS_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        cache: 'no-store',
+                        keepalive: true,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body
+                    }).catch((err) => {
+                        console.error("Sheets Sync Fetch Error:", err);
+                    });
+                }
+
+                if (statusTag && !options.quiet) {
+                    statusTag.innerHTML = "\u2705 Sent to Sheet";
+                    statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
+                    setTimeout(() => statusTag.classList.add('hidden'), 5000);
+                }
             } catch (e) {
                 console.error("Sheets Sync Error:", e);
                 if (statusTag && !options.quiet) {
