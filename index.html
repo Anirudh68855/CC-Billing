@@ -649,7 +649,7 @@
                         <div id="loader" class="loader hidden absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
                     </button>
                     <button id="newBillBtn" onclick="newTransaction()"
-                        class="hidden w-full bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-2xl font-black shadow-sm transition-all flex items-center justify-center gap-2 text-[11px] uppercase active:scale-95">
+                        class="w-full bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-2xl font-black shadow-sm transition-all flex items-center justify-center gap-2 text-[11px] uppercase active:scale-95">
                         New Bill
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -2611,7 +2611,7 @@
             if (printArea) printArea.classList.add('hidden');
             if (watermark) watermark.classList.add('hidden');
             if (itemsArea) itemsArea.classList.add('hidden');
-            if (newBtn) newBtn.classList.add('hidden');
+            if (newBtn) newBtn.classList.remove('hidden');
             if (generateBtn) generateBtn.disabled = false;
             if (btnText) btnText.innerText = 'COMPLETE BILLING';
             const backBtn = document.getElementById('backBtn');
