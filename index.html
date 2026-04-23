@@ -3060,38 +3060,28 @@
                     statusTag.classList.remove('hidden');
                 }
 
-                const iframeName = `gsheets_sync_${Date.now()}`;
-                const iframe = document.createElement('iframe');
-                iframe.name = iframeName;
-                iframe.style.display = 'none';
-
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_URL;
-                form.target = iframeName;
-                form.style.display = 'none';
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'data';
-                input.value = JSON.stringify(data);
-                form.appendChild(input);
-
-                iframe.onload = () => {
+                fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-store',
+                    keepalive: true,
+                    headers: {
+                        'Content-Type': 'text/plain;charset=UTF-8'
+                    },
+                    body: JSON.stringify(data)
+                }).then(() => {
                     if (statusTag && !options.quiet) {
                         statusTag.innerHTML = "\u2705 Saved to Sheet";
                         statusTag.className = "text-[7px] font-black px-2 py-1 bg-green-50 text-green-600 rounded-full";
                         setTimeout(() => statusTag.classList.add('hidden'), 5000);
                     }
-                    setTimeout(() => {
-                        iframe.remove();
-                        form.remove();
-                    }, 1000);
-                };
-
-                document.body.appendChild(iframe);
-                document.body.appendChild(form);
-                form.submit();
+                }).catch((err) => {
+                    console.error("Sheets Sync Fetch Error:", err);
+                    if (statusTag && !options.quiet) {
+                        statusTag.innerHTML = "\u26A0 Sync Failed";
+                        statusTag.className = "text-[7px] font-black px-2 py-1 bg-red-50 text-red-600 rounded-full";
+                    }
+                });
             } catch (e) {
                 console.error("Sheets Sync Error:", e);
                 if (statusTag && !options.quiet) {
