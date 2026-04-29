@@ -1390,8 +1390,8 @@
         const saveSharedBillsToFirebase = async (bill) => {
             const purchaseBillId = bill.purchaseBillId || generateBillId('PB');
             const salesBillId = bill.salesBillId || generateBillId('SB');
-            const purchaseBillLink = bill.purchaseBillLink || buildBillPageLink('purchase-bill/', purchaseBillId);
-            const salesBillLink = bill.salesBillLink || buildBillPageLink('sales-bill/', salesBillId);
+            const purchaseBillLink = bill.purchaseBillLink || buildBillPageLink('purchase-bill.html', purchaseBillId);
+            const salesBillLink = bill.salesBillLink || buildBillPageLink('sales-bill.html', salesBillId);
 
             const purchaseShare = buildSharedBillRecord(bill, 'PURCHASE', purchaseBillId, purchaseBillLink);
             const salesShare = buildSharedBillRecord(bill, 'SALES', salesBillId, salesBillLink);
@@ -2533,8 +2533,8 @@
                 const billId = "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase();
                 const purchaseBillId = generateBillId("PB");
                 const salesBillId = generateBillId("SB");
-                const purchaseBillLink = buildBillPageLink('purchase-bill/', purchaseBillId);
-                const salesBillLink = buildBillPageLink('sales-bill/', salesBillId);
+                const purchaseBillLink = buildBillPageLink('purchase-bill.html', purchaseBillId);
+                const salesBillLink = buildBillPageLink('sales-bill.html', salesBillId);
                 const finalData = {
                     id: billId,
                     billId: billId,
