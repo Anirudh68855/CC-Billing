@@ -2262,7 +2262,7 @@
 
             // Internal Dashboard Math: Percentage should match the sheet contract value basis
             const netProfit = totalSalesValue - totalPurchaseValue + expenseMargin;
-            const profitPercentage = netPayable > 0 ? (netProfit / netPayable) * 100 : 0;
+            const profitPercentage = totalSalesValue > 0 ? (netProfit / totalSalesValue) * 100 : 0;
 
             const statusTag = document.getElementById('histSyncStatus');
             const netProfitEl = document.getElementById('internalNetProfit');
@@ -2507,7 +2507,7 @@
 
                 // Match the dashboard's profit analysis
                 const netProfit = totalSalesValue - totalPurchaseValue + expenseMargin;
-                const profitPercentage = totalAmount > 0 ? (netProfit / totalAmount) * 100 : 0;
+                const profitPercentage = totalSalesValue > 0 ? (netProfit / totalSalesValue) * 100 : 0;
 
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
                 data.expenses.forEach(e => {
