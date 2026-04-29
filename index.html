@@ -1241,6 +1241,14 @@
             printArea.classList.toggle('hidden', !lastFinalizedBill);
         };
 
+        const focusFinalActionBar = () => {
+            const printArea = document.getElementById('printActionArea');
+            if (!printArea || printArea.classList.contains('hidden')) return;
+            requestAnimationFrame(() => {
+                printArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        };
+
         const getPartyDetails = () => ({
             customerName: document.getElementById('customerName')?.value.trim() || '',
             customerMob: document.getElementById('customerMob')?.value.trim() || '',
@@ -2578,6 +2586,7 @@
                     billIsFinalized = true;
                     finalizeUI(finalData);
                     syncFinalActionBar();
+                    focusFinalActionBar();
 
                     const btnText = document.getElementById('generateBtnText');
                     if (btnText) btnText.innerText = 'BILL COMPLETE - RESETTING...';
