@@ -2586,11 +2586,7 @@
                         setTimeout(() => { document.title = prevTitle; }, 1000);
                     }, 400);
 
-                    setTimeout(() => {
-                        newTransaction();
-                        if (btnText) btnText.innerText = 'COMPLETE BILLING';
-                        if (generateBtn) generateBtn.disabled = false;
-                    }, 2500);
+                    if (btnText) btnText.innerText = 'BILL COMPLETED';
                 } catch (uiErr) {
                     console.error("Post-save UI Error:", uiErr);
                 }
