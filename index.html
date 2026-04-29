@@ -1235,6 +1235,12 @@
             vId: getActivePartyDetails().mob
         };
 
+        const syncFinalActionBar = () => {
+            const printArea = document.getElementById('printActionArea');
+            if (!printArea) return;
+            printArea.classList.toggle('hidden', !lastFinalizedBill);
+        };
+
         const getPartyDetails = () => ({
             customerName: document.getElementById('customerName')?.value.trim() || '',
             customerMob: document.getElementById('customerMob')?.value.trim() || '',
@@ -2571,6 +2577,7 @@
                 try {
                     billIsFinalized = true;
                     finalizeUI(finalData);
+                    syncFinalActionBar();
 
                     const btnText = document.getElementById('generateBtnText');
                     if (btnText) btnText.innerText = 'BILL COMPLETE - RESETTING...';
@@ -2630,7 +2637,7 @@
                 });
             }
             document.getElementById('dispGrn').innerText = "REF: " + bill.ts.toString().slice(-6);
-            document.getElementById('printActionArea').classList.remove('hidden');
+            syncFinalActionBar();
         };
 
         window.toggleMoreOptions = () => {
@@ -2850,6 +2857,7 @@
             if (backBtn) backBtn.classList.add('hidden');
 
             updateUI();
+            syncFinalActionBar();
 
             requestAnimationFrame(() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
