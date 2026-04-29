@@ -1238,7 +1238,8 @@
         const syncFinalActionBar = () => {
             const printArea = document.getElementById('printActionArea');
             if (!printArea) return;
-            printArea.classList.toggle('hidden', !lastFinalizedBill);
+            printArea.classList.remove('hidden');
+            printArea.style.display = '';
         };
 
         const focusFinalActionBar = () => {
@@ -2856,7 +2857,7 @@
                 draftTag.className = "text-[9px] font-black tracking-[.2em] text-gray-300 uppercase";
             }
             if (preview) preview.className = "bill-container p-6 md:p-12 border rounded shadow-2xl mx-auto w-full max-w-full md:max-w-none flex flex-col draft-border relative transition-all scale-[0.8] xl:scale-95 origin-top h-fit sticky top-6";
-            if (printArea && !lastFinalizedBill) printArea.classList.add('hidden');
+            if (printArea) printArea.classList.remove('hidden');
             if (watermark) watermark.classList.add('hidden');
             if (itemsArea) itemsArea.classList.add('hidden');
             if (newBtn) newBtn.classList.remove('hidden');
