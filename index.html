@@ -1177,7 +1177,6 @@
         let expenseSPAmounts = {};
         let expenseSPManual = {};
         let expenseModes = {};
-        let expenseDraftCollapsed = false;
         let expenseDraftDefaults = {
             types: [],
             pp: {},
@@ -1705,14 +1704,6 @@
 
             updateExpensePickerButton();
 
-            // Collapse the draft-entry area after add, and re-open it after delete.
-            if (expenseDraftCollapsed) {
-                area.classList.add('hidden');
-                container.innerHTML = '';
-                addAllBtn.classList.add('hidden');
-                return;
-            }
-
             if (selectedExpenseTypes.length === 0) {
                 area.classList.add('hidden');
                 container.innerHTML = '';
@@ -1993,9 +1984,8 @@
         };
 
         const clearExpenseDraft = (type) => {
-            if (!selectedExpenseTypes.includes(type)) {
-                selectedExpenseTypes.push(type);
-            }
+            const idx = selectedExpenseTypes.indexOf(type);
+            if (idx > -1) selectedExpenseTypes.splice(idx, 1);
             delete expensePPAmounts[type];
             delete expenseSPAmounts[type];
             delete expenseSPManual[type];
@@ -2028,7 +2018,6 @@
                 addMode: !isSubtract
             });
 
-            expenseDraftCollapsed = true;
             syncExpenseDraftDefaults();
             clearExpenseDraft(type);
             updateUI();
@@ -2056,16 +2045,20 @@
 
             if (added === 0) return;
 
-            expenseDraftCollapsed = true;
             syncExpenseDraftDefaults();
-            resetExpenseDrafts();
+            selectedExpenseTypes = selectedExpenseTypes.filter(type => {
+                const ppAmt = parseFloat(expensePPAmounts[type]) || 0;
+                const spAmt = parseFloat(expenseSPAmounts[type]) || 0;
+                return !(ppAmt > 0 || spAmt > 0);
+            });
+            renderSelectedExpenseDrafts();
+            updateExpensePickerUI();
             updateUI();
         };
 
         window.removeExpense = (index) => {
             const removed = currentExpenses[index];
             currentExpenses.splice(index, 1);
-            expenseDraftCollapsed = false;
 
             if (removed?.type) {
                 if (!selectedExpenseTypes.includes(removed.type)) {
@@ -2819,7 +2812,6 @@
             currentBillTimestamp = Date.now();
             currentItems = [];
             currentExpenses = [];
-            expenseDraftCollapsed = false;
             resetExpenseDrafts();
 
             const customerName = document.getElementById('customerName');
