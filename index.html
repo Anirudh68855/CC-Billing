@@ -816,14 +816,15 @@
                             </svg>
                             Download PNG
                         </button>
-                        <button onclick="copyBillLink()"
-                            class="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13.828 10.172a4 4 0 00-5.656 0l-3 3a4 4 0 105.657 5.657l1.414-1.414m2.828-2.828l3-3a4 4 0 10-5.657-5.657l-1.414 1.414" />
-                            </svg>
-                            Copy Link
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <button onclick="copyShareLink('PURCHASE')"
+                            class="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-wider transition-all active:scale-95">
+                            Copy Purchase Link
+                        </button>
+                        <button onclick="copyShareLink('SALES')"
+                            class="flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-wider transition-all active:scale-95">
+                            Copy Sales Link
                         </button>
                     </div>
                 </div>
@@ -1271,15 +1272,22 @@
             return isNegative ? -Math.abs(sideAmount) : Math.abs(sideAmount);
         };
 
-        const getBillShareId = (bill = null) => bill?.billId || bill?.id || '';
+        const generateBillId = (prefix) => {
+            return `${prefix}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        };
 
-        const buildBillShareLink = (billId) => {
+        const buildBillPageLink = (pageName, billId) => {
             if (!billId) return '';
-            const url = new URL(window.location.href);
+            const url = new URL(pageName, window.location.href);
             url.search = '';
             url.hash = '';
             url.searchParams.set('billId', billId);
             return url.toString();
+        };
+
+        const getShareBillLink = (bill, side) => {
+            if (!bill) return '';
+            return side === 'PURCHASE' ? (bill.purchaseBillLink || '') : (bill.salesBillLink || '');
         };
 
         const normalizeExpenseTypeForSheet = (type) => {
@@ -1302,6 +1310,89 @@
                 ...expense,
                 type: normalizeExpenseTypeForSheet(expense?.type)
             }));
+        };
+
+        const buildSharedBillItems = (items, side) => {
+            return (items || []).map(item => {
+                const weight = parseFloat(item?.weight) || 0;
+                const crates = parseFloat(item?.crates) || 0;
+                const rate = side === 'PURCHASE'
+                    ? (parseFloat(item?.purchasePrice) || 0)
+                    : (parseFloat(item?.price) || 0);
+                return {
+                    grade: item?.grade || item?.rawGrade || item?.manualGrade || 'Item',
+                    crates: crates,
+                    weight: weight,
+                    rate: rate,
+                    total: weight * rate
+                };
+            }).filter(item => item.weight > 0 || item.crates > 0);
+        };
+
+        const buildSharedBillExpenses = (expenses, side) => {
+            return (expenses || []).map(expense => {
+                const rawType = normalizeExpenseTypeForSheet(expense?.type);
+                const value = getExpenseAmountForSide(expense, side);
+                return {
+                    type: rawType,
+                    amount: value,
+                    label: rawType
+                };
+            }).filter(expense => expense.amount !== 0);
+        };
+
+        const buildSharedBillRecord = (bill, side, shareBillId, shareBillLink) => {
+            const party = getBillSidePartyDetails(bill, side);
+            const totals = calculateBillSideTotals(bill, side);
+
+            return {
+                id: shareBillId,
+                billId: shareBillId,
+                billLink: shareBillLink,
+                billSide: side,
+                billLabel: side === 'PURCHASE' ? 'Purchase Bill' : 'Sales Bill',
+                masterBillId: bill.id,
+                transactionId: bill.transactionId || bill.id,
+                ts: bill.ts,
+                status: bill.status || 'ACCEPTED',
+                type: side,
+                name: party.name.toUpperCase(),
+                vId: (party.mob || '').replace(/\D/g, ''),
+                customerName: bill.customerName || '',
+                customerMob: (bill.customerMob || '').replace(/\D/g, ''),
+                vendorName: bill.vendorName || '',
+                vendorMob: (bill.vendorMob || '').replace(/\D/g, ''),
+                items: buildSharedBillItems(bill.items || [], side),
+                expenses: buildSharedBillExpenses(bill.expenses || [], side),
+                grossTotal: totals.produceValue,
+                expenseTotal: totals.expenseTotal,
+                advanceTotal: totals.advanceAmt,
+                total: totals.totalAmount,
+                shareView: side
+            };
+        };
+
+        const saveSharedBillsToFirebase = async (bill) => {
+            const purchaseBillId = bill.purchaseBillId || generateBillId('PB');
+            const salesBillId = bill.salesBillId || generateBillId('SB');
+            const purchaseBillLink = bill.purchaseBillLink || buildBillPageLink('purchase-bill.html', purchaseBillId);
+            const salesBillLink = bill.salesBillLink || buildBillPageLink('sales-bill.html', salesBillId);
+
+            const purchaseShare = buildSharedBillRecord(bill, 'PURCHASE', purchaseBillId, purchaseBillLink);
+            const salesShare = buildSharedBillRecord(bill, 'SALES', salesBillId, salesBillLink);
+
+            const sharesRoot = db.collection('artifacts').doc(appId).collection('public').doc('data');
+            await Promise.all([
+                sharesRoot.collection('purchaseBills').doc(purchaseBillId).set(purchaseShare),
+                sharesRoot.collection('salesBills').doc(salesBillId).set(salesShare)
+            ]);
+
+            return {
+                purchaseBillId: purchaseBillId,
+                purchaseBillLink: purchaseBillLink,
+                salesBillId: salesBillId,
+                salesBillLink: salesBillLink
+            };
         };
 
         const formatSheetItemSummary = (item, side) => {
@@ -1358,12 +1449,12 @@
             const party = getBillSidePartyDetails(bill, side);
             const totals = calculateBillSideTotals(bill, side);
             const sideLabel = side === 'SALES' ? 'Sales Bill' : 'Purchase Invoice';
-            const billId = getBillShareId(bill);
+            const billId = side === 'PURCHASE' ? (bill.purchaseBillId || bill.id) : (bill.salesBillId || bill.id);
 
             return {
                 id: `${bill.id}-${side}`,
                 billId: billId,
-                billLink: bill?.billLink || buildBillShareLink(billId),
+                billLink: getShareBillLink(bill, side),
                 transactionId: bill.transactionId || bill.id,
                 masterBillId: bill.id,
                 billSide: side,
@@ -2420,11 +2511,18 @@
                 });
 
                 const billId = "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase();
-                const billLink = buildBillShareLink(billId);
+                const purchaseBillId = generateBillId("PB");
+                const salesBillId = generateBillId("SB");
+                const purchaseBillLink = buildBillPageLink('purchase-bill.html', purchaseBillId);
+                const salesBillLink = buildBillPageLink('sales-bill.html', salesBillId);
                 const finalData = {
                     id: billId,
                     billId: billId,
-                    billLink: billLink,
+                    billLink: salesBillLink,
+                    purchaseBillId: purchaseBillId,
+                    purchaseBillLink: purchaseBillLink,
+                    salesBillId: salesBillId,
+                    salesBillLink: salesBillLink,
                     ...data,
                     customerName: party.customerName.toUpperCase(),
                     customerMob: party.customerMob.replace(/\D/g, ''),
@@ -2443,6 +2541,18 @@
                 const ref = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(finalData.id);
 
                 await ref.set(finalData);
+
+                try {
+                    const shareIds = await saveSharedBillsToFirebase(finalData);
+                    finalData.purchaseBillId = shareIds.purchaseBillId;
+                    finalData.purchaseBillLink = shareIds.purchaseBillLink;
+                    finalData.salesBillId = shareIds.salesBillId;
+                    finalData.salesBillLink = shareIds.salesBillLink;
+                    finalData.billLink = shareIds.salesBillLink;
+                    await ref.set(finalData);
+                } catch (shareErr) {
+                    console.error("Share Bill Save Error:", shareErr);
+                }
 
                 // Critical save succeeded, so don't let sheet/UI hiccups mark it as failed.
                 try {
@@ -2599,10 +2709,13 @@
             });
         };
 
-        window.copyBillLink = async () => {
+        window.copyShareLink = async (side) => {
             const bill = getExportBillContext();
-            const billId = getBillShareId(bill);
-            const billLink = bill?.billLink || buildBillShareLink(billId);
+            if (!bill) return;
+
+            const billLink = side === 'PURCHASE'
+                ? (bill.purchaseBillLink || '')
+                : (bill.salesBillLink || '');
 
             if (!billLink) {
                 alert('Bill link is not ready yet.');
@@ -2612,7 +2725,7 @@
             try {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(billLink);
-                    alert('Bill link copied to clipboard.');
+                    alert(`${side === 'PURCHASE' ? 'Purchase' : 'Sales'} link copied.`);
                     return;
                 }
                 throw new Error('Clipboard API not available');
