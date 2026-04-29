@@ -816,6 +816,15 @@
                             </svg>
                             Download PNG
                         </button>
+                        <button onclick="copyBillLink()"
+                            class="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.828 10.172a4 4 0 00-5.656 0l-3 3a4 4 0 105.657 5.657l1.414-1.414m2.828-2.828l3-3a4 4 0 10-5.657-5.657l-1.414 1.414" />
+                            </svg>
+                            Copy Link
+                        </button>
                     </div>
                 </div>
                 <div class="hidden" id="moreOptionsWrapper">
@@ -1262,6 +1271,39 @@
             return isNegative ? -Math.abs(sideAmount) : Math.abs(sideAmount);
         };
 
+        const getBillShareId = (bill = null) => bill?.billId || bill?.id || '';
+
+        const buildBillShareLink = (billId) => {
+            if (!billId) return '';
+            const url = new URL(window.location.href);
+            url.search = '';
+            url.hash = '';
+            url.searchParams.set('billId', billId);
+            return url.toString();
+        };
+
+        const normalizeExpenseTypeForSheet = (type) => {
+            const value = (type || '').toString().trim();
+            const lower = value.toLowerCase();
+
+            if (lower === 'coolie') return 'Labour';
+            if (lower === 'commission') return 'Agent';
+            if (lower === 'labour') return 'Labour';
+            if (lower === 'agent') return 'Agent';
+            if (lower === 'transport') return 'Transport';
+            if (lower === 'packing') return 'Packing';
+            if (lower === 'advance') return 'Advance';
+
+            return value;
+        };
+
+        const buildSheetExpenses = (expenses) => {
+            return (expenses || []).map(expense => ({
+                ...expense,
+                type: normalizeExpenseTypeForSheet(expense?.type)
+            }));
+        };
+
         const formatSheetItemSummary = (item, side) => {
             const label = (item?.grade || item?.rawGrade || item?.manualGrade || 'Item').toString().trim();
             const crates = parseFloat(item?.crates) || 0;
@@ -1316,9 +1358,12 @@
             const party = getBillSidePartyDetails(bill, side);
             const totals = calculateBillSideTotals(bill, side);
             const sideLabel = side === 'SALES' ? 'Sales Bill' : 'Purchase Invoice';
+            const billId = getBillShareId(bill);
 
             return {
                 id: `${bill.id}-${side}`,
+                billId: billId,
+                billLink: bill?.billLink || buildBillShareLink(billId),
                 transactionId: bill.transactionId || bill.id,
                 masterBillId: bill.id,
                 billSide: side,
@@ -1334,7 +1379,7 @@
                 vendorMob: (bill.vendorMob || '').replace(/\D/g, ''),
                 items: bill.items || [],
                 sheetItemsSummary: buildSheetItemsSummary(bill.items || [], side),
-                expenses: bill.expenses || [],
+                expenses: buildSheetExpenses(bill.expenses || []),
                 total: totals.totalAmount,
                 grossTotal: totals.produceValue,
                 expenseTotal: totals.expenseTotal,
@@ -2374,8 +2419,12 @@
                     else buckets.Other += (e.amount || 0);
                 });
 
+                const billId = "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase();
+                const billLink = buildBillShareLink(billId);
                 const finalData = {
-                    id: "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                    id: billId,
+                    billId: billId,
+                    billLink: billLink,
                     ...data,
                     customerName: party.customerName.toUpperCase(),
                     customerMob: party.customerMob.replace(/\D/g, ''),
@@ -2548,6 +2597,28 @@
                     });
                 });
             });
+        };
+
+        window.copyBillLink = async () => {
+            const bill = getExportBillContext();
+            const billId = getBillShareId(bill);
+            const billLink = bill?.billLink || buildBillShareLink(billId);
+
+            if (!billLink) {
+                alert('Bill link is not ready yet.');
+                return;
+            }
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(billLink);
+                    alert('Bill link copied to clipboard.');
+                    return;
+                }
+                throw new Error('Clipboard API not available');
+            } catch (err) {
+                prompt('Copy bill link', billLink);
+            }
         };
 
         window.setBillType = (type) => {
@@ -2877,8 +2948,10 @@
             document.body.style.overflow = '';
         };
 
-        window.viewPastBill = (id) => {
-            const bill = allHistoryData.find(b => b.id === id);
+        window.viewPastBill = (idOrBill) => {
+            const bill = typeof idOrBill === 'object' && idOrBill
+                ? idOrBill
+                : allHistoryData.find(b => b.id === idOrBill);
             if (!bill) return;
             lastFinalizedBill = bill;
 
@@ -2922,7 +2995,7 @@
             }
 
             // Restore historical metadata
-            document.getElementById('dispGrn').innerHTML = `REF: ${bill.id}`;
+            document.getElementById('dispGrn').innerHTML = `REF: ${bill.billId || bill.id}`;
 
             // Populating visual elements directly for the preview
             billIsFinalized = true;
@@ -3004,6 +3077,32 @@
 
         window.loadMoreHistory = () => {
             loadHistory(true);
+        };
+
+        const getRequestedBillId = () => {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('billId') || params.get('id') || '';
+        };
+
+        const loadBillFromShareLink = async () => {
+            const billId = getRequestedBillId();
+            if (!billId) return false;
+
+            try {
+                const snap = await db.collection('artifacts').doc(appId)
+                    .collection('public').doc('data')
+                    .collection('bills').doc(billId)
+                    .get();
+
+                if (!snap.exists) return false;
+
+                const bill = { id: snap.id, ...snap.data() };
+                viewPastBill(bill);
+                return true;
+            } catch (err) {
+                console.error('Share Link Load Error:', err);
+                return false;
+            }
         };
 
         let historyUnsubscribe = null;
@@ -3238,13 +3337,18 @@
             renderModalHistory(allHistoryData);
         };
 
-        window.onload = () => {
+        window.onload = async () => {
             console.log("Dashboard Booting...");
             try {
                 // Re-init mode to keep UI fresh
                 if (typeof window.setBillType === 'function') window.setBillType('SALES');
 
                 loadHistory();
+                const sharedLoaded = await loadBillFromShareLink();
+                if (sharedLoaded) {
+                    console.log("Shared bill loaded.");
+                    return;
+                }
                 if (typeof updateUI === 'function') updateUI();
                 const dateEl = document.getElementById('displayDate');
                 if (dateEl) {
