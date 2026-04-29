@@ -1177,6 +1177,7 @@
         let expenseSPAmounts = {};
         let expenseSPManual = {};
         let expenseModes = {};
+        let expenseDraftCollapsed = false;
         let expenseDraftDefaults = {
             types: [],
             pp: {},
@@ -1704,6 +1705,14 @@
 
             updateExpensePickerButton();
 
+            // Collapse the draft-entry area after add, and re-open it after delete.
+            if (expenseDraftCollapsed) {
+                area.classList.add('hidden');
+                container.innerHTML = '';
+                addAllBtn.classList.add('hidden');
+                return;
+            }
+
             if (selectedExpenseTypes.length === 0) {
                 area.classList.add('hidden');
                 container.innerHTML = '';
@@ -2019,6 +2028,7 @@
                 addMode: !isSubtract
             });
 
+            expenseDraftCollapsed = true;
             syncExpenseDraftDefaults();
             clearExpenseDraft(type);
             updateUI();
@@ -2046,6 +2056,7 @@
 
             if (added === 0) return;
 
+            expenseDraftCollapsed = true;
             syncExpenseDraftDefaults();
             resetExpenseDrafts();
             updateUI();
@@ -2054,6 +2065,7 @@
         window.removeExpense = (index) => {
             const removed = currentExpenses[index];
             currentExpenses.splice(index, 1);
+            expenseDraftCollapsed = false;
 
             if (removed?.type) {
                 if (!selectedExpenseTypes.includes(removed.type)) {
@@ -2807,6 +2819,7 @@
             currentBillTimestamp = Date.now();
             currentItems = [];
             currentExpenses = [];
+            expenseDraftCollapsed = false;
             resetExpenseDrafts();
 
             const customerName = document.getElementById('customerName');
