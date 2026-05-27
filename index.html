@@ -318,7 +318,7 @@
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
         }
 
-        /* Default state — overridden by setBillType() inline styles */
+        /* Default state ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â overridden by setBillType() inline styles */
 
         #generateBtn {
             background: linear-gradient(135deg, #2db956 0%, #159a46 100%) !important;
@@ -786,11 +786,7 @@
                     </div>
 
                     <div class="mt-3 flex justify-between items-center">
-                        <div class="text-center opacity-0 transition-opacity" id="verifiedSeal">
-                            <div
-                                class="w-14 h-14 border-4 border-double border-[#2DB956] rounded-full flex items-center justify-center text-[#2DB956] font-black text-[9px] transform rotate-[-15deg] leading-tight">
-                                VERIFIED<br>BILL</div>
-                        </div>
+                        <div class="text-center opacity-0 transition-opacity" id="verifiedSeal"></div>
                         <div class="text-[9px] text-gray-400 uppercase tracking-widest font-black" id="dispGrn">REF:
                             UNKNOWN</div>
                     </div>
@@ -1598,7 +1594,7 @@
                 : (parseFloat(item?.price) || parseFloat(item?.purchasePrice) || 0);
             const crateText = `${crates}U`;
             const weightText = `${weight.toFixed(2)}Kg`;
-            const rateText = `₹${rate.toFixed(2)}`;
+            const rateText = `ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹${rate.toFixed(2)}`;
             return `${label} - ${crateText} / ${weightText} @ ${rateText}`;
         };
 
@@ -1923,7 +1919,7 @@
                         <button onclick="toggleExpenseMode('${safeType}')"
                             class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-all active:scale-90 ${isSubtract ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}"
                             title="${isSubtract ? 'Subtract' : 'Add'}">
-                            <span class="text-xs font-bold">${isSubtract ? '−' : '+'}</span>
+                            <span class="text-xs font-bold">${isSubtract ? 'ÃƒÆ’Ã‚Â¢Ãƒâ€¹Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢' : '+'}</span>
                         </button>
                         <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${label}</span>
                         <input type="text" inputmode="decimal" id="${ppId}" value="${expensePPAmounts[type] || ''}"
@@ -2179,7 +2175,7 @@
         window.autoAddSelectedExpense = (type) => {
             const ppAmt = parseFloat(expensePPAmounts[type]) || 0;
             const spAmt = parseFloat(expenseSPAmounts[type]) || 0;
-            if (ppAmt > 0 && spAmt > 0) {
+            if (ppAmt > 0 || spAmt > 0) {
                 addSelectedExpense(type);
             }
         };
@@ -2680,6 +2676,47 @@
             if (packSelect.value !== 'MANUAL') packSelect.value = 'MANUAL';
         };
 
+        const showNotification = (message, type = 'success') => {
+            let container = document.getElementById('custom-toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'custom-toast-container';
+                container.className = 'fixed top-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none no-print';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'flex items-center gap-3 bg-white border-l-4 border-emerald-500 text-gray-800 px-4 py-3.5 rounded-xl shadow-xl transform translate-x-12 opacity-0 transition-all duration-300 pointer-events-auto min-w-[300px] max-w-sm';
+            
+            const icon = type === 'success' 
+                ? '<div class="h-6 w-6 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></div>'
+                : '<div class="h-6 w-6 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></div>';
+            
+            toast.innerHTML = `
+                ${icon}
+                <div class="flex-1">
+                    <p class="text-[10px] font-black uppercase tracking-wider text-emerald-700">${type.toUpperCase()}</p>
+                    <p class="text-[13px] font-bold text-gray-700 mt-0.5">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600 transition-colors ml-2">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        };
+
         window.generateVerifiedBill = async () => {
             if (isSaving) return;
 
@@ -2850,6 +2887,7 @@
                     if (generateBtn) generateBtn.disabled = true;
 
                     loadHistory();
+                    showNotification('Billing completed successfully! Saved & sent to printer.', 'success');
 
                     setTimeout(() => {
                         const prevTitle = document.title;
