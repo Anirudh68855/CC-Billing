@@ -443,17 +443,17 @@
                                 <input type="text" id="vendorName" oninput="updateUI()"
                                     onkeydown="handlePartyEnter(event, 'vendorMob')"
                                     class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
-                                    placeholder="Name">
+                                    placeholder="Farmer Name">
                             </div>
                             <div>
                                 <label
-                                    class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Farmer
+                                    class="sr-only">Farmer
                                     Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="vendorMob" oninput="updateUI()"
                                         onkeydown="handlePartyEnter(event, 'customerName')"
                                         class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
-                                        placeholder="Mobile">
+                                        placeholder="Farmer Mobile">
                                     <div id="vendorMobStatus"
                                         class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
                                     </div>
@@ -465,17 +465,17 @@
                                 <input type="text" id="customerName" oninput="updateUI()"
                                     onkeydown="handlePartyEnter(event, 'customerMob')"
                                     class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-gray-50 focus:bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs"
-                                    placeholder="Name">
+                                    placeholder="Customer Name">
                             </div>
                             <div>
                                 <label
-                                    class="block text-[8px] font-black text-gray-400 uppercase mb-1 tracking-widest">Customer
+                                    class="sr-only">Customer
                                     Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="customerMob" oninput="updateUI()"
                                         onkeydown="handlePartyEnter(event, 'pName')"
                                         class="w-full border border-gray-100 rounded-xl px-3 py-2.5 min-h-[44px] bg-white focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-xs font-mono"
-                                        placeholder="Mobile">
+                                        placeholder="Customer Mobile">
                                     <div id="customerMobStatus"
                                         class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-tighter">
                                     </div>
@@ -728,7 +728,8 @@
                             </div>
                         </div>
                         <div class="border-x border-gray-200">
-                            <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1" id="totalPackLabel">
+                            <div class="text-[9px] font-bold text-gray-400 flex justify-center space-x-1"
+                                id="totalPackLabel">
                                 <span>TOTAL</span><span>CRATES</span>
                             </div>
                             <div class="text-base font-black text-gray-900 flex justify-center" id="dispTotalCrates">0
@@ -814,10 +815,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Download PNG
+                            Download JPG
                         </button>
                     </div>
-                    <div class="mt-2 grid grid-cols-2 gap-2">
+                    <div class="hidden mt-2 grid grid-cols-2 gap-2" id="shareLinkActions">
                         <button onclick="copyShareLink('PURCHASE')"
                             class="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-wider transition-all active:scale-95">
                             Copy Purchase Link
@@ -901,8 +902,9 @@
                 <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-6">Enter a custom expense
                     type</p>
                 <input type="text" id="customExpensePromptInput" placeholder="Type Expense Name..."
+                    oninput="formatCustomExpenseInput(this)"
                     onkeydown="if(event.key === 'Enter') confirmCustomExpensePrompt()"
-                    class="w-full bg-gray-50 border-2 border-gray-100 placeholder-gray-300 text-gray-900 rounded-xl px-4 py-4 font-black uppercase text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all mb-6">
+                    class="w-full bg-gray-50 border-2 border-gray-100 placeholder-gray-300 text-gray-900 rounded-xl px-4 py-4 font-black normal-case text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all mb-6">
                 <div class="flex gap-3">
                     <button onclick="closeCustomExpensePrompt()"
                         class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">Cancel</button>
@@ -1015,7 +1017,8 @@
                         Selected</span>
                     <div class="flex items-center gap-3">
                         <button onclick="selectAllGradesInPicker()"
-                            class="text-[9px] font-black text-blue-500 uppercase hover:text-blue-700">Select All</button>
+                            class="text-[9px] font-black text-blue-500 uppercase hover:text-blue-700">Select
+                            All</button>
                         <button onclick="clearPickerSelection()"
                             class="text-[9px] font-black text-red-400 uppercase hover:text-red-600">Clear All</button>
                     </div>
@@ -1081,9 +1084,12 @@
 
     <script>
         let db, auth;
+        let firebaseAuthReady = Promise.resolve(null);
         const appId = 'nj-billing-v2';
         const CC_ACCESS_CODE = "temp123";
         const GOOGLE_SHEETS_URL = "https://script.google.com/a/macros/ninjacart.com/s/AKfycbwMq1-SdwAsABFTXjZCOTepAvxdC7LshDDTQOo2iR06CmWxjMUvsMiu0zSsbdgdvxd4pw/exec";
+        const LOCAL_BILLS_KEY = `${appId}:offline-bills`;
+        const LOCAL_DELETED_BILLS_KEY = `${appId}:deleted-bills`;
 
         try {
             const firebaseConfig = {
@@ -1102,6 +1108,23 @@
 
             db = firebase.firestore();
             auth = firebase.auth();
+            firebaseAuthReady = new Promise((resolve) => {
+                let unsubscribe = null;
+                unsubscribe = auth.onAuthStateChanged((user) => {
+                    if (unsubscribe) unsubscribe();
+                    if (user) {
+                        resolve(user);
+                        return;
+                    }
+
+                    auth.signInAnonymously()
+                        .then((cred) => resolve(cred.user))
+                        .catch((err) => {
+                            console.warn("Anonymous auth unavailable:", err);
+                            resolve(null);
+                        });
+                });
+            });
         } catch (e) {
             console.error("Firebase Error:", e);
 
@@ -1166,6 +1189,7 @@
 
             db = { collection: mockCollection };
             auth = { onAuthStateChanged: (cb) => cb({ uid: 'mock-user-123' }) };
+            firebaseAuthReady = Promise.resolve({ uid: 'mock-user-123' });
         }
 
         let currentItems = [];
@@ -1195,6 +1219,129 @@
         let lastHistoryDoc = null;
         const HISTORY_PAGE_SIZE = 50;
 
+        const isFirebasePermissionError = (err) => {
+            const code = (err?.code || '').toString().toLowerCase();
+            const message = (err?.message || err || '').toString().toLowerCase();
+            return code.includes('permission-denied') || message.includes('missing or insufficient permissions');
+        };
+
+        const getLocalBills = () => {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_BILLS_KEY) || '[]');
+            } catch (err) {
+                console.warn("Local bill cache read failed:", err);
+                return [];
+            }
+        };
+
+        const getDeletedBillIds = () => {
+            try {
+                return JSON.parse(localStorage.getItem(LOCAL_DELETED_BILLS_KEY) || '[]');
+            } catch (err) {
+                console.warn("Local deleted bill list read failed:", err);
+                return [];
+            }
+        };
+
+        const filterDeletedBills = (bills) => {
+            const deletedIds = new Set(getDeletedBillIds());
+            return (bills || []).filter(b => !deletedIds.has(b.id));
+        };
+
+        const markBillDeletedLocally = (billId) => {
+            try {
+                const deletedIds = getDeletedBillIds().filter(id => id !== billId);
+                deletedIds.unshift(billId);
+                localStorage.setItem(LOCAL_DELETED_BILLS_KEY, JSON.stringify(deletedIds.slice(0, 500)));
+            } catch (err) {
+                console.error("Local deleted bill list write failed:", err);
+            }
+        };
+
+        const saveBillToLocalHistory = (bill) => {
+            try {
+                const bills = getLocalBills().filter(b => b.id !== bill.id);
+                bills.unshift(bill);
+                localStorage.setItem(LOCAL_BILLS_KEY, JSON.stringify(bills.slice(0, 200)));
+                allHistoryData = bills;
+                if (typeof renderHistoryQueue === 'function') renderHistoryQueue(allHistoryData);
+                return true;
+            } catch (err) {
+                console.error("Local bill cache write failed:", err);
+                return false;
+            }
+        };
+
+        const deleteBillFromLocalHistory = (billId) => {
+            markBillDeletedLocally(billId);
+            try {
+                const bills = getLocalBills().filter(b => b.id !== billId);
+                localStorage.setItem(LOCAL_BILLS_KEY, JSON.stringify(bills));
+            } catch (err) {
+                console.error("Local bill cache delete failed:", err);
+            }
+
+            allHistoryData = allHistoryData.filter(b => b.id !== billId);
+            if (lastFinalizedBill && lastFinalizedBill.id === billId) lastFinalizedBill = null;
+        };
+
+        const getBillDeleteIdentifiers = (billOrId) => {
+            const bill = typeof billOrId === 'object' && billOrId ? billOrId : null;
+            const masterId = (bill?.masterBillId || bill?.id || bill?.billId || billOrId || '').toString();
+            const ids = new Set();
+
+            [masterId, bill?.id, bill?.billId, bill?.transactionId, bill?.purchaseBillId, bill?.salesBillId]
+                .filter(Boolean)
+                .forEach(id => ids.add(id.toString()));
+
+            if (masterId) {
+                ids.add(`${masterId}-PURCHASE`);
+                ids.add(`${masterId}-SALES`);
+            }
+
+            return {
+                masterId,
+                ids: [...ids].filter(Boolean)
+            };
+        };
+
+        const syncDeleteBillToGoogleSheets = (billOrId, options = {}) => {
+            if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") return;
+
+            const { masterId, ids } = getBillDeleteIdentifiers(billOrId);
+            if (ids.length === 0) return;
+
+            ids.forEach((deleteId, idx) => {
+                const suffix = deleteId.endsWith('-PURCHASE') ? 'PURCHASE' : (deleteId.endsWith('-SALES') ? 'SALES' : 'ALL');
+                setTimeout(() => {
+                    syncToGoogleSheets({
+                        id: deleteId,
+                        billId: deleteId,
+                        masterBillId: masterId || deleteId,
+                        transactionId: deleteId,
+                        deleteIds: ids,
+                        action: 'delete',
+                        billSide: suffix
+                    }, { quiet: options.quiet !== false });
+                }, idx * 120);
+            });
+        };
+
+        const retryPendingSheetDeletes = () => {
+            getDeletedBillIds().forEach((billId, idx) => {
+                setTimeout(() => syncDeleteBillToGoogleSheets(billId), idx * 400);
+            });
+        };
+
+        const renderLocalHistoryFromCache = () => {
+            const localBills = filterDeletedBills(getLocalBills());
+            if (localBills.length > 0) {
+                allHistoryData = localBills;
+                renderHistoryQueue(allHistoryData);
+            }
+            return localBills;
+        };
+
         const sanitizeFilePart = (value, fallback = 'Vendor') => {
             return (value || fallback)
                 .toString()
@@ -1203,6 +1350,10 @@
                 .replace(/[^a-zA-Z0-9_-]/g, '_')
                 .replace(/_+/g, '_')
                 .replace(/^_+|_+$/g, '') || fallback;
+        };
+
+        const safeUpper = (value, fallback = '') => {
+            return (value || fallback).toString().trim().toUpperCase();
         };
 
         const formatBillDateForFile = (ts) => {
@@ -1264,6 +1415,13 @@
                 : { name: party.vendorName, mob: party.vendorMob, role: 'Vendor' };
         };
 
+        const hasPartyDetailsForSide = (bill, side) => {
+            if (side === 'SALES') {
+                return !!((bill?.customerName || '').trim() || (bill?.customerMob || '').trim());
+            }
+            return !!((bill?.vendorName || '').trim() || (bill?.vendorMob || '').trim());
+        };
+
         const getBillSidePartyDetails = (bill, side) => {
             if (side === 'PURCHASE') {
                 return {
@@ -1291,12 +1449,18 @@
             return `${prefix}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
         };
 
-        const buildBillPageLink = (pageName, billId) => {
+        const buildBillPageLink = (pageName, billId, billData) => {
             if (!billId) return '';
             const url = new URL(pageName, window.location.href);
             url.search = '';
             url.hash = '';
             url.searchParams.set('billId', billId);
+            if (billData) {
+                try {
+                    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(billData))));
+                    url.searchParams.set('data', encoded);
+                } catch(e) { console.error('Failed to encode link data', e); }
+            }
             return url.toString();
         };
 
@@ -1319,6 +1483,8 @@
 
             return value;
         };
+
+        const displayExpenseType = (type) => normalizeExpenseTypeForSheet(type);
 
         const buildSheetExpenses = (expenses) => {
             return (expenses || []).map(expense => ({
@@ -1367,11 +1533,11 @@
                 billSide: side,
                 billLabel: side === 'PURCHASE' ? 'Purchase Bill' : 'Sales Bill',
                 masterBillId: bill.id,
-                transactionId: bill.transactionId || bill.id,
+                transactionId: shareBillId,
                 ts: bill.ts,
                 status: bill.status || 'ACCEPTED',
                 type: side,
-                name: party.name.toUpperCase(),
+                name: safeUpper(party.name, side === 'PURCHASE' ? 'Vendor' : 'Customer'),
                 vId: (party.mob || '').replace(/\D/g, ''),
                 customerName: bill.customerName || '',
                 customerMob: (bill.customerMob || '').replace(/\D/g, ''),
@@ -1390,17 +1556,30 @@
         const saveSharedBillsToFirebase = async (bill) => {
             const purchaseBillId = bill.purchaseBillId || generateBillId('PB');
             const salesBillId = bill.salesBillId || generateBillId('SB');
-            const purchaseBillLink = bill.purchaseBillLink || buildBillPageLink('purchase-bill.html', purchaseBillId);
-            const salesBillLink = bill.salesBillLink || buildBillPageLink('sales-bill.html', salesBillId);
+            
+            // Build the share record first to encode it
+            const purchaseShare = buildSharedBillRecord(bill, 'PURCHASE', purchaseBillId, '');
+            const salesShare = buildSharedBillRecord(bill, 'SALES', salesBillId, '');
 
-            const purchaseShare = buildSharedBillRecord(bill, 'PURCHASE', purchaseBillId, purchaseBillLink);
-            const salesShare = buildSharedBillRecord(bill, 'SALES', salesBillId, salesBillLink);
+            // Generate stateless links using encoded data
+            const purchaseBillLink = bill.purchaseBillLink || buildBillPageLink('purchase-bill.html', purchaseBillId, purchaseShare);
+            const salesBillLink = bill.salesBillLink || buildBillPageLink('sales-bill.html', salesBillId, salesShare);
+
+            // Update the share records with the correct links
+            purchaseShare.billLink = purchaseBillLink;
+            salesShare.billLink = salesBillLink;
 
             const sharesRoot = db.collection('artifacts').doc(appId).collection('public').doc('data');
-            await Promise.all([
-                sharesRoot.collection('purchaseBills').doc(purchaseBillId).set(purchaseShare),
-                sharesRoot.collection('salesBills').doc(salesBillId).set(salesShare)
-            ]);
+            try {
+                await firebaseAuthReady;
+                await Promise.all([
+                    sharesRoot.collection('purchaseBills').doc(purchaseBillId).set(purchaseShare),
+                    sharesRoot.collection('salesBills').doc(salesBillId).set(salesShare)
+                ]);
+            } catch (err) {
+                if (!isFirebasePermissionError(err)) throw err;
+                console.warn("Share bill cloud save blocked by Firebase rules. Using stateless bill links.", err);
+            }
 
             return {
                 purchaseBillId: purchaseBillId,
@@ -1470,14 +1649,14 @@
                 id: `${bill.id}-${side}`,
                 billId: billId,
                 billLink: getShareBillLink(bill, side),
-                transactionId: bill.transactionId || bill.id,
+                transactionId: billId,
                 masterBillId: bill.id,
                 billSide: side,
                 billLabel: sideLabel,
                 type: side,
                 status: bill.status || 'ACCEPTED',
                 ts: bill.ts,
-                name: party.name.toUpperCase(),
+                name: safeUpper(party.name, side === 'PURCHASE' ? 'Vendor' : 'Customer'),
                 vId: (party.mob || '').replace(/\D/g, ''),
                 customerName: bill.customerName || '',
                 customerMob: (bill.customerMob || '').replace(/\D/g, ''),
@@ -1498,10 +1677,11 @@
 
         const syncFinalBillToGoogleSheets = (bill) => {
             if (GOOGLE_SHEETS_URL === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") return;
-            const payloads = [
-                buildSheetPayloadForSide(bill, 'SALES'),
-                buildSheetPayloadForSide(bill, 'PURCHASE')
-            ];
+            const sides = [bill.type || activeBillType];
+            if (hasPartyDetailsForSide(bill, 'SALES') && hasPartyDetailsForSide(bill, 'PURCHASE')) {
+                sides.splice(0, sides.length, 'SALES', 'PURCHASE');
+            }
+            const payloads = sides.map(side => buildSheetPayloadForSide(bill, side));
 
             payloads.forEach((payload, idx) => {
                 setTimeout(() => syncToGoogleSheets(payload, { quiet: idx > 0, statusKey: idx === 0 ? 'histSyncStatus' : null }), idx * 150);
@@ -1581,8 +1761,8 @@
 
         const EXPENSE_TYPE_OPTIONS = [
             { value: 'Transport', label: 'Transport / Freight' },
-            { value: 'Collie', label: 'Collie Charges' },
-            { value: 'Commission', label: 'Commission' },
+            { value: 'Labour', label: 'Labour Charges' },
+            { value: 'Agent', label: 'Agent' },
             { value: 'Packing', label: 'Packing Material' }
         ];
 
@@ -1660,13 +1840,14 @@
                 expListBody.innerHTML = currentExpenses.map((e, idx) => {
                     const pp = e.pp !== undefined ? parseFloat(e.pp) : Math.abs(parseFloat(e.amount || 0));
                     const sp = e.sp !== undefined ? parseFloat(e.sp) : Math.abs(parseFloat(e.amount || 0));
+                    const label = displayExpenseType(e.type);
 
                     return `
                     <div class="bg-white px-3 py-2.5 transition-colors hover:bg-gray-50 min-w-[360px] sm:min-w-0">
                         <div class="flex items-center gap-2.5 sm:items-center">
                             <div class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold">+</div>
                             <div class="flex-1 min-w-0">
-                                <div class="text-[12px] font-semibold text-gray-800">${e.type}</div>
+                                <div class="text-[12px] font-semibold text-gray-800">${label}</div>
                                 <div class="mt-0.5 flex items-center gap-2.5 text-[9px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:hidden">
                                     <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
                                     <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
@@ -1701,9 +1882,10 @@
                 const pp = e.pp !== undefined ? e.pp : Math.abs(e.amount || 0);
                 const sp = e.sp !== undefined ? e.sp : Math.abs(e.amount || 0);
                 const displayVal = activeBillType === 'SALES' ? sp : pp;
+                const label = displayExpenseType(e.type);
                 return `
                 <tr class="${isSub ? 'text-red-600' : 'text-blue-600'}">
-                    <td colspan="4" class="py-2 text-right text-[10px] uppercase font-bold">${isSub ? '(-)' : '(+)'} ${e.type}</td>
+                    <td colspan="4" class="py-2 text-right text-[10px] uppercase font-bold">${isSub ? '(-)' : '(+)'} ${label}</td>
                     <td class="py-2 text-right font-mono font-bold">${isSub ? '-&#x20B9;' : '&#x20B9;'}${displayVal.toFixed(2)}</td>
                 </tr>`;
             }).join('');
@@ -1734,6 +1916,7 @@
                 const spId = `expense_sp_${expenseTypeKey(type)}`;
                 const isSubtract = expenseModes[type] === 'subtract';
                 const isCustom = !DEFAULT_EXPENSE_TYPES.includes(type);
+                const label = displayExpenseType(type);
 
                 return `
                     <div class="flex items-center gap-2 py-2.5">
@@ -1742,7 +1925,7 @@
                             title="${isSubtract ? 'Subtract' : 'Add'}">
                             <span class="text-xs font-bold">${isSubtract ? '−' : '+'}</span>
                         </button>
-                        <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${type}</span>
+                        <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${label}</span>
                         <input type="text" inputmode="decimal" id="${ppId}" value="${expensePPAmounts[type] || ''}"
                             oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateExpensePP('${safeType}', this.value)"
                             onfocus="this.select()"
@@ -1812,8 +1995,8 @@
 
             const iconMap = {
                 Transport: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>',
-                Collie: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>',
-                Commission: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>',
+                Labour: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>',
+                Agent: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>',
                 Packing: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>'
             };
 
@@ -1836,13 +2019,14 @@
             html += customExpenseTypes.map(type => {
                 const safeType = type.replace(/'/g, "\\'");
                 const isSelected = expensePickerSelected.includes(type);
+                const label = displayExpenseType(type);
                 return `
                     <button onclick="toggleExpenseInPicker('${safeType}')" class="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 active:bg-gray-100">
                         <div class="flex h-8 w-8 items-center justify-center rounded-lg ${isSelected ? 'bg-orange-50' : 'bg-gray-100'}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ${isSelected ? 'text-orange-500' : 'text-gray-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-[13px] font-medium text-gray-800">${type}</p>
+                            <p class="text-[13px] font-medium text-gray-800">${label}</p>
                             <p class="text-[11px] text-gray-400">Custom Expense</p>
                         </div>
                         ${isSelected ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' : ''}
@@ -1881,9 +2065,30 @@
             }
         };
 
+        const toExpenseSentenceCase = (value) => {
+            const cleanValue = (value || '')
+                .toString()
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, ' ');
+            return cleanValue ? cleanValue.charAt(0).toUpperCase() + cleanValue.slice(1) : '';
+        };
+
+        window.formatCustomExpenseInput = (input) => {
+            if (!input) return;
+            const cursor = input.selectionStart;
+            const formatted = toExpenseSentenceCase(input.value);
+            if (input.value !== formatted) {
+                input.value = formatted;
+                input.setSelectionRange(input.value.length, input.value.length);
+            } else if (cursor !== null) {
+                input.setSelectionRange(cursor, cursor);
+            }
+        };
+
         window.confirmCustomExpensePrompt = () => {
             const input = document.getElementById('customExpensePromptInput');
-            const name = input ? input.value.trim().toUpperCase() : '';
+            const name = input ? toExpenseSentenceCase(input.value) : '';
             if (!name) {
                 closeCustomExpensePrompt();
                 return;
@@ -2010,6 +2215,24 @@
 
         const resetExpenseDrafts = () => {
             restoreExpenseDraftDefaults();
+            renderSelectedExpenseDrafts();
+            updateExpensePickerUI();
+        };
+
+        const clearExpenseDraftsForNewBill = () => {
+            expenseDraftDefaults = {
+                types: [...DEFAULT_EXPENSE_TYPES],
+                pp: {},
+                sp: {},
+                manual: {},
+                modes: {}
+            };
+            selectedExpenseTypes = [...DEFAULT_EXPENSE_TYPES];
+            expensePickerSelected = [...DEFAULT_EXPENSE_TYPES];
+            expensePPAmounts = {};
+            expenseSPAmounts = {};
+            expenseSPManual = {};
+            expenseModes = {};
             renderSelectedExpenseDrafts();
             updateExpensePickerUI();
         };
@@ -2396,16 +2619,19 @@
         window.commitInlineItem = (idx) => {
             const item = currentItems[idx];
             const qty = parseFloat(item.crates) || 0;
-            const price = parseFloat(item.price) || 0;
+            const price = activeBillType === 'PURCHASE'
+                ? (parseFloat(item.purchasePrice) || 0)
+                : (parseFloat(item.price) || 0);
 
             if (qty <= 0 || price <= 0) {
                 if (qty <= 0) document.getElementById(`inline_qty_${idx}`).focus();
-                else document.getElementById(`inline_price_${idx}`).focus();
+                else document.getElementById(activeBillType === 'PURCHASE' ? `inline_pp_${idx}` : `inline_price_${idx}`).focus();
                 return;
             }
 
             item.crates = qty;
-            item.price = price;
+            if (activeBillType === 'PURCHASE') item.purchasePrice = price;
+            else item.price = price;
             item.total = item.weight * price;
             updateUI();
 
@@ -2460,20 +2686,21 @@
             const party = getPartyDetails();
             const activeParty = getActivePartyDetails();
             const activeMob = (activeParty.mob || "").replace(/\D/g, '');
-            if (activeMob.length !== 10) { alert(activeBillType === 'SALES' ? "ERROR: Please enter a valid 10-digit customer mobile number." : "ERROR: Please enter a valid 10-digit vendor mobile number."); return; }
 
             if (currentItems.length === 0) { alert("Add items first."); return; }
 
             isSaving = true;
             const loader = document.getElementById('loader');
-            loader.classList.remove('hidden');
+            if (loader) loader.classList.remove('hidden');
 
             try {
                 // STABILITY FIX: Auto-calculate any uncommitted rows before saving
                 currentItems.forEach(item => {
                     if (item.total === 0) {
                         const qty = parseFloat(item.crates) || 0;
-                        const price = parseFloat(item.price) || 0;
+                        const price = activeBillType === 'PURCHASE'
+                            ? (parseFloat(item.purchasePrice) || 0)
+                            : (parseFloat(item.price) || 0);
                         if (qty > 0 && price > 0) {
                             if (item.packType !== 'MANUAL') item.weight = qty * (PACK_MULTIPLIERS[item.packType] || 0);
                             item.total = item.weight * price;
@@ -2481,14 +2708,29 @@
                     }
                 });
 
+                const billableItems = currentItems.filter(i => {
+                    const weight = parseFloat(i.weight) || 0;
+                    const rate = activeBillType === 'PURCHASE'
+                        ? (parseFloat(i.purchasePrice) || 0)
+                        : (parseFloat(i.price) || 0);
+                    return weight > 0 && rate > 0;
+                });
+
+                if (billableItems.length === 0) {
+                    alert(activeBillType === 'PURCHASE'
+                        ? "Add at least one item with qty and PP."
+                        : "Add at least one item with qty and SP.");
+                    return;
+                }
+
                 const data = {
-                    customerName: party.customerName.toUpperCase(),
+                    customerName: safeUpper(party.customerName),
                     customerMob: party.customerMob.replace(/\D/g, ''),
-                    vendorName: party.vendorName.toUpperCase(),
+                    vendorName: safeUpper(party.vendorName),
                     vendorMob: party.vendorMob.replace(/\D/g, ''),
-                    name: activeParty.name.toUpperCase() || "VENDOR",
+                    name: safeUpper(activeParty.name, activeBillType === 'SALES' ? 'CUSTOMER' : 'VENDOR'),
                     vId: activeMob || "NJ-XXXX",
-                    items: currentItems.filter(i => i.total > 0),
+                    items: billableItems,
                     expenses: currentExpenses,
                     status: 'ACCEPTED',
                     type: activeBillType,
@@ -2526,15 +2768,16 @@
 
                 const buckets = { Transport: 0, Labour: 0, Packing: 0, Agent: 0, Advance: 0, Other: 0 };
                 data.expenses.forEach(e => {
-                    if (buckets.hasOwnProperty(e.type)) buckets[e.type] += (e.amount || 0);
+                    const bucketType = normalizeExpenseTypeForSheet(e.type);
+                    if (buckets.hasOwnProperty(bucketType)) buckets[bucketType] += (e.amount || 0);
                     else buckets.Other += (e.amount || 0);
                 });
 
                 const billId = "NC26" + Math.random().toString(36).substr(2, 6).toUpperCase();
                 const purchaseBillId = generateBillId("PB");
                 const salesBillId = generateBillId("SB");
-                const purchaseBillLink = buildBillPageLink('purchase-bill.html', purchaseBillId);
-                const salesBillLink = buildBillPageLink('sales-bill.html', salesBillId);
+                const purchaseBillLink = '';
+                const salesBillLink = '';
                 const finalData = {
                     id: billId,
                     billId: billId,
@@ -2544,12 +2787,12 @@
                     salesBillId: salesBillId,
                     salesBillLink: salesBillLink,
                     ...data,
-                    customerName: party.customerName.toUpperCase(),
+                    customerName: safeUpper(party.customerName),
                     customerMob: party.customerMob.replace(/\D/g, ''),
-                    vendorName: party.vendorName.toUpperCase(),
+                    vendorName: safeUpper(party.vendorName),
                     vendorMob: party.vendorMob.replace(/\D/g, ''),
-                    name: activeParty.name.toUpperCase(),
-                    vId: activeMob,
+                    name: safeUpper(activeParty.name, activeBillType === 'SALES' ? 'CUSTOMER' : 'VENDOR'),
+                    vId: activeMob || "NJ-XXXX",
                     total: totalAmount,
                     margin: netProfit,
                     marginPercent: profitPercentage,
@@ -2560,7 +2803,14 @@
 
                 const ref = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(finalData.id);
 
-                await ref.set(finalData);
+                await firebaseAuthReady;
+                try {
+                    await ref.set(finalData);
+                } catch (saveErr) {
+                    if (!isFirebasePermissionError(saveErr)) throw saveErr;
+                    console.warn("Main bill cloud save blocked by Firebase rules. Saved locally instead.", saveErr);
+                    saveBillToLocalHistory(finalData);
+                }
 
                 try {
                     const shareIds = await saveSharedBillsToFirebase(finalData);
@@ -2569,7 +2819,12 @@
                     finalData.salesBillId = shareIds.salesBillId;
                     finalData.salesBillLink = shareIds.salesBillLink;
                     finalData.billLink = shareIds.salesBillLink;
-                    await ref.set(finalData);
+                    try {
+                        await ref.set(finalData);
+                    } catch (updateErr) {
+                        if (!isFirebasePermissionError(updateErr)) throw updateErr;
+                        saveBillToLocalHistory(finalData);
+                    }
                 } catch (shareErr) {
                     console.error("Share Bill Save Error:", shareErr);
                 }
@@ -2609,9 +2864,9 @@
                 }
             } catch (e) {
                 console.error("BILL SAVE ERR:", e);
-                alert("STABILITY ALERT: Save failed. Try again.");
+                alert("STABILITY ALERT: Save failed. Try again. \n" + (e.stack || e.message || e));
             } finally {
-                loader.classList.add('hidden');
+                if (loader) loader.classList.add('hidden');
                 isSaving = false;
             }
         };
@@ -2679,7 +2934,7 @@
             isDownloading = true;
 
             const bill = document.getElementById('billPreview');
-            const filename = `${buildBillFileBaseName(getExportBillContext())}.png`;
+            const filename = `${buildBillFileBaseName(getExportBillContext())}.jpg`;
 
             // Clone-based export to prevent layout issues
             const exportHost = document.createElement('div');
@@ -2714,7 +2969,7 @@
                     }).then(canvas => {
                         const link = document.createElement('a');
                         link.download = filename;
-                        link.href = canvas.toDataURL('image/png', 1.0);
+                        link.href = canvas.toDataURL('image/jpeg', 0.95);
                         link.click();
                         exportHost.remove();
                         isDownloading = false;
@@ -2822,10 +3077,11 @@
 
         window.newTransaction = () => {
             billIsFinalized = false;
+            lastFinalizedBill = null;
             currentBillTimestamp = Date.now();
             currentItems = [];
             currentExpenses = [];
-            resetExpenseDrafts();
+            clearExpenseDraftsForNewBill();
 
             const customerName = document.getElementById('customerName');
             const customerMob = document.getElementById('customerMob');
@@ -2841,12 +3097,14 @@
             const newBtn = document.getElementById('newBillBtn');
             const generateBtn = document.getElementById('generateBtn');
             const btnText = document.getElementById('generateBtnText');
+            const refLabel = document.getElementById('dispGrn');
 
             if (customerName) customerName.value = "";
             if (customerMob) customerMob.value = "";
             if (vendorName) vendorName.value = "";
             if (vendorMob) vendorMob.value = "";
             if (seal) seal.style.opacity = '0';
+            if (refLabel) refLabel.innerText = "REF: UNKNOWN";
 
             if (badge) {
                 badge.innerText = "Creation Mode";
@@ -3258,7 +3516,7 @@
                             snap.forEach(d => newBills.push({ id: d.id, ...d.data() }));
 
                             // Update the head of our local array
-                            allHistoryData = newBills;
+                            allHistoryData = filterDeletedBills(newBills);
                             if (snap.docs.length > 0) {
                                 lastHistoryDoc = snap.docs[snap.docs.length - 1];
                             }
@@ -3268,7 +3526,10 @@
                             if (snap.docs.length === HISTORY_PAGE_SIZE) {
                                 document.getElementById('loadMoreArea').classList.remove('hidden');
                             }
-                        }, err => console.error("Sync Error:", err));
+                        }, err => {
+                            console.error("Sync Error:", err);
+                            if (isFirebasePermissionError(err)) renderLocalHistoryFromCache();
+                        });
                 } else {
                     // One-time fetch for Load More
                     let query = db.collection('artifacts').doc(appId)
@@ -3289,7 +3550,7 @@
                     const paginatedBills = [];
                     snap.forEach(d => paginatedBills.push({ id: d.id, ...d.data() }));
 
-                    allHistoryData = [...allHistoryData, ...paginatedBills];
+                    allHistoryData = filterDeletedBills([...allHistoryData, ...paginatedBills]);
                     renderHistoryQueue(allHistoryData);
 
                     if (snap.docs.length < HISTORY_PAGE_SIZE) {
@@ -3298,7 +3559,11 @@
                 }
             } catch (e) {
                 console.error("History Load Error:", e);
-                renderHistoryQueue([]); // Clear "Ready to Sync" even on error
+                if (isFirebasePermissionError(e)) {
+                    renderLocalHistoryFromCache();
+                } else {
+                    renderHistoryQueue([]); // Clear "Ready to Sync" even on error
+                }
             }
         };
 
@@ -3351,22 +3616,22 @@
         };
         window.executeDelete = async () => {
             if (!pendingDeleteId) return;
+            const deleteId = pendingDeleteId;
+            const billToDelete = allHistoryData.find(b => b.id === deleteId)
+                || getLocalBills().find(b => b.id === deleteId)
+                || (lastFinalizedBill && lastFinalizedBill.id === deleteId ? lastFinalizedBill : null)
+                || deleteId;
             try {
-                await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(pendingDeleteId).delete();
-
-                allHistoryData = allHistoryData.filter(b => b.id !== pendingDeleteId);
-                if (lastFinalizedBill && lastFinalizedBill.id === pendingDeleteId) lastFinalizedBill = null;
-
-                // Trigger Google Sheets deletion
-                if (GOOGLE_SHEETS_URL) {
-                    syncToGoogleSheets({
-                        id: pendingDeleteId,
-                        masterBillId: pendingDeleteId,
-                        transactionId: pendingDeleteId,
-                        action: 'delete',
-                        billSide: 'ALL'
-                    });
+                try {
+                    await firebaseAuthReady;
+                    await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('bills').doc(deleteId).delete();
+                } catch (deleteErr) {
+                    if (!isFirebasePermissionError(deleteErr)) throw deleteErr;
+                    console.warn("Cloud delete blocked by Firebase rules. Removed locally instead.", deleteErr);
                 }
+
+                deleteBillFromLocalHistory(deleteId);
+                syncDeleteBillToGoogleSheets(billToDelete, { quiet: false });
 
                 closeDeleteModal();
                 refreshHistoryViews();
@@ -3476,6 +3741,7 @@
                 if (typeof window.setBillType === 'function') window.setBillType('SALES');
 
                 loadHistory();
+                retryPendingSheetDeletes();
                 const sharedLoaded = await loadBillFromShareLink();
                 if (sharedLoaded) {
                     console.log("Shared bill loaded.");
