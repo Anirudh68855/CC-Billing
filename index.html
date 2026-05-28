@@ -318,7 +318,7 @@
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
         }
 
-        /* Default state ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â overridden by setBillType() inline styles */
+        /* Default state ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â overridden by setBillType() inline styles */
 
         #generateBtn {
             background: linear-gradient(135deg, #2db956 0%, #159a46 100%) !important;
@@ -1594,7 +1594,7 @@
                 : (parseFloat(item?.price) || parseFloat(item?.purchasePrice) || 0);
             const crateText = `${crates}U`;
             const weightText = `${weight.toFixed(2)}Kg`;
-            const rateText = `ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹${rate.toFixed(2)}`;
+            const rateText = `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹${rate.toFixed(2)}`;
             return `${label} - ${crateText} / ${weightText} @ ${rateText}`;
         };
 
@@ -1919,7 +1919,7 @@
                         <button onclick="toggleExpenseMode('${safeType}')"
                             class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-all active:scale-90 ${isSubtract ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}"
                             title="${isSubtract ? 'Subtract' : 'Add'}">
-                            <span class="text-xs font-bold">${isSubtract ? 'ÃƒÆ’Ã‚Â¢Ãƒâ€¹Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢' : '+'}</span>
+                            <span class="text-xs font-bold">${isSubtract ? 'ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢' : '+'}</span>
                         </button>
                         <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${label}</span>
                         <input type="text" inputmode="decimal" id="${ppId}" value="${expensePPAmounts[type] || ''}"
@@ -2146,6 +2146,21 @@
             closeExpensePicker();
         };
 
+
+        const updateAddAllButton = () => {
+            const addAllBtn = document.getElementById('addAllExpensesBtn');
+            if (!addAllBtn) return;
+            const filledCount = selectedExpenseTypes.filter(type => {
+                const ppAmt = parseFloat(expensePPAmounts[type]) || 0;
+                const spAmt = parseFloat(expenseSPAmounts[type]) || 0;
+                return ppAmt > 0 || spAmt > 0;
+            }).length;
+            addAllBtn.classList.toggle('hidden', filledCount === 0);
+            if (filledCount > 0) {
+                addAllBtn.innerText = `Add All at Once (${filledCount})`;
+            }
+        };
+
         window.updateExpensePP = (type, value) => {
             expensePPAmounts[type] = value;
             // Auto-mirror to SP only if user hasn't manually edited SP
@@ -2157,6 +2172,7 @@
                 }
             }
             syncExpenseDraftDefaults();
+            updateAddAllButton();
         };
 
         window.updateExpenseSP = (type, value) => {
@@ -2170,6 +2186,7 @@
                 expenseSPManual[type] = false;
             }
             syncExpenseDraftDefaults();
+            updateAddAllButton();
         };
 
         window.autoAddSelectedExpense = (type) => {
