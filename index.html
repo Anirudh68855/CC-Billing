@@ -572,23 +572,20 @@
                     </div>
                 </div>
 
-                <div id="lineItemsArea"
-                    class="hidden border border-gray-100 rounded-2xl overflow-x-auto overflow-y-hidden mt-3 shadow-sm bg-white"
-                    style="-webkit-overflow-scrolling: touch;">
-                    <table class="w-full min-w-[680px] text-[9px]">
-                        <thead class="bg-gray-50 text-gray-400 font-bold uppercase">
-                            <tr>
-                                <th class="p-2 text-left">Grade</th>
-                                <th class="p-2 text-right">Qty</th>
-                                <th class="p-2 text-right">PP</th>
-                                <th class="p-2 text-right">SP</th>
-                                <th class="p-2 text-right">Margin</th>
-                                <th class="p-2 text-right">Value</th>
-                                <th class="p-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="lineItemsBody" class="divide-y divide-gray-50 bg-white"></tbody>
-                    </table>
+                <div id="lineItemsArea" class="hidden border border-gray-100 rounded-2xl p-4 mt-3 compact-panel bg-white">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3
+                            class="flex items-center gap-2 text-[10px] font-black text-gray-700 uppercase tracking-widest">
+                            <span class="inline-block h-4 w-1 rounded-full bg-orange-500"></span>
+                            Grades
+                        </h3>
+                        <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">Qty & Rates</span>
+                    </div>
+                    <div id="lineItemsBody" class="divide-y divide-gray-100"></div>
+                    <button id="addAllGradesBtn" onclick="addAllSelectedGrades()"
+                        class="hidden mt-2 w-full rounded-xl bg-blue-50/80 py-2.5 text-[11px] font-semibold text-blue-600 transition-all hover:bg-blue-100 active:scale-[0.99]">
+                        Add All at Once
+                    </button>
                 </div>
 
                 <div id="expensesArea" class="border border-gray-100 rounded-2xl p-4 mt-4 compact-panel bg-white">
@@ -1839,21 +1836,26 @@
                     const label = displayExpenseType(e.type);
 
                     return `
-                    <div class="bg-white px-3 py-2.5 transition-colors hover:bg-gray-50 min-w-[360px] sm:min-w-0">
+                    <div class="bg-white px-3 py-2.5 transition-colors hover:bg-gray-50 min-w-0">
                         <div class="flex items-center gap-2.5 sm:items-center">
                             <div class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold">+</div>
                             <div class="flex-1 min-w-0">
                                 <div class="text-[12px] font-semibold text-gray-800">${label}</div>
-                                <div class="mt-0.5 flex items-center gap-2.5 text-[9px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:hidden">
-                                    <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
-                                    <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
+                                <div class="mt-0.5 flex items-center justify-between gap-2 text-[9px] font-black uppercase tracking-widest leading-tight sm:hidden">
+                                    <div class="flex min-w-0 items-center gap-2.5 whitespace-nowrap">
+                                        <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
+                                        <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
+                                    </div>
+                                    <button onclick="removeExpense(${idx})" class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500 transition-colors active:scale-95" title="Remove">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
                                 </div>
                             </div>
                             <div class="hidden flex-shrink-0 items-center gap-3 text-[9px] font-black uppercase tracking-widest leading-tight whitespace-nowrap sm:flex">
                                 <span class="text-gray-400">PP <span class="font-mono text-gray-700 normal-case tracking-normal">&#x20B9;${pp.toFixed(2)}</span></span>
                                 <span class="text-gray-400">SP <span class="font-mono text-blue-700 normal-case tracking-normal">&#x20B9;${sp.toFixed(2)}</span></span>
                             </div>
-                            <button onclick="removeExpense(${idx})" class="ml-1 flex-shrink-0 rounded-md p-1 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500" title="Remove">
+                            <button onclick="removeExpense(${idx})" class="ml-1 hidden flex-shrink-0 rounded-md p-1 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500 sm:block" title="Remove">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
@@ -2395,83 +2397,78 @@
                 const rowWeight = parseFloat(item.weight) || 0;
                 const rowProfit = (sellRate - buyRate) * rowWeight;
                 const rowTotal = item.total > 0 ? item.total : (sellRate * rowWeight);
+                const gradeName = item.manualGrade || item.rawGrade || item.grade || 'GRADE';
+                const packLabel = item.packType && item.packType !== 'MANUAL' ? item.packType : '';
 
                 return `
-                <tr class="group border-b transition-all ${isPending ? 'bg-orange-50/40 animate-pending' : 'hover:bg-blue-50 cursor-pointer'}" ${!isPending ? `onclick="editItem(${idx})"` : ''}>
-                    <!-- 1. GRADE -->
-                    <td class="p-3">
-                        <div class="flex flex-col">
-                            <span class="font-black text-[11px] ${isPending ? 'text-orange-700' : 'text-blue-800'} uppercase">${item.grade}</span>
+                    <div class="flex items-center gap-2 py-2.5 ${isPending ? '' : 'cursor-pointer'}" ${!isPending ? `onclick="editItem(${idx})"` : ''}>
+                        <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${isPending ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}">
+                            <span class="text-xs font-bold">${isPending ? '+' : '✓'}</span>
                         </div>
-                    </td>
-                    
-                    <!-- 2. QTY -->
-                    <td class="p-3 text-right">
+                        <div class="min-w-[82px] flex-1">
+                            <p class="text-[12px] font-semibold text-gray-800 uppercase leading-tight">${gradeName}</p>
+                            ${packLabel ? `<p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">${packLabel}</p>` : `<p class="text-[8px] font-black text-gray-300 uppercase tracking-widest">${rowWeight.toFixed(2)} kg</p>`}
+                        </div>
                         ${isPending ? `
-                            <div class="flex items-center justify-end gap-1">
-                                <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
-                                    class="w-[60px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm">
-                            </div>
+                            <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
+                                class="no-spinner w-[64px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-gray-800 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:ring-orange-300 transition-colors">
+                            <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
+                                class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-gray-800 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:ring-orange-300 transition-colors">
+                            <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
+                                class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-blue-900 outline-none placeholder:text-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-400 transition-colors">
                         ` : `
-                            <div class="flex flex-col items-end">
-                                <span class="text-gray-900 font-bold text-xs">${rowWeight.toFixed(2)}Kg</span>
-                                <span class="text-[8px] font-bold text-gray-400 uppercase">${item.crates}U</span>
+                            <div class="flex-1 text-right">
+                                <p class="text-[11px] font-bold text-gray-500">${rowWeight.toFixed(2)} kg</p>
+                                <p class="text-[10px] font-mono font-black text-blue-700">\u20B9${sellRate.toFixed(2)}</p>
                             </div>
                         `}
-                    </td>
-
-                    <!-- 3. PP (Buy Rate) -->
-                    <td class="p-3 text-right">
-                        ${isPending ? `
-                             <div class="flex flex-col items-end gap-1">
-                                <span class="text-[7px] font-bold text-gray-400 uppercase">Buy Rate</span>
-                                <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
-                                    class="w-[60px] h-[35px] text-right border-2 border-blue-100 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-blue-50/20">
-                            </div>
-                        ` : `
-                            <span class="text-gray-400 font-bold text-xs font-mono">\u20B9${buyRate.toFixed(1)}</span>
-                        `}
-                    </td>
-
-                    <!-- 4. RATE (Sell Rate - Goes to Bill) -->
-                    <td class="p-3 text-right">
-                        ${isPending ? `
-                             <div class="flex flex-col items-end gap-1">
-                                <span class="text-[7px] font-bold text-orange-400 uppercase">Bill Rate</span>
-                                <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
-                                    class="w-[70px] h-[35px] text-right border-2 border-orange-200 rounded-lg px-2 text-xs font-black focus:border-blue-600 outline-none shadow-sm bg-orange-50/30">
-                            </div>
-                        ` : `
-                            <span class="text-orange-700 font-black text-xs font-mono">\u20B9${sellRate.toFixed(2)}</span>
-                        `}
-                    </td>
-
-                    <!-- 5. MARGIN -->
-                    <td class="p-3 text-right">
-                        <div class="flex flex-col items-end">
-                            <span class="text-[7px] font-bold text-gray-400 uppercase">Profit</span>
-                            <span id="row_profit_${idx}" class="font-black text-[10px] ${rowProfit >= 0 ? 'text-green-600' : 'text-red-500'}">
-                                \u20B9${rowProfit.toFixed(1)}
-                            </span>
+                        <div class="hidden xl:block min-w-[92px] text-right">
+                            <p id="row_profit_${idx}" class="font-mono text-[10px] font-bold ${rowProfit >= 0 ? 'text-emerald-600' : 'text-red-500'}">M \u20B9${rowProfit.toFixed(1)}</p>
+                            <p id="row_total_${idx}" class="font-mono text-[11px] font-black text-gray-800">\u20B9${rowTotal.toFixed(2)}</p>
                         </div>
-                    </td>
-
-                    <!-- 6. VALUE -->
-                    <td class="p-3 text-right">
-                        <div class="flex flex-col items-end">
-                            <span class="text-[7px] font-bold text-gray-400 uppercase">Bill Value</span>
-                            <span id="row_total_${idx}" class="font-black text-gray-900 font-mono text-xs">\u20B9${rowTotal.toFixed(2)}</span>
-                        </div>
-                    </td>
-
-                    <!-- 7. ACTIONS -->
-                    <td class="p-3 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                             <button onclick="event.stopPropagation(); removeItem(${idx})" class="w-8 h-8 flex items-center justify-center text-red-300 hover:text-red-600 bg-white border border-transparent hover:border-red-50 rounded-lg transition-all active:scale-95 text-xs font-bold">X</button>
-                        </div>
-                    </td>
-                </tr>`;
+                        <button onclick="event.stopPropagation(); removeItem(${idx})" class="rounded-md p-1 text-red-300 hover:bg-red-50 hover:text-red-500 transition-colors" title="Remove">x</button>
+                    </div>`;
             }).join('');
+            updateAddAllGradesButton();
+        };
+
+        const getFillableGradeIndexes = () => currentItems.reduce((indexes, item, idx) => {
+            if (item.total > 0) return indexes;
+            const qty = parseFloat(item.crates) || 0;
+            const activeRate = activeBillType === 'PURCHASE'
+                ? (parseFloat(item.purchasePrice) || 0)
+                : (parseFloat(item.price) || 0);
+            if (qty > 0 && activeRate > 0) indexes.push(idx);
+            return indexes;
+        }, []);
+
+        const updateAddAllGradesButton = () => {
+            const addAllBtn = document.getElementById('addAllGradesBtn');
+            if (!addAllBtn) return;
+            const filledCount = getFillableGradeIndexes().length;
+            addAllBtn.classList.toggle('hidden', filledCount === 0);
+            if (filledCount > 0) {
+                addAllBtn.innerText = `Add All at Once (${filledCount})`;
+            }
+        };
+
+        window.addAllSelectedGrades = () => {
+            const indexes = getFillableGradeIndexes();
+            if (indexes.length === 0) return;
+
+            indexes.forEach(idx => {
+                const item = currentItems[idx];
+                const qty = parseFloat(item.crates) || 0;
+                const multiplier = item.packType === 'MANUAL' ? 1 : (PACK_MULTIPLIERS[item.packType] || 0);
+                const rate = activeBillType === 'PURCHASE'
+                    ? (parseFloat(item.purchasePrice) || 0)
+                    : (parseFloat(item.price) || 0);
+                item.crates = qty;
+                item.weight = qty * multiplier;
+                item.total = item.weight * rate;
+            });
+
+            updateUI();
         };
 
         window.syncTotals = () => {
@@ -2596,6 +2593,7 @@
             // Sync everything in real-time
             syncTotals();
             syncBillPreview();
+            updateAddAllGradesButton();
         };
 
         window.autoCommitInlineItem = (idx) => {
