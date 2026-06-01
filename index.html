@@ -2410,11 +2410,11 @@
                             ${packLabel ? `<p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">${packLabel}</p>` : `<p class="text-[8px] font-black text-gray-300 uppercase tracking-widest">${rowWeight.toFixed(2)} kg</p>`}
                         </div>
                         ${isPending ? `
-                            <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
+                            <input type="text" inputmode="decimal" id="inline_qty_${idx}" value="${item.crates || ''}" placeholder="Qty" onfocus="this.select()" oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateInlineItem(${idx}, 'crates', this.value)" onkeydown="handleInlineKey(${idx}, 'crates', event)"
                                 class="no-spinner w-[64px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-gray-800 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:ring-orange-300 transition-colors">
-                            <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
+                            <input type="text" inputmode="decimal" id="inline_pp_${idx}" value="${item.purchasePrice || ''}" placeholder="PP" onfocus="this.select()" oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateInlineItem(${idx}, 'purchasePrice', this.value)" onkeydown="handleInlineKey(${idx}, 'purchasePrice', event)"
                                 class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-gray-800 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:ring-orange-300 transition-colors">
-                            <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
+                            <input type="text" inputmode="decimal" id="inline_price_${idx}" value="${item.price || ''}" placeholder="SP" onfocus="this.select()" oninput="this.value=this.value.replace(/[^0-9.]/g,''); updateInlineItem(${idx}, 'price', this.value)" onkeydown="handleInlineKey(${idx}, 'price', event)"
                                 class="no-spinner flex-1 min-w-[60px] bg-gray-50 rounded-lg px-3 py-1.5 text-right text-[13px] font-semibold text-blue-900 outline-none placeholder:text-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-400 transition-colors">
                         ` : `
                             <div class="flex-1 text-right">
@@ -2565,7 +2565,8 @@
         };
         window.updateInlineItem = (idx, field, value) => {
             const item = currentItems[idx];
-            item[field] = value;
+            const cleanValue = String(value || '').replace(/[^0-9.]/g, '');
+            item[field] = cleanValue;
             if (field === 'crates') {
                 const multiplier = (item.packType === 'MANUAL') ? 1 : (PACK_MULTIPLIERS[item.packType] || 0);
                 item.weight = (parseFloat(item.crates) || 0) * multiplier;
