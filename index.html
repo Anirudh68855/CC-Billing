@@ -334,6 +334,23 @@
             background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.98)) !important;
         }
 
+        #dispProd {
+            height: 32px;
+            line-height: 1 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            padding-top: 0 !important;
+            padding-bottom: 2px !important;
+            white-space: nowrap;
+        }
+
+        #sumTotal,
+        #sumTotal span {
+            line-height: 1 !important;
+        }
+
         #expensesItemsBody>div {
             background: transparent;
         }
@@ -707,7 +724,7 @@
                         <div class="text-right flex flex-col items-end">
                             <p class="text-[9px] font-bold text-gray-400 uppercase mb-1 tracking-wider">PRODUCE SEGMENT
                             </p>
-                            <h4 class="text-xl font-black text-blue-700 bg-blue-50 px-4 py-1 rounded-xl border border-blue-100"
+                            <h4 class="text-xl font-black text-blue-700 bg-blue-50 px-4 rounded-xl border border-blue-100 leading-none"
                                 id="dispProd">Pomegranate</h4>
                         </div>
                     </div>
@@ -777,7 +794,7 @@
                             <div class="font-black text-xs tracking-widest opacity-60 flex space-x-1">
                                 <span>NET</span><span>PAYABLE</span><span>AMOUNT</span>
                             </div>
-                            <div class="text-2xl font-black flex items-baseline" id="sumTotal"><span
+                            <div class="text-2xl font-black inline-flex items-center leading-none" id="sumTotal"><span
                                     class="mr-1">&#x20B9;</span><span>0.00</span></div>
                         </div>
                     </div>
@@ -1591,7 +1608,7 @@
                 : (parseFloat(item?.price) || parseFloat(item?.purchasePrice) || 0);
             const crateText = `${crates}U`;
             const weightText = `${weight.toFixed(2)}Kg`;
-            const rateText = `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹${rate.toFixed(2)}`;
+            const rateText = `Rs.${rate.toFixed(2)}`;
             return `${label} - ${crateText} / ${weightText} @ ${rateText}`;
         };
 
@@ -1600,6 +1617,26 @@
                 .filter(item => (parseFloat(item?.weight) || 0) > 0 || (parseFloat(item?.crates) || 0) > 0)
                 .map(item => formatSheetItemSummary(item, side))
                 .join(', ');
+        };
+
+        const buildSheetItemColumns = (items, side) => {
+            const summaries = (items || [])
+                .filter(item => (parseFloat(item?.weight) || 0) > 0 || (parseFloat(item?.crates) || 0) > 0)
+                .map(item => formatSheetItemSummary(item, side));
+
+            const columns = {
+                Items: summaries[0] || '',
+                sheetItemsByColumn: summaries,
+                sheetItemsCount: summaries.length,
+                sheetItemsSummary: summaries[0] || ''
+            };
+
+            summaries.forEach((summary, index) => {
+                columns[`Item ${index + 1}`] = summary;
+                columns[`item${index + 1}`] = summary;
+            });
+
+            return columns;
         };
 
         const calculateBillSideTotals = (bill, side) => {
@@ -1637,6 +1674,7 @@
             const totals = calculateBillSideTotals(bill, side);
             const sideLabel = side === 'SALES' ? 'Sales Bill' : 'Purchase Invoice';
             const billId = side === 'PURCHASE' ? (bill.purchaseBillId || bill.id) : (bill.salesBillId || bill.id);
+            const sheetItemColumns = buildSheetItemColumns(bill.items || [], side);
 
             return {
                 id: `${bill.id}-${side}`,
@@ -1656,7 +1694,7 @@
                 vendorName: bill.vendorName || '',
                 vendorMob: (bill.vendorMob || '').replace(/\D/g, ''),
                 items: bill.items || [],
-                sheetItemsSummary: buildSheetItemsSummary(bill.items || [], side),
+                ...sheetItemColumns,
                 expenses: buildSheetExpenses(bill.expenses || []),
                 total: totals.totalAmount,
                 grossTotal: totals.produceValue,
@@ -2882,6 +2920,8 @@
                     console.error("Share Bill Save Error:", shareErr);
                 }
 
+                saveBillToLocalHistory(finalData);
+
                 // Critical save succeeded, so don't let sheet/UI hiccups mark it as failed.
                 try {
                     if (GOOGLE_SHEETS_URL !== "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
@@ -2903,7 +2943,7 @@
                     if (generateBtn) generateBtn.disabled = true;
 
                     loadHistory();
-                    showNotification('Billing completed successfully! Saved & sent to printer.', 'success');
+                    showNotification('Bill completed and added to history.', 'success');
 
                     setTimeout(() => {
                         const prevTitle = document.title;
@@ -2990,36 +3030,68 @@
             const bill = document.getElementById('billPreview');
             const filename = `${buildBillFileBaseName(getExportBillContext())}.jpg`;
 
-            // Clone-based export to prevent layout issues
+            // Clone-based export to prevent layout issues. Always render as desktop, even on phones.
+            const EXPORT_WIDTH = 960;
+            const EXPORT_WINDOW_WIDTH = 1200;
             const exportHost = document.createElement('div');
-            exportHost.style.cssText = 'position:fixed;left:-10000px;top:0;z-index:-1;padding:24px;background:white;';
+            exportHost.style.cssText = `position:fixed;left:-10000px;top:0;z-index:-1;width:${EXPORT_WINDOW_WIDTH}px;padding:24px;background:white;`;
 
             const clonedBill = bill.cloneNode(true);
-            clonedBill.style.width = '700px';
-            clonedBill.style.minWidth = '700px';
-            clonedBill.style.maxWidth = '700px';
+            clonedBill.style.width = `${EXPORT_WIDTH}px`;
+            clonedBill.style.minWidth = `${EXPORT_WIDTH}px`;
+            clonedBill.style.maxWidth = `${EXPORT_WIDTH}px`;
             clonedBill.style.transform = 'none';
             clonedBill.style.boxShadow = 'none';
             clonedBill.style.zoom = '1';
             clonedBill.style.border = '1px solid #e2e8f0';
+            clonedBill.style.fontFamily = "'Manrope', Arial, Helvetica, sans-serif";
 
             // Fix table layout in clone
             const tables = clonedBill.querySelectorAll('table');
             tables.forEach(t => { t.style.tableLayout = 'fixed'; t.style.width = '100%'; });
             const cells = clonedBill.querySelectorAll('td, th');
-            cells.forEach(c => { c.style.wordBreak = 'break-word'; c.style.overflow = 'visible'; });
+            cells.forEach(c => {
+                c.style.wordBreak = 'normal';
+                c.style.overflow = 'visible';
+                c.style.letterSpacing = '0.06em';
+                c.style.whiteSpace = 'nowrap';
+            });
+
+            const clonedProduct = clonedBill.querySelector('#dispProd');
+            if (clonedProduct) {
+                clonedProduct.style.display = 'inline-flex';
+                clonedProduct.style.alignItems = 'center';
+                clonedProduct.style.justifyContent = 'center';
+                clonedProduct.style.height = '32px';
+                clonedProduct.style.minHeight = '32px';
+                clonedProduct.style.lineHeight = '1';
+                clonedProduct.style.paddingTop = '0';
+                clonedProduct.style.paddingBottom = '2px';
+                clonedProduct.style.whiteSpace = 'nowrap';
+                clonedProduct.style.letterSpacing = '0';
+                clonedProduct.style.fontFamily = "'Manrope', Arial, Helvetica, sans-serif";
+            }
+
+            const clonedTotal = clonedBill.querySelector('#sumTotal');
+            if (clonedTotal) {
+                clonedTotal.style.display = 'inline-flex';
+                clonedTotal.style.alignItems = 'center';
+                clonedTotal.style.lineHeight = '1';
+                clonedTotal.querySelectorAll('span').forEach(span => { span.style.lineHeight = '1'; });
+            }
 
             exportHost.appendChild(clonedBill);
             document.body.appendChild(exportHost);
 
-            requestAnimationFrame(() => {
+            const fontsReady = document.fonts ? document.fonts.ready.catch(() => null) : Promise.resolve();
+            fontsReady.then(() => requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     html2canvas(clonedBill, {
                         scale: 2,
                         useCORS: true,
                         backgroundColor: "#ffffff",
-                        width: 700,
-                        windowWidth: 700
+                        width: EXPORT_WIDTH,
+                        windowWidth: EXPORT_WINDOW_WIDTH
                     }).then(canvas => {
                         const link = document.createElement('a');
                         link.download = filename;
@@ -3033,7 +3105,7 @@
                         isDownloading = false;
                     });
                 });
-            });
+            }));
         };
 
         window.copyShareLink = async (side) => {
