@@ -318,7 +318,7 @@
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
         }
 
-        /* Default state ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â overridden by setBillType() inline styles */
+        /* Default state - overridden by setBillType() inline styles */
 
         #generateBtn {
             background: linear-gradient(135deg, #2db956 0%, #159a46 100%) !important;
@@ -463,8 +463,7 @@
                                     placeholder="Farmer Name">
                             </div>
                             <div>
-                                <label
-                                    class="sr-only">Farmer
+                                <label class="sr-only">Farmer
                                     Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="vendorMob" oninput="updateUI()"
@@ -485,8 +484,7 @@
                                     placeholder="Customer Name">
                             </div>
                             <div>
-                                <label
-                                    class="sr-only">Customer
+                                <label class="sr-only">Customer
                                     Mobile</label>
                                 <div class="relative">
                                     <input type="text" id="customerMob" oninput="updateUI()"
@@ -589,7 +587,8 @@
                     </div>
                 </div>
 
-                <div id="lineItemsArea" class="hidden border border-gray-100 rounded-2xl p-4 mt-3 compact-panel bg-white">
+                <div id="lineItemsArea"
+                    class="hidden border border-gray-100 rounded-2xl p-4 mt-3 compact-panel bg-white">
                     <div class="flex items-center justify-between mb-2">
                         <h3
                             class="flex items-center gap-2 text-[10px] font-black text-gray-700 uppercase tracking-widest">
@@ -708,9 +707,12 @@
                             <span class="text-[9px] font-black tracking-[.25em] text-gray-300 uppercase">BILLING
                                 PREVIEW</span>
                         </div>
-                        <div class="flex flex-col items-end">
+                        <div class="flex flex-col items-end relative cursor-pointer group" onclick="openBillDatePicker()">
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date</p>
-                            <p id="displayDate" class="text-xl font-black text-gray-900 leading-none">-- -- ----</p>
+                            <div class="relative">
+                                <p id="displayDate" class="text-xl font-black text-gray-900 leading-none group-hover:text-blue-600 transition-colors">-- -- ----</p>
+                                <input type="date" id="billDatePicker" onchange="updateBillDateDisplayFromPicker(this.value)" onclick="event.stopPropagation()" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full disabled:cursor-not-allowed disabled:pointer-events-none" style="min-width: 120px;">
+                            </div>
                         </div>
                     </div>
 
@@ -826,6 +828,16 @@
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                             Download JPG
+                        </button>
+                        <button id="copyBillBtn" onclick="copyBillToClipboard()" title="Copy Image to Clipboard"
+                            class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-3 rounded-xl transition-all active:scale-95 border border-gray-200 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="copyIcon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-600 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="checkIcon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
                         </button>
                     </div>
                     <div class="hidden mt-2 grid grid-cols-2 gap-2" id="shareLinkActions">
@@ -1221,6 +1233,7 @@
         let isLocked = false;
         let isSaving = false;
         let isDownloading = false;
+        let isCopying = false;
         let billIsFinalized = false;
         let lastFinalizedBill = null;
         let activeBillType = 'SALES'; // 'SALES' or 'PURCHASE'
@@ -1469,7 +1482,7 @@
                 try {
                     const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(billData))));
                     url.searchParams.set('data', encoded);
-                } catch(e) { console.error('Failed to encode link data', e); }
+                } catch (e) { console.error('Failed to encode link data', e); }
             }
             return url.toString();
         };
@@ -1566,7 +1579,7 @@
         const saveSharedBillsToFirebase = async (bill) => {
             const purchaseBillId = bill.purchaseBillId || generateBillId('PB');
             const salesBillId = bill.salesBillId || generateBillId('SB');
-            
+
             // Build the share record first to encode it
             const purchaseShare = buildSharedBillRecord(bill, 'PURCHASE', purchaseBillId, '');
             const salesShare = buildSharedBillRecord(bill, 'SALES', salesBillId, '');
@@ -1959,7 +1972,7 @@
                         <button onclick="toggleExpenseMode('${safeType}')"
                             class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full transition-all active:scale-90 ${isSubtract ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}"
                             title="${isSubtract ? 'Subtract' : 'Add'}">
-                            <span class="text-xs font-bold">${isSubtract ? 'ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢' : '+'}</span>
+                            <span class="text-xs font-bold">${isSubtract ? '-' : '+'}</span>
                         </button>
                         <span class="min-w-[80px] text-[13px] font-medium text-gray-800">${label}</span>
                         <input type="text" inputmode="decimal" id="${ppId}" value="${expensePPAmounts[type] || ''}"
@@ -2741,11 +2754,11 @@
 
             const toast = document.createElement('div');
             toast.className = 'flex items-center gap-3 bg-white border-l-4 border-emerald-500 text-gray-800 px-4 py-3.5 rounded-xl shadow-xl transform translate-x-12 opacity-0 transition-all duration-300 pointer-events-auto min-w-[300px] max-w-sm';
-            
-            const icon = type === 'success' 
+
+            const icon = type === 'success'
                 ? '<div class="h-6 w-6 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></div>'
                 : '<div class="h-6 w-6 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></div>';
-            
+
             toast.innerHTML = `
                 ${icon}
                 <div class="flex-1">
@@ -2825,7 +2838,7 @@
                     expenses: currentExpenses,
                     status: 'ACCEPTED',
                     type: activeBillType,
-                    ts: Date.now()
+                    ts: currentBillTimestamp || Date.now()
                 };
 
                 const totalSalesValue = data.items.reduce((acc, i) => acc + (parseFloat(i.weight) * parseFloat(i.price)), 0);
@@ -2986,15 +2999,11 @@
             if (document.getElementById('dispId')) document.getElementById('dispId').innerText = activeMob;
             if (document.getElementById('gridDispName')) document.getElementById('gridDispName').innerText = activeName.toString().toUpperCase();
             if (document.getElementById('gridDispId')) document.getElementById('gridDispId').innerText = activeMob;
-            if (bill?.ts) currentBillTimestamp = bill.ts;
-            const displayDateEl = document.getElementById('displayDate');
-            if (displayDateEl && bill?.ts) {
-                displayDateEl.innerText = new Date(bill.ts).toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
+            if (bill?.ts) {
+                window.updateBillDateDisplay(bill.ts);
             }
+            const picker = document.getElementById('billDatePicker');
+            if (picker) picker.disabled = true;
             document.getElementById('dispGrn').innerText = "REF: " + bill.ts.toString().slice(-6);
             syncFinalActionBar();
         };
@@ -3108,6 +3117,123 @@
             }));
         };
 
+        window.copyBillToClipboard = () => {
+            if (isCopying) return;
+            isCopying = true;
+
+            const copyBtn = document.getElementById('copyBillBtn');
+            const copyIcon = document.getElementById('copyIcon');
+            const checkIcon = document.getElementById('checkIcon');
+
+            if (copyBtn) {
+                copyBtn.classList.add('opacity-50');
+            }
+
+            const bill = document.getElementById('billPreview');
+
+            // Clone-based export to prevent layout issues. Always render as desktop, even on phones.
+            const EXPORT_WIDTH = 960;
+            const EXPORT_WINDOW_WIDTH = 1200;
+            const exportHost = document.createElement('div');
+            exportHost.style.cssText = `position:fixed;left:-10000px;top:0;z-index:-1;width:${EXPORT_WINDOW_WIDTH}px;padding:24px;background:white;`;
+
+            const clonedBill = bill.cloneNode(true);
+            clonedBill.style.width = `${EXPORT_WIDTH}px`;
+            clonedBill.style.minWidth = `${EXPORT_WIDTH}px`;
+            clonedBill.style.maxWidth = `${EXPORT_WIDTH}px`;
+            clonedBill.style.transform = 'none';
+            clonedBill.style.boxShadow = 'none';
+            clonedBill.style.zoom = '1';
+            clonedBill.style.border = '1px solid #e2e8f0';
+            clonedBill.style.fontFamily = "'Manrope', Arial, Helvetica, sans-serif";
+
+            // Fix table layout in clone
+            const tables = clonedBill.querySelectorAll('table');
+            tables.forEach(t => { t.style.tableLayout = 'fixed'; t.style.width = '100%'; });
+            const cells = clonedBill.querySelectorAll('td, th');
+            cells.forEach(c => {
+                c.style.wordBreak = 'normal';
+                c.style.overflow = 'visible';
+                c.style.letterSpacing = '0.06em';
+                c.style.whiteSpace = 'nowrap';
+            });
+
+            const clonedProduct = clonedBill.querySelector('#dispProd');
+            if (clonedProduct) {
+                clonedProduct.style.display = 'inline-flex';
+                clonedProduct.style.alignItems = 'center';
+                clonedProduct.style.justifyContent = 'center';
+                clonedProduct.style.height = '32px';
+                clonedProduct.style.minHeight = '32px';
+                clonedProduct.style.lineHeight = '1';
+                clonedProduct.style.paddingTop = '0';
+                clonedProduct.style.paddingBottom = '2px';
+                clonedProduct.style.whiteSpace = 'nowrap';
+                clonedProduct.style.letterSpacing = '0';
+                clonedProduct.style.fontFamily = "'Manrope', Arial, Helvetica, sans-serif";
+            }
+
+            const clonedTotal = clonedBill.querySelector('#sumTotal');
+            if (clonedTotal) {
+                clonedTotal.style.display = 'inline-flex';
+                clonedTotal.style.alignItems = 'center';
+                clonedTotal.style.lineHeight = '1';
+                clonedTotal.querySelectorAll('span').forEach(span => { span.style.lineHeight = '1'; });
+            }
+
+            exportHost.appendChild(clonedBill);
+            document.body.appendChild(exportHost);
+
+            const fontsReady = document.fonts ? document.fonts.ready.catch(() => null) : Promise.resolve();
+            fontsReady.then(() => requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    html2canvas(clonedBill, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: "#ffffff",
+                        width: EXPORT_WIDTH,
+                        windowWidth: EXPORT_WINDOW_WIDTH
+                    }).then(canvas => {
+                        canvas.toBlob(blob => {
+                            if (!blob) {
+                                throw new Error("Canvas to Blob failed");
+                            }
+                            navigator.clipboard.write([
+                                new ClipboardItem({
+                                    [blob.type]: blob
+                                })
+                            ]).then(() => {
+                                if (copyIcon && checkIcon) {
+                                    copyIcon.classList.add('hidden');
+                                    checkIcon.classList.remove('hidden');
+                                    copyBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+                                    copyBtn.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                                    setTimeout(() => {
+                                        copyIcon.classList.remove('hidden');
+                                        checkIcon.classList.add('hidden');
+                                        copyBtn.classList.remove('bg-green-50', 'text-green-700', 'border-green-200');
+                                        copyBtn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+                                    }, 2000);
+                                }
+                            }).catch(err => {
+                                console.error("Clipboard write failed:", err);
+                                alert("Failed to copy image to clipboard automatically. Please try downloading it.");
+                            }).finally(() => {
+                                exportHost.remove();
+                                if (copyBtn) copyBtn.classList.remove('opacity-50');
+                                isCopying = false;
+                            });
+                        }, 'image/png');
+                    }).catch(err => {
+                        console.error("Capture failed:", err);
+                        exportHost.remove();
+                        if (copyBtn) copyBtn.classList.remove('opacity-50');
+                        isCopying = false;
+                    });
+                });
+            }));
+        };
+
         window.copyShareLink = async (side) => {
             const bill = getExportBillContext();
             if (!bill) return;
@@ -3204,10 +3330,13 @@
         window.newTransaction = () => {
             billIsFinalized = false;
             lastFinalizedBill = null;
-            currentBillTimestamp = Date.now();
             currentItems = [];
             currentExpenses = [];
             clearExpenseDraftsForNewBill();
+            
+            window.updateBillDateDisplay(Date.now());
+            const picker = document.getElementById('billDatePicker');
+            if (picker) picker.disabled = false;
 
             const customerName = document.getElementById('customerName');
             const customerMob = document.getElementById('customerMob');
@@ -3488,7 +3617,11 @@
             if (customerMobI) customerMobI.value = bill.customerMob || (bill.type === 'SALES' ? bill.vId || "" : "");
             if (vendorNameI) vendorNameI.value = bill.vendorName || (bill.type === 'PURCHASE' ? bill.name || "" : "");
             if (vendorMobI) vendorMobI.value = bill.vendorMob || (bill.type === 'PURCHASE' ? bill.vId || "" : "");
-            if (bill.ts) currentBillTimestamp = bill.ts;
+            if (bill.ts) {
+                window.updateBillDateDisplay(bill.ts);
+            }
+            const picker = document.getElementById('billDatePicker');
+            if (picker) picker.disabled = true;
 
             // Sync UI displays manually since we aren't using event listeners here
             const restoredName = bill.type === 'SALES'
@@ -3501,14 +3634,6 @@
             if (document.getElementById('dispId')) document.getElementById('dispId').innerText = restoredMob;
             if (document.getElementById('gridDispName')) document.getElementById('gridDispName').innerText = restoredName.toUpperCase();
             if (document.getElementById('gridDispId')) document.getElementById('gridDispId').innerText = restoredMob;
-            const restoredDateEl = document.getElementById('displayDate');
-            if (restoredDateEl && bill.ts) {
-                restoredDateEl.innerText = new Date(bill.ts).toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
-            }
 
             // Restore historical metadata
             document.getElementById('dispGrn').innerHTML = `REF: ${bill.billId || bill.id}`;
@@ -3860,6 +3985,45 @@
             renderModalHistory(allHistoryData);
         };
 
+        window.updateBillDateDisplay = (ts) => {
+            currentBillTimestamp = ts;
+            const displayDateEl = document.getElementById('displayDate');
+            if (displayDateEl) {
+                displayDateEl.innerText = new Date(ts).toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
+            const picker = document.getElementById('billDatePicker');
+            if (picker) {
+                const d = new Date(ts);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                picker.value = `${yyyy}-${mm}-${dd}`;
+            }
+        };
+
+        window.updateBillDateDisplayFromPicker = (val) => {
+            if (val) {
+                const parts = val.split('-');
+                const selectedDate = new Date();
+                selectedDate.setFullYear(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                window.updateBillDateDisplay(selectedDate.getTime());
+            }
+        };
+        window.openBillDatePicker = () => {
+            const picker = document.getElementById('billDatePicker');
+            if (!picker || picker.disabled) return;
+            if (typeof picker.showPicker === 'function') {
+                picker.showPicker();
+            } else {
+                picker.focus();
+                picker.click();
+            }
+        };
+
         window.onload = async () => {
             console.log("Dashboard Booting...");
             try {
@@ -3874,14 +4038,7 @@
                     return;
                 }
                 if (typeof updateUI === 'function') updateUI();
-                const dateEl = document.getElementById('displayDate');
-                if (dateEl) {
-                    dateEl.innerText = new Date().toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    });
-                }
+                window.updateBillDateDisplay(Date.now());
                 console.log("Dashboard Fully Online.");
 
             } catch (bootErr) {
